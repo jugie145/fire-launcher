@@ -18,6 +18,8 @@ jobs:
           distribution: temurin
           java-version: 17
       - name: Build APK
+        env:
+            ORG_GRADLE_PROJECT_RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
         run: |
           chmod +x gradlew
           ./gradlew --no-daemon assembleRelease
