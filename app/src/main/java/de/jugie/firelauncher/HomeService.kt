@@ -21,6 +21,21 @@ class HomeService : AccessibilityService() {
         /** Bis zu diesem Zeitpunkt (uptimeMillis) nicht umleiten, z. B. wenn der Launcher die Einstellungen oeffnet. */
         @Volatile
         var settingsUntil = 0L
+
+        @Volatile private var activeService: HomeService? = null
+        @Volatile private var sleepDeadline = 0L
+
+        fun startSleepTimer(minutes: Int): Boolean =
+            activeService?.scheduleSleepTimer(minutes) ?: false
+
+        fun cancelSleepTimer() {
+            activeService?.cancelSleepTimerInternal()
+        }
+
+        fun sleepRemainingSeconds(): Long {
+            if (sleepDeadline == 0L) return 0L
+            return ((sleepDeadline - SystemClock.elapsedRealtime()).coerceAtLeast(0L) + 999L) / 1000L
+        }
     }
 
     private val amazon = setOf("com.amazon.tv.launcher", "com.amazon.firelauncher")
@@ -40,6 +55,29 @@ class HomeService : AccessibilityService() {
         }
     }
     private val uncoverLater = Runnable { uncover() }
+    private val sleepNow = Runnable {
+        sleepDeadline = 0L
+        // Fire OS may handle this like the remote's sleep action; HDMI-CEC can then switch off the TV.
+        performGlobalAction(GLOBAL_ACTION_LOCK_SCREEN)
+    }
+
+    override fun onServiceConnected() {
+        super.onServiceConnected()
+        activeService = this
+    }
+
+    private fun scheduleSleepTimer(minutes: Int): Boolean {
+        if (minutes <= 0) return false
+        handler.removeCallbacks(sleepNow)
+        sleepDeadline = SystemClock.elapsedRealtime() + minutes * 60_000L
+        handler.postDelayed(sleepNow, minutes * 60_000L)
+        return true
+    }
+
+    private fun cancelSleepTimerInternal() {
+        handler.removeCallbacks(sleepNow)
+        sleepDeadline = 0L
+    }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (event == null || event.eventType != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) return
@@ -106,6 +144,8 @@ class HomeService : AccessibilityService() {
     override fun onInterrupt() {}
 
     override fun onDestroy() {
+        if (activeService === this) activeService = null
+        cancelSleepTimerInternal()
         handler.removeCallbacksAndMessages(null)
         uncover()
         super.onDestroy()
