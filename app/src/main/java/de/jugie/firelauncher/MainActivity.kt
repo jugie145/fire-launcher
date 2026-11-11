@@ -5,7 +5,6 @@ import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.Outline
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.os.Handler
@@ -14,7 +13,6 @@ import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewOutlineProvider
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -30,14 +28,11 @@ class MainActivity : Activity() {
 
     private var k = 1f
     private val handler = Handler(Looper.getMainLooper())
-    private lateinit var aurora: Aurora
+    private lateinit var wave: WaveBackground
     private lateinit var content: LinearLayout
+    private lateinit var hero: Hero
     private lateinit var row: LinearLayout
     private lateinit var greet: TextView
-    private lateinit var spotBox: LinearLayout
-    private lateinit var spotIcon: ImageView
-    private lateinit var spotTitle: TextView
-    private lateinit var spotDesc: TextView
     private lateinit var wIcon: WeatherIcon
     private lateinit var wTemp: TextView
     private lateinit var wCond: TextView
@@ -46,6 +41,7 @@ class MainActivity : Activity() {
     private var lastFocus = 0
     private var lastWeather = 0L
     private var shown: String? = null
+    private var spotSet = false
     private var sig = ""
 
     private fun px(v: Int): Int = (v * k).toInt()
@@ -58,10 +54,13 @@ class MainActivity : Activity() {
             leftMargin = px(left)
         }
 
-    private fun divider(height: Int): View {
+    private fun divider(height: Int, left: Int, right: Int): View {
         val v = View(this)
         v.setBackgroundColor(0x40FFFFFF)
-        v.layoutParams = LinearLayout.LayoutParams(Math.max(1, px(2)), px(height))
+        v.layoutParams = LinearLayout.LayoutParams(Math.max(1, px(2)), px(height)).apply {
+            leftMargin = px(left)
+            rightMargin = px(right)
+        }
         return v
     }
 
@@ -76,12 +75,13 @@ class MainActivity : Activity() {
         sig = Prefs.sig(this)
         favApps = emptyList()
         shown = null
+        spotSet = false
         lastWeather = 0L
 
         val root = FrameLayout(this)
-        aurora = Aurora(this, k)
-        aurora.configure(Prefs.bg(this), Prefs.bgAnim(this), Ui.lastAccent)
-        root.addView(aurora, FrameLayout.LayoutParams(match, match))
+        root.setBackgroundColor(Ui.BG)
+        wave = WaveBackground(this)
+        root.addView(wave, FrameLayout.LayoutParams(match, match))
 
         content = LinearLayout(this)
         content.orientation = LinearLayout.VERTICAL
@@ -90,20 +90,21 @@ class MainActivity : Activity() {
         content.clipToPadding = false
         root.addView(content, FrameLayout.LayoutParams(match, match))
 
-        // Kopfzeile: Uhr | Datum, Begruessung, Standort | Wetter
-        val header = LinearLayout(this)
-        header.orientation = LinearLayout.HORIZONTAL
-        header.gravity = Gravity.CENTER_VERTICAL
+        // Kopfzeile: Uhr | Datum links, Begruessung exakt mittig, Ort | Wetter rechts
+        val header = FrameLayout(this)
+        val line = LinearLayout(this)
+        line.orientation = LinearLayout.HORIZONTAL
+        line.gravity = Gravity.CENTER_VERTICAL
         val fmt = if (Prefs.h24(this)) "HH:mm" else "h:mm"
         val clock = TextClock(this)
         clock.format24Hour = fmt
         clock.format12Hour = fmt
         clock.setTextSize(TypedValue.COMPLEX_UNIT_PX, 86 * k)
         clock.setTextColor(Color.WHITE)
-        clock.typeface = Ui.light
+        clock.typeface = Ui.medium
         clock.includeFontPadding = false
-        header.addView(clock)
-        header.addView(divider(80), (divider(80).layoutParams as LinearLayout.LayoutParams).apply { leftMargin = px(38); rightMargin = px(36) })
+        line.addView(clock)
+        line.addView(divider(80, 38, 36))
         val dateCol = LinearLayout(this)
         dateCol.orientation = LinearLayout.VERTICAL
         for (f in arrayOf("EEEE,", "d. MMMM")) {
@@ -115,59 +116,32 @@ class MainActivity : Activity() {
             t.includeFontPadding = false
             dateCol.addView(t, lp(wrap, wrap, top = if (f == "EEEE,") 0 else 8))
         }
-        header.addView(dateCol)
-        greet = Ui.text(this, "", 37f, k, Color.WHITE)
-        header.addView(greet, LinearLayout.LayoutParams(0, wrap, 1f).apply { leftMargin = px(110) })
-
-        header.addView(PinIcon(this), LinearLayout.LayoutParams(px(34), px(34)))
-        header.addView(Ui.text(this, "Grabow", 29f, k, Ui.TEXT_DIM), lp(wrap, wrap, left = 12))
-        header.addView(divider(72), (divider(72).layoutParams as LinearLayout.LayoutParams).apply { leftMargin = px(36); rightMargin = px(34) })
-        wIcon = WeatherIcon(this)
-        header.addView(wIcon, LinearLayout.LayoutParams(px(66), px(66)))
+        line.addView(dateCol)
+        line.addView(View(this), LinearLayout.LayoutParams(0, 1, 1f))
+        line.addView(Ui.text(this, "Grabow", 29f, k, Ui.TEXT_DIM))
+        line.addView(divider(72, 36, 34))
         val wCol = LinearLayout(this)
         wCol.orientation = LinearLayout.VERTICAL
         wCol.gravity = Gravity.END
+        val wRow = LinearLayout(this)
+        wRow.orientation = LinearLayout.HORIZONTAL
+        wRow.gravity = Gravity.CENTER_VERTICAL
+        wIcon = WeatherIcon(this)
+        wRow.addView(wIcon, LinearLayout.LayoutParams(px(48), px(48)))
         wTemp = Ui.text(this, "–°C", 42f, k, Color.WHITE)
+        wRow.addView(wTemp, lp(wrap, wrap, left = 12))
         wCond = Ui.text(this, "", 22f, k, Ui.TEXT_DIM)
-        wCol.addView(wTemp)
+        wCol.addView(wRow)
         wCol.addView(wCond, lp(wrap, wrap, top = 8))
-        header.addView(wCol, lp(wrap, wrap, left = 22))
+        line.addView(wCol)
+        header.addView(line, FrameLayout.LayoutParams(match, wrap))
+        greet = Ui.text(this, "", 37f, k, Color.WHITE)
+        header.addView(greet, FrameLayout.LayoutParams(wrap, wrap, Gravity.CENTER))
         content.addView(header)
 
-        content.addView(View(this), LinearLayout.LayoutParams(1, 0, 3f))
-
-        // Spotlight: zeigt die ausgewaehlte App
-        val spot = LinearLayout(this)
-        spot.orientation = LinearLayout.HORIZONTAL
-        spot.gravity = Gravity.CENTER_VERTICAL
-        spot.background = GlassDrawable(42f * k, k)
-        spot.setPadding(px(52), 0, px(42), 0)
-        spotBox = LinearLayout(this)
-        spotBox.orientation = LinearLayout.HORIZONTAL
-        spotBox.gravity = Gravity.CENTER_VERTICAL
-        spotIcon = ImageView(this)
-        spotIcon.scaleType = ImageView.ScaleType.FIT_CENTER
-        spotIcon.outlineProvider = object : ViewOutlineProvider() {
-            override fun getOutline(v: View, o: Outline) {
-                val s = Math.min(v.width, v.height)
-                val l = (v.width - s) / 2
-                val t = (v.height - s) / 2
-                o.setRoundRect(l, t, l + s, t + s, s * 0.23f)
-            }
-        }
-        spotIcon.clipToOutline = true
-        spotBox.addView(spotIcon, LinearLayout.LayoutParams(px(124), px(92)))
-        spotBox.addView(divider(96), (divider(96).layoutParams as LinearLayout.LayoutParams).apply { leftMargin = px(46); rightMargin = px(46) })
-        val sCol = LinearLayout(this)
-        sCol.orientation = LinearLayout.VERTICAL
-        spotTitle = Ui.text(this, "", 40f, k, Color.WHITE, Ui.medium)
-        spotDesc = Ui.text(this, "", 27f, k, Ui.TEXT_DIM)
-        sCol.addView(spotTitle)
-        sCol.addView(spotDesc, lp(wrap, wrap, top = 14))
-        spotBox.addView(sCol)
-        spot.addView(spotBox, LinearLayout.LayoutParams(0, wrap, 1f))
-        spot.addView(PlayIcon(this), LinearLayout.LayoutParams(px(82), px(82)))
-        content.addView(spot, LinearLayout.LayoutParams(match, px(152)))
+        // Grosse Flaeche mit wechselnden Inhalten
+        hero = Hero(this, k)
+        content.addView(hero, lp(match, px(460), top = 44))
 
         // App-Leiste
         row = LinearLayout(this)
@@ -175,7 +149,7 @@ class MainActivity : Activity() {
         row.gravity = Gravity.CENTER
         row.clipChildren = false
         row.clipToPadding = false
-        content.addView(row, lp(match, px(206), top = 62))
+        content.addView(row, lp(match, px(204), top = 62))
 
         content.addView(View(this), LinearLayout.LayoutParams(1, 0, 1f))
 
@@ -184,35 +158,47 @@ class MainActivity : Activity() {
         bar.orientation = LinearLayout.HORIZONTAL
         bar.gravity = Gravity.CENTER_VERTICAL
         bar.clipChildren = false
-        bar.addView(footItem(GearIcon(this), "Einstellungen") { startActivity(Intent(this, SettingsActivity::class.java)) })
-        bar.addView(footItem(null, "Alle Apps") { startActivity(Intent(this, AllAppsActivity::class.java)) }, lp(wrap, wrap, left = 14))
+        bar.addView(footItem(GearIcon(this), "Einstellungen", 252, R.drawable.glass_pill_settings) {
+            startActivity(Intent(this, SettingsActivity::class.java))
+        })
+        bar.addView(footItem(null, "Alle Apps", 162, R.drawable.glass_pill_apps) {
+            startActivity(Intent(this, AllAppsActivity::class.java))
+        }, LinearLayout.LayoutParams(px(162), px(64)).apply { leftMargin = px(14) })
         bar.addView(View(this), LinearLayout.LayoutParams(0, 1, 1f))
         wifiIcon = WifiIcon(this)
         bar.addView(wifiIcon, LinearLayout.LayoutParams(px(26), px(26)))
-        bar.addView(divider(40), (divider(40).layoutParams as LinearLayout.LayoutParams).apply { leftMargin = px(26); rightMargin = px(26) })
+        bar.addView(divider(40, 26, 26))
         bar.addView(Ui.text(this, "LIQUID TV · v" + versionName(), 21f, k, Ui.TEXT_DIM))
         content.addView(bar)
 
         setContentView(root)
     }
 
-    private fun footItem(icon: View?, label: String, onClick: () -> Unit): View {
-        val box = LinearLayout(this)
-        box.orientation = LinearLayout.HORIZONTAL
-        box.gravity = Gravity.CENTER_VERTICAL
-        box.setPadding(px(20), px(12), px(26), px(12))
-        val g = GlassDrawable(999f, k)
+    /** Knopf der Fussleiste: bei Fokus blendet das fertige Glasbild ein. */
+    private fun footItem(icon: View?, label: String, w: Int, glassRes: Int, onClick: () -> Unit): View {
+        val box = FrameLayout(this)
+        box.clipChildren = false
+        box.layoutParams = LinearLayout.LayoutParams(px(w), px(64))
+        val glass = ImageView(this)
+        glass.setImageResource(glassRes)
+        glass.scaleType = ImageView.ScaleType.FIT_XY
+        glass.alpha = 0f
+        box.addView(glass, FrameLayout.LayoutParams(px(w + 8), px(72), Gravity.CENTER))
+        val line = LinearLayout(this)
+        line.orientation = LinearLayout.HORIZONTAL
+        line.gravity = Gravity.CENTER_VERTICAL
         val t = Ui.text(this, label, 23f, k, Ui.TEXT_DIM)
         if (icon != null) {
-            box.addView(icon, LinearLayout.LayoutParams(px(38), px(38)))
-            box.addView(t, lp(wrap, wrap, left = 18))
+            line.addView(icon, LinearLayout.LayoutParams(px(38), px(38)))
+            line.addView(t, lp(wrap, wrap, left = 18))
+            box.addView(line, FrameLayout.LayoutParams(wrap, wrap, Gravity.START or Gravity.CENTER_VERTICAL).apply { leftMargin = px(20) })
         } else {
-            box.addView(t, lp(wrap, wrap, left = 6))
+            line.addView(t)
+            box.addView(line, FrameLayout.LayoutParams(wrap, wrap, Gravity.CENTER))
         }
         box.isFocusable = true
         box.setOnFocusChangeListener { v, has ->
-            g.boost = if (has) 1f else 0f
-            box.background = if (has) g else null
+            glass.animate().alpha(if (has) 1f else 0f).setDuration(Ui.d(180)).start()
             t.setTextColor(if (has) Color.WHITE else Ui.TEXT_DIM)
             val s = if (has) 1.05f else 1f
             v.animate().scaleX(s).scaleY(s).setDuration(Ui.d(180)).setInterpolator(Ui.smooth).start()
@@ -228,7 +214,8 @@ class MainActivity : Activity() {
         super.onResume()
         if (Prefs.redirect(this) && Setup.canWrite(this) && !Setup.isEnabled(this)) Setup.enable(this)
         if (sig != Prefs.sig(this)) build()
-        aurora.start()
+        wave.start()
+        hero.start()
         if (Ui.anims) {
             content.alpha = 0f
             content.scaleX = 0.98f
@@ -242,7 +229,8 @@ class MainActivity : Activity() {
     }
 
     override fun onPause() {
-        aurora.stop()
+        wave.stop()
+        hero.stop()
         super.onPause()
     }
 
@@ -252,12 +240,12 @@ class MainActivity : Activity() {
         val h = c.get(Calendar.HOUR_OF_DAY)
         val dow = c.get(Calendar.DAY_OF_WEEK)
         greet.text = when {
-            h >= 23 || h < 5 -> "Noch wach, $name? 🌙"
-            h in 5..10 -> "Guten Morgen, $name. ☀️"
-            dow == Calendar.FRIDAY && h >= 16 -> "Schönes Wochenende, $name. 👋"
-            h in 11..13 -> "Mahlzeit, $name. 👋"
-            h in 14..17 -> "Hallo $name. 👋"
-            else -> "Guten Abend, $name. 👋"
+            h >= 23 || h < 5 -> "Noch wach, $name?"
+            h in 5..10 -> "Guten Morgen, $name."
+            dow == Calendar.FRIDAY && h >= 16 -> "Schönes Wochenende, $name."
+            h in 11..13 -> "Mahlzeit, $name."
+            h in 14..17 -> "Hallo $name."
+            else -> "Guten Abend, $name."
         }
     }
 
@@ -299,31 +287,21 @@ class MainActivity : Activity() {
         }
     }
 
-    /** Spotlight und Hintergrund auf die ausgewaehlte App umstellen. */
-    private fun select(app: AppEntry) {
-        if (shown == app.pkg) return
-        shown = app.pkg
+    /** Grosse Flaeche und Farbbereich des Hintergrunds auf die ausgewaehlte App umstellen. */
+    private fun select(app: AppEntry, v: View) {
         val accent = Ui.accentFor(app)
         Ui.lastAccent = accent
-        aurora.setAccent(accent)
-        val logo = Ui.logoRes(app)
-        if (logo != 0) {
-            spotIcon.clipToOutline = false
-            spotIcon.setImageResource(logo)
-        } else {
-            spotIcon.clipToOutline = true
-            spotIcon.setImageDrawable(app.icon ?: app.banner)
+        v.post {
+            val loc = IntArray(2)
+            v.getLocationInWindow(loc)
+            val cx = loc[0] + v.width * v.scaleX / 2f
+            val cy = loc[1] + v.height * v.scaleY / 2f
+            wave.setSpot(cx, cy, accent, spotSet)
+            spotSet = true
         }
-        spotTitle.text = app.label
-        spotDesc.text = Ui.descFor(app)
-        spotBox.animate().cancel()
-        if (Ui.anims) {
-            spotBox.alpha = 0f
-            spotBox.translationX = 26f * k
-            spotBox.animate().alpha(1f).translationX(0f).setDuration(320).setInterpolator(Ui.smooth).start()
-        } else {
-            spotBox.alpha = 1f
-            spotBox.translationX = 0f
+        if (shown != app.pkg) {
+            shown = app.pkg
+            hero.show(app)
         }
     }
 
@@ -333,21 +311,18 @@ class MainActivity : Activity() {
         row.removeAllViews()
         if (list.isEmpty()) {
             shown = null
-            spotTitle.text = "Noch keine Favoriten"
-            spotDesc.text = "Unter „Alle Apps“ eine App lange gedrückt halten, um sie anzupinnen."
-            spotIcon.setImageDrawable(null)
+            row.addView(Ui.text(this, "Unter „Alle Apps“ eine App lange gedrückt halten, um sie hier anzupinnen.", 28f, k, Ui.TEXT_DIM))
             return
         }
-        // Kacheln fuellen die Breite gleichmaessig; Groesse richtet sich nach der Anzahl
         val n = list.size
-        val gap = px(28)
+        val w = px(227)
+        val h = px(204)
         val avail = resources.displayMetrics.widthPixels - px(160)
-        val w = Math.min(px(270), (avail - gap * (n - 1)) / n)
-        val h = Math.min(px(206), (w * 0.9f).toInt())
+        val gap = if (n > 1) Math.max(0, Math.min(px(64), (avail - w * n) / (n - 1))) else 0
         list.forEachIndexed { i, app ->
-            val tile = Ui.glassTile(this, app, w, h, k, true) {
+            val tile = Ui.imageTile(this, app, w, h, k) { v ->
                 lastFocus = i
-                select(app)
+                select(app, v)
             }
             tile.setOnClickListener { v ->
                 val opts = try {

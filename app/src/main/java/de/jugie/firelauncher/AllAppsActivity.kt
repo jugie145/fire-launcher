@@ -19,7 +19,7 @@ class AllAppsActivity : Activity() {
     private var k = 1f
     private val handler = Handler(Looper.getMainLooper())
     private lateinit var grid: LinearLayout
-    private lateinit var aurora: Aurora
+    private lateinit var wave: WaveBackground
     private lateinit var hint: TextView
     private val hintText = "OK öffnet die App  ·  OK lange halten: als Favorit anpinnen oder lösen"
 
@@ -32,8 +32,7 @@ class AllAppsActivity : Activity() {
         k = resources.displayMetrics.widthPixels / 1920f
         Ui.load(this)
 
-        aurora = Aurora(this, k)
-        aurora.configure(Prefs.bg(this), Prefs.bgAnim(this), Ui.lastAccent)
+        wave = WaveBackground(this)
         val scroll = ScrollView(this)
         scroll.clipChildren = false
         scroll.clipToPadding = false
@@ -56,7 +55,7 @@ class AllAppsActivity : Activity() {
 
         scroll.addView(col)
         val frame = FrameLayout(this)
-        frame.addView(aurora, FrameLayout.LayoutParams(match, match))
+        frame.addView(wave, FrameLayout.LayoutParams(match, match))
         frame.addView(scroll, FrameLayout.LayoutParams(match, match))
         setContentView(frame)
 
@@ -68,11 +67,11 @@ class AllAppsActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
-        aurora.start()
+        wave.start()
     }
 
     override fun onPause() {
-        aurora.stop()
+        wave.stop()
         super.onPause()
     }
 

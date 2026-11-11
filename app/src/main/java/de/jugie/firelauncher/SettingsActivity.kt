@@ -30,7 +30,7 @@ class SettingsActivity : Activity() {
 
     private var k = 1f
     private val handler = Handler(Looper.getMainLooper())
-    private lateinit var aurora: Aurora
+    private lateinit var wave: WaveBackground
     private lateinit var orderRow: LinearLayout
     private lateinit var orderHint: TextView
     private val glasses = ArrayList<GlassDrawable>()
@@ -50,11 +50,10 @@ class SettingsActivity : Activity() {
         super.onCreate(savedInstanceState)
         k = resources.displayMetrics.widthPixels / 1920f
         Ui.load(this)
-        bgSig = "" + Prefs.bg(this) + Prefs.bgAnim(this)
+        bgSig = "" + Prefs.bgAnim(this) + Prefs.anims(this)
         glassSig = Prefs.glass(this)
 
-        aurora = Aurora(this, k)
-        aurora.configure(Prefs.bg(this), Prefs.bgAnim(this), Ui.lastAccent)
+        wave = WaveBackground(this)
         val scroll = ScrollView(this)
         scroll.clipChildren = false
         scroll.clipToPadding = false
@@ -68,10 +67,7 @@ class SettingsActivity : Activity() {
         col.addView(Ui.text(this, "Einstellungen", 60f, k, Color.WHITE, Ui.light))
 
         section(col, "Darstellung")
-        val first = row(col, "Hintergrund", { Aurora.NAMES[Prefs.bg(this) % Aurora.NAMES.size] }) {
-            Prefs.setBg(this, (Prefs.bg(this) + 1) % Aurora.NAMES.size)
-        }
-        row(col, "Hintergrundanimation", { onOff(Prefs.bgAnim(this)) }) { Prefs.setBgAnim(this, !Prefs.bgAnim(this)) }
+        val first = row(col, "Hintergrundanimation", { onOff(Prefs.bgAnim(this)) }) { Prefs.setBgAnim(this, !Prefs.bgAnim(this)) }
         row(col, "Glaseffekt", { arrayOf("Dezent", "Normal", "Stark")[Prefs.glass(this) % 3] }) {
             Prefs.setGlass(this, (Prefs.glass(this) + 1) % 3)
         }
@@ -118,7 +114,7 @@ class SettingsActivity : Activity() {
 
         scroll.addView(col)
         val frame = FrameLayout(this)
-        frame.addView(aurora, FrameLayout.LayoutParams(match, match))
+        frame.addView(wave, FrameLayout.LayoutParams(match, match))
         frame.addView(scroll, FrameLayout.LayoutParams(match, match))
         setContentView(frame)
         first.requestFocus()
@@ -135,13 +131,13 @@ class SettingsActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
-        aurora.start()
+        wave.start()
         if (Prefs.redirect(this) && Setup.canWrite(this)) Setup.enable(this)
         for (r in refreshers) r()
     }
 
     override fun onPause() {
-        aurora.stop()
+        wave.stop()
         super.onPause()
     }
 
@@ -196,10 +192,10 @@ class SettingsActivity : Activity() {
     private fun applyChanges() {
         Ui.load(this)
         for (r in refreshers) r()
-        val nb = "" + Prefs.bg(this) + Prefs.bgAnim(this)
+        val nb = "" + Prefs.bgAnim(this) + Prefs.anims(this)
         if (nb != bgSig) {
             bgSig = nb
-            aurora.configure(Prefs.bg(this), Prefs.bgAnim(this), Ui.lastAccent)
+            wave.start()
         }
         if (Prefs.glass(this) != glassSig) {
             glassSig = Prefs.glass(this)
@@ -281,7 +277,7 @@ class SettingsActivity : Activity() {
         } catch (e: Exception) {
         }
         val dm = resources.displayMetrics
-        return "Fire Launcher " + ver + "\n" +
+        return "Liquid TV " + ver + "\n" +
             "Gerät: " + Build.MANUFACTURER + " " + Build.MODEL + "\n" +
             "Android " + Build.VERSION.RELEASE + " (API " + Build.VERSION.SDK_INT + ")\n" +
             "Oberfläche: " + dm.widthPixels + " × " + dm.heightPixels + "\n" +

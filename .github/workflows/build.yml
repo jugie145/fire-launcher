@@ -18,6 +18,8 @@ jobs:
           distribution: temurin
           java-version: 17
       - name: Build APK
+        env:
+          TMDB_KEY: ${{ secrets.TMDB_KEY }}
         run: |
           chmod +x gradlew
           ./gradlew --no-daemon assembleRelease

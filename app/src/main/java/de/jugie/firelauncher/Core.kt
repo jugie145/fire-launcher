@@ -191,7 +191,7 @@ object Ui {
     @Volatile var intensity = 1f
     @Volatile var anims = true
     /** Akzentfarbe der zuletzt ausgewaehlten App, damit Unterseiten denselben Hintergrund zeigen. */
-    @Volatile var lastAccent = 0xFFFF2A3D.toInt()
+    @Volatile var lastAccent = 0xFFFF0000.toInt()
 
     val smooth = PathInterpolator(0.22f, 0.9f, 0.3f, 1f)
     val light: Typeface by lazy { Typeface.create("sans-serif-light", Typeface.NORMAL) }
@@ -243,13 +243,13 @@ object Ui {
         val l = app.label.lowercase()
         val p = app.pkg.lowercase()
         return when {
-            l.contains("spotify") || p.contains("spotify") -> 0xFF1DB954.toInt()
-            l.contains("youtube") || p.contains("youtube") -> 0xFFFF2A3D.toInt()
-            l.contains("twitch") || p.contains("twitch") -> 0xFF9146FF.toInt()
-            l.contains("netflix") || p.contains("netflix") -> 0xFFE50914.toInt()
-            l.startsWith("prime video") || p.contains("firebat") -> 0xFF1A98FF.toInt()
-            l.contains("disney") || p.contains("disney") -> 0xFF2B6BFF.toInt()
-            l == "wow" || l.startsWith("wow ") -> 0xFF14A8A4.toInt()
+            l.contains("spotify") || p.contains("spotify") -> 0xFF1ED860.toInt()
+            l.contains("youtube") || p.contains("youtube") -> 0xFFFF0000.toInt()
+            l.contains("twitch") || p.contains("twitch") -> 0xFF9246FF.toInt()
+            l.contains("netflix") || p.contains("netflix") -> 0xFFE50000.toInt()
+            l.startsWith("prime video") || p.contains("firebat") -> 0xFF2896D3.toInt()
+            l.contains("disney") || p.contains("disney") -> 0xFF31BADD.toInt()
+            l == "wow" || l.startsWith("wow ") -> 0xFF02AAB2.toInt()
             else -> iconColor(app.icon ?: app.banner)
         }
     }
@@ -263,6 +263,7 @@ object Ui {
             l == "youtube" || p.endsWith(".youtube") -> R.drawable.logo_youtube
             l.contains("twitch") || p.contains("twitch") -> R.drawable.logo_twitch
             l.contains("netflix") || p.contains("netflix") -> R.drawable.logo_netflix
+            l.startsWith("prime video") || p.contains("firebat") -> R.drawable.logo_prime
             l == "wow" || l.startsWith("wow ") -> R.drawable.logo_wow
             l.contains("disney") || p.contains("disney") -> R.drawable.logo_disney
             else -> 0
@@ -322,7 +323,6 @@ object Ui {
         ctx: Context, app: AppEntry, w: Int, h: Int, k: Float,
         showLabel: Boolean, onFocus: (() -> Unit)? = null
     ): FrameLayout {
-        val accent = accentFor(app)
         val f = FrameLayout(ctx)
         f.clipChildren = false
         f.clipToPadding = false
@@ -337,12 +337,11 @@ object Ui {
 
         val glSize = (w * 1.85f).toInt()
         val glow = View(ctx)
-        glow.background = radial((accent and 0x00FFFFFF) or 0x66000000, glSize)
+        glow.background = radial(0x30FFFFFF, glSize)
         glow.alpha = 0f
         f.addView(glow, FrameLayout.LayoutParams(glSize, glSize, Gravity.CENTER))
 
         val glass = GlassDrawable(Math.min(w, h) * 0.2f, k)
-        glass.accent = accent
         val panel = View(ctx)
         panel.background = glass
         f.addView(panel, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
@@ -398,6 +397,90 @@ object Ui {
                 glass.boost = target
             }
             if (has) onFocus?.invoke()
+        }
+        return f
+    }
+
+    /**
+     * Kachel des Startbildschirms: fertige Glasbilder (normal / ausgewaehlt), Logo und Name.
+     * Bei Fokus blendet das hellere Glas ein, die Kachel waechst auf 108 % und hebt sich,
+     * und einmal zieht ein Lichtstreif darueber.
+     */
+    fun imageTile(ctx: Context, app: AppEntry, w: Int, h: Int, k: Float, onFocus: ((View) -> Unit)?): FrameLayout {
+        val f = FrameLayout(ctx)
+        f.clipChildren = false
+        f.clipToPadding = false
+        val gw = (347 * k).toInt()
+        val gh = (324 * k).toInt()
+        val normal = ImageView(ctx)
+        normal.setImageResource(R.drawable.glass_tile)
+        normal.scaleType = ImageView.ScaleType.FIT_XY
+        f.addView(normal, FrameLayout.LayoutParams(gw, gh, Gravity.CENTER))
+        val lit = ImageView(ctx)
+        lit.setImageResource(R.drawable.glass_tile_focus)
+        lit.scaleType = ImageView.ScaleType.FIT_XY
+        lit.alpha = 0f
+        f.addView(lit, FrameLayout.LayoutParams(gw, gh, Gravity.CENTER))
+
+        val clip = FrameLayout(ctx)
+        clip.outlineProvider = object : ViewOutlineProvider() {
+            override fun getOutline(v: View, o: Outline) {
+                o.setRoundRect(0, 0, v.width, v.height, 41f * k)
+            }
+        }
+        clip.clipToOutline = true
+        val streak = View(ctx)
+        streak.background = GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, intArrayOf(0x00FFFFFF, 0x33FFFFFF, 0x00FFFFFF))
+        streak.alpha = 0f
+        clip.addView(streak, FrameLayout.LayoutParams((w * 0.45f).toInt(), ViewGroup.LayoutParams.MATCH_PARENT))
+        f.addView(clip, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+
+        val col = LinearLayout(ctx)
+        col.orientation = LinearLayout.VERTICAL
+        col.gravity = Gravity.CENTER_HORIZONTAL
+        val box = FrameLayout(ctx)
+        val iv = ImageView(ctx)
+        iv.scaleType = ImageView.ScaleType.FIT_CENTER
+        val logo = logoRes(app)
+        if (logo != 0) {
+            iv.setImageResource(logo)
+            box.addView(iv, FrameLayout.LayoutParams((140 * k).toInt(), (91 * k).toInt(), Gravity.CENTER))
+        } else {
+            iv.setImageDrawable(app.icon ?: app.banner)
+            iv.outlineProvider = object : ViewOutlineProvider() {
+                override fun getOutline(v: View, o: Outline) {
+                    o.setRoundRect(0, 0, v.width, v.height, v.width * 0.23f)
+                }
+            }
+            iv.clipToOutline = true
+            box.addView(iv, FrameLayout.LayoutParams((90 * k).toInt(), (90 * k).toInt(), Gravity.CENTER))
+        }
+        col.addView(box, LinearLayout.LayoutParams((150 * k).toInt(), (96 * k).toInt()))
+        val name = text(ctx, app.label, 23f, k, Color.WHITE, medium)
+        name.maxLines = 1
+        name.ellipsize = android.text.TextUtils.TruncateAt.END
+        name.gravity = Gravity.CENTER_HORIZONTAL
+        col.addView(name, LinearLayout.LayoutParams(w - (24 * k).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = (15 * k).toInt() })
+        f.addView(col, FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER))
+
+        f.isFocusable = true
+        f.contentDescription = app.label
+        f.setOnFocusChangeListener { v, has ->
+            val s = if (has) 1.08f else 1f
+            v.animate().scaleX(s).scaleY(s).translationY(if (has) -8f * k else 0f)
+                .setDuration(d(300)).setInterpolator(smooth).start()
+            lit.animate().alpha(if (has) 1f else 0f).setDuration(d(300)).start()
+            normal.animate().alpha(if (has) 0f else 1f).setDuration(d(300)).start()
+            streak.animate().cancel()
+            if (has && anims) {
+                streak.translationX = -w * 0.6f
+                streak.alpha = 1f
+                streak.animate().translationX(w * 1.2f).setStartDelay(80).setDuration(750)
+                    .withEndAction { streak.alpha = 0f }.start()
+            } else {
+                streak.alpha = 0f
+            }
+            if (has) onFocus?.invoke(v)
         }
         return f
     }

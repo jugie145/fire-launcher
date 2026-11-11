@@ -15,6 +15,7 @@ android {
         targetSdk = 34
         versionCode = (System.getenv("GITHUB_RUN_NUMBER") ?: "1").toInt()
         versionName = "1." + (System.getenv("GITHUB_RUN_NUMBER") ?: "0")
+        buildConfigField("String", "TMDB_KEY", "\"" + (System.getenv("TMDB_KEY") ?: "").replace("\"", "").trim() + "\"")
     }
     signingConfigs {
         create("release") {
@@ -30,6 +31,7 @@ android {
             signingConfig = signingConfigs.getByName("release")
         }
     }
+    buildFeatures { buildConfig = true }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
