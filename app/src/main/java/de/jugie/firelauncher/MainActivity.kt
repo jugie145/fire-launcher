@@ -352,6 +352,13 @@ class MainActivity : Activity() {
             }
             tile.id = View.generateViewId()
             tile.nextFocusUpId = hero.id
+            tile.setOnKeyListener { _, keyCode, event ->
+                if (keyCode == android.view.KeyEvent.KEYCODE_DPAD_DOWN &&
+                    event.action == android.view.KeyEvent.ACTION_DOWN) {
+                    startActivity(Intent(this, CinemaActivity::class.java))
+                    true
+                } else false
+            }
             val cell = FrameLayout(this)
             cell.clipChildren = false
             cell.clipToPadding = false
