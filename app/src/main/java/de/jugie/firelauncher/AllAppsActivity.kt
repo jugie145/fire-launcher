@@ -1,6 +1,7 @@
 package de.jugie.firelauncher
 
 import android.app.Activity
+import android.app.ActivityOptions
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
@@ -94,7 +95,14 @@ class AllAppsActivity : Activity() {
             cell.clipChildren = false
             cell.clipToPadding = false
             val tile = Ui.glassTile(this, app, size, size, k, false)
-            tile.setOnClickListener { Apps.launch(this, app) }
+            tile.setOnClickListener { v ->
+                val opts = try {
+                    ActivityOptions.makeScaleUpAnimation(v, 0, 0, v.width, v.height).toBundle()
+                } catch (e: Exception) {
+                    null
+                }
+                Apps.launch(this, app, opts)
+            }
             tile.setOnLongClickListener { toggleFav(app); true }
             cell.addView(tile, LinearLayout.LayoutParams(size, size))
             val name = Ui.text(this, app.label, 21f, k, Ui.TEXT_DIM)
