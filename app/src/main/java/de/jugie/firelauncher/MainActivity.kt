@@ -5,6 +5,8 @@ import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.Canvas
+import android.graphics.Paint
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.os.Handler
@@ -43,6 +45,7 @@ class MainActivity : Activity() {
     private var shown: String? = null
     private var spotSet = false
     private var sig = ""
+    private val selectedBorders = mutableMapOf<String, View>()
 
     private fun px(v: Int): Int = (v * k).toInt()
     private val wrap = ViewGroup.LayoutParams.WRAP_CONTENT
@@ -153,7 +156,7 @@ class MainActivity : Activity() {
         row.gravity = Gravity.CENTER
         row.clipChildren = false
         row.clipToPadding = false
-        content.addView(row, lp(match, px(204), top = 62))
+        content.addView(row, lp(match, px(184), top = 62))
 
         content.addView(View(this), LinearLayout.LayoutParams(1, 0, 1f))
 
@@ -295,6 +298,12 @@ class MainActivity : Activity() {
     private fun select(app: AppEntry, v: View) {
         val accent = Ui.accentFor(app)
         Ui.lastAccent = accent
+        selectedBorders.values.forEach { it.visibility = View.INVISIBLE }
+        selectedBorders[app.pkg]?.let { border ->
+            border.visibility = View.VISIBLE
+            border.alpha = 0f
+            border.animate().alpha(1f).setDuration(Ui.d(180)).start()
+        }
         v.post {
             val loc = IntArray(2)
             v.getLocationInWindow(loc)
@@ -321,8 +330,8 @@ class MainActivity : Activity() {
             return
         }
         val n = list.size
-        val w = px(227)
-        val h = px(204)
+        val w = px(205)
+        val h = px(184)
         val avail = resources.displayMetrics.widthPixels - px(160)
         val gap = if (n > 1) Math.max(0, Math.min(px(64), (avail - w * n) / (n - 1))) else 0
         list.forEachIndexed { i, app ->
@@ -340,11 +349,47 @@ class MainActivity : Activity() {
             }
             tile.id = View.generateViewId()
             tile.nextFocusUpId = hero.id
-            row.addView(tile, LinearLayout.LayoutParams(w, h).apply { if (i > 0) leftMargin = gap })
-            Ui.fadeIn(tile, 60L * i)
+            val cell = FrameLayout(this)
+            cell.clipChildren = false
+            cell.clipToPadding = false
+            cell.addView(tile, FrameLayout.LayoutParams(w, h))
+            val border = CornerBorder(this, Ui.accentFor(app))
+            border.visibility = View.INVISIBLE
+            cell.addView(border, FrameLayout.LayoutParams(w, h))
+            selectedBorders[app.pkg] = border
+            row.addView(cell, LinearLayout.LayoutParams(w, h).apply { if (i > 0) leftMargin = gap })
+            Ui.fadeIn(cell, 60L * i)
         }
         val idx = if (lastFocus < list.size) lastFocus else 0
         row.getChildAt(idx)?.requestFocus()
+    }
+
+    /** Dezenter, nur an den Ecken gezeichneter Akzent-Rahmen fuer die fokussierte App. */
+    private inner class CornerBorder(context: Context, accent: Int) : View(context) {
+        private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = accent
+            style = Paint.Style.STROKE
+            strokeWidth = px(4).toFloat()
+            strokeCap = Paint.Cap.ROUND
+        }
+
+        override fun onDraw(canvas: Canvas) {
+            super.onDraw(canvas)
+            val inset = px(5).toFloat()
+            val length = px(34).toFloat()
+            val r = width.toFloat() - inset
+            val b = height.toFloat() - inset
+            val l = inset
+            val t = inset
+            canvas.drawLine(l, t, l + length, t, paint)
+            canvas.drawLine(l, t, l, t + length, paint)
+            canvas.drawLine(r - length, t, r, t, paint)
+            canvas.drawLine(r, t, r, t + length, paint)
+            canvas.drawLine(l, b - length, l, b, paint)
+            canvas.drawLine(l, b, l + length, b, paint)
+            canvas.drawLine(r, b - length, r, b, paint)
+            canvas.drawLine(r - length, b, r, b, paint)
+        }
     }
 
     private fun loadWeather() {
