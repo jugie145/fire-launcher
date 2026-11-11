@@ -39,6 +39,14 @@ class SettingsActivity : Activity() {
     private var grabbed = -1
     private var bgSig = ""
     private var glassSig = -1
+    private val sleepDurations = listOf(15, 30, 45, 60, 90, 120)
+    private var sleepDurationIndex = 1
+    private val sleepRefresh = object : Runnable {
+        override fun run() {
+            for (r in refreshers) r()
+            handler.postDelayed(this, 1000L)
+        }
+    }
 
     private fun px(v: Int): Int = (v * k).toInt()
     private val wrap = ViewGroup.LayoutParams.WRAP_CONTENT
@@ -109,6 +117,25 @@ class SettingsActivity : Activity() {
             }
         }
 
+        section(col, "Sleep-Timer")
+        row(col, "Dauer auswählen", { "${sleepDurations[sleepDurationIndex]} Minuten" }) {
+            sleepDurationIndex = (sleepDurationIndex + 1) % sleepDurations.size
+        }
+        row(col, "Timer starten", {
+            val seconds = HomeService.sleepRemainingSeconds()
+            if (seconds > 0L) "Läuft" else "Starten"
+        }) {
+            HomeService.startSleepTimer(sleepDurations[sleepDurationIndex])
+        }
+        row(col, "Verbleibende Zeit", {
+            val seconds = HomeService.sleepRemainingSeconds()
+            if (seconds <= 0L) "Nicht aktiv"
+            else String.format(java.util.Locale.GERMANY, "%02d:%02d", seconds / 60L, seconds % 60L)
+        }) { }
+        row(col, "Timer abbrechen", { "Abbrechen" }) {
+            HomeService.cancelSleepTimer()
+        }
+
         section(col, "Systeminformationen")
         info(col, sysInfo(), false)
 
@@ -133,10 +160,12 @@ class SettingsActivity : Activity() {
         super.onResume()
         wave.start()
         if (Prefs.redirect(this) && Setup.canWrite(this)) Setup.enable(this)
-        for (r in refreshers) r()
+        handler.removeCallbacks(sleepRefresh)
+        handler.post(sleepRefresh)
     }
 
     override fun onPause() {
+        handler.removeCallbacks(sleepRefresh)
         wave.stop()
         super.onPause()
     }
