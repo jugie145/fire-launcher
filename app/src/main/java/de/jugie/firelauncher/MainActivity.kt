@@ -43,6 +43,8 @@ class MainActivity : Activity() {
     private var shown: String? = null
     private var spotSet = false
     private var sig = ""
+    private var returnToFooter = false
+    private var settingsButton: View? = null
 
     private fun px(v: Int): Int = (v * k).toInt()
     private val wrap = ViewGroup.LayoutParams.WRAP_CONTENT
@@ -162,9 +164,10 @@ class MainActivity : Activity() {
         bar.orientation = LinearLayout.HORIZONTAL
         bar.gravity = Gravity.CENTER_VERTICAL
         bar.clipChildren = false
-        bar.addView(footItem(GearIcon(this), "Einstellungen", 252, R.drawable.glass_pill_settings) {
+        settingsButton = footItem(GearIcon(this), "Einstellungen", 252, R.drawable.glass_pill_settings) {
             startActivity(Intent(this, SettingsActivity::class.java))
-        })
+        }
+        bar.addView(settingsButton)
         bar.addView(footItem(null, "Alle Apps", 162, R.drawable.glass_pill_apps) {
             startActivity(Intent(this, AllAppsActivity::class.java))
         }, LinearLayout.LayoutParams(px(162), px(64)).apply { leftMargin = px(14) })
@@ -220,6 +223,10 @@ class MainActivity : Activity() {
         if (sig != Prefs.sig(this)) build()
         wave.start()
         hero.start()
+        if (returnToFooter) {
+            returnToFooter = false
+            settingsButton?.post { settingsButton?.requestFocus() }
+        }
         if (Ui.anims) {
             content.alpha = 0f
             content.scaleX = 0.98f
@@ -343,6 +350,7 @@ class MainActivity : Activity() {
             tile.setOnKeyListener { _, keyCode, event ->
                 if (keyCode == android.view.KeyEvent.KEYCODE_DPAD_DOWN &&
                     event.action == android.view.KeyEvent.ACTION_DOWN) {
+                    returnToFooter = true
                     startActivity(Intent(this, CinemaActivity::class.java))
                     true
                 } else false
