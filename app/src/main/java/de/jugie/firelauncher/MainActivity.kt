@@ -298,11 +298,13 @@ class MainActivity : Activity() {
     private fun select(app: AppEntry, v: View) {
         val accent = Ui.accentFor(app)
         Ui.lastAccent = accent
-        selectedBorders.values.forEach { it.visibility = View.INVISIBLE }
-        selectedBorders[app.pkg]?.let { border ->
-            border.visibility = View.VISIBLE
-            border.alpha = 0f
-            border.animate().alpha(1f).setDuration(Ui.d(180)).start()
+        // Nicht ausgewaehlte Apps behalten ihren farbigen Eckrahmen.
+        // Die fokussierte App zeigt stattdessen das helle Glasbild wie bisher.
+        selectedBorders.forEach { (pkg, border) ->
+            val showAccentCorners = pkg != app.pkg
+            border.animate().cancel()
+            border.alpha = 1f
+            border.visibility = if (showAccentCorners) View.VISIBLE else View.INVISIBLE
         }
         v.post {
             val loc = IntArray(2)
@@ -355,7 +357,8 @@ class MainActivity : Activity() {
             cell.clipToPadding = false
             cell.addView(tile, FrameLayout.LayoutParams(w, h))
             val border = CornerBorder(this, Ui.accentFor(app))
-            border.visibility = View.INVISIBLE
+            // Im Ruhezustand ist der App-Farbton dezent an den Glasecken sichtbar.
+            border.visibility = View.VISIBLE
             cell.addView(border, FrameLayout.LayoutParams(w, h))
             selectedBorders[app.pkg] = border
             row.addView(cell, LinearLayout.LayoutParams(w, h).apply { if (i > 0) leftMargin = gap })
