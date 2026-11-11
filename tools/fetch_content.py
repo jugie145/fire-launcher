@@ -87,11 +87,29 @@ def tmdb_sections():
             vote = r.get("vote_average") or 0
             if vote > 0.1:
                 parts.append("★ " + ("%.1f" % vote).replace(".", ","))
+            poster_path = r.get("poster_path") or ""
+            poster = "https://image.tmdb.org/t/p/w500" + poster_path if poster_path else ""
+            trailer = ""
+            # Fuer die ersten drei Titel je Anbieter den offiziellen YouTube-Trailer laden.
+            if len(out) < 3:
+                try:
+                    kind = "tv" if tv else "movie"
+                    videos = tmdb("/%s/%s/videos" % (kind, r.get("id")), language="de-DE").get("results", [])
+                    if not videos:
+                        videos = tmdb("/%s/%s/videos" % (kind, r.get("id")), language="en-US").get("results", [])
+                    candidates = [v for v in videos if v.get("site") == "YouTube" and v.get("type") == "Trailer" and v.get("key")]
+                    candidates.sort(key=lambda v: (not v.get("official", False), v.get("iso_639_1") not in ("de", "en")))
+                    if candidates:
+                        trailer = "https://www.youtube.com/watch?v=" + candidates[0]["key"]
+                except Exception:
+                    trailer = ""
             out.append({
                 "title": title.strip(),
                 "meta": "  ·  ".join(parts),
                 "desc": (r.get("overview") or "").strip(),
                 "images": ["https://image.tmdb.org/t/p/w1280" + backdrop],
+                "poster": poster,
+                "trailer": trailer,
             })
         return out
 
