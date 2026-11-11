@@ -324,6 +324,7 @@ class MainActivity : Activity() {
         if (row.childCount > 0 && list.isNotEmpty() && list.map { it.pkg } == favApps.map { it.pkg }) return
         favApps = list
         row.removeAllViews()
+        selectedBorders.clear()
         if (list.isEmpty()) {
             shown = null
             row.addView(Ui.text(this, "Unter „Alle Apps“ eine App lange gedrückt halten, um sie hier anzupinnen.", 28f, k, Ui.TEXT_DIM))
@@ -361,7 +362,7 @@ class MainActivity : Activity() {
             Ui.fadeIn(cell, 60L * i)
         }
         val idx = if (lastFocus < list.size) lastFocus else 0
-        row.getChildAt(idx)?.requestFocus()
+        (row.getChildAt(idx) as? FrameLayout)?.getChildAt(0)?.requestFocus()
     }
 
     /** Dezenter, nur an den Ecken gezeichneter Akzent-Rahmen fuer die fokussierte App. */
