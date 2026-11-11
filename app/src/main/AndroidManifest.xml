@@ -40,6 +40,7 @@
 
         <activity android:name=".AllAppsActivity" android:screenOrientation="landscape" />
         <activity android:name=".SettingsActivity" android:screenOrientation="landscape" />
+        <activity android:name=".CinemaActivity" android:screenOrientation="landscape" />
 
         <service
             android:name=".HomeService"
