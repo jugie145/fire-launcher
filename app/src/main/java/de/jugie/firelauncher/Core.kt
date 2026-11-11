@@ -458,7 +458,8 @@ object Ui {
         val logo = logoRes(app)
         if (logo != 0) {
             iv.setImageResource(logo)
-            box.addView(iv, FrameLayout.LayoutParams((140 * k).toInt(), (91 * k).toInt(), Gravity.CENTER))
+            // Kleinere Logos geben dem Glas mehr freie Flaeche und wirken ruhiger.
+            box.addView(iv, FrameLayout.LayoutParams((116 * k).toInt(), (76 * k).toInt(), Gravity.CENTER))
         } else {
             iv.setImageDrawable(app.icon ?: app.banner)
             iv.outlineProvider = object : ViewOutlineProvider() {
@@ -467,7 +468,7 @@ object Ui {
                 }
             }
             iv.clipToOutline = true
-            box.addView(iv, FrameLayout.LayoutParams((90 * k).toInt(), (90 * k).toInt(), Gravity.CENTER))
+            box.addView(iv, FrameLayout.LayoutParams((76 * k).toInt(), (76 * k).toInt(), Gravity.CENTER))
         }
         col.addView(box, LinearLayout.LayoutParams((150 * k).toInt(), (96 * k).toInt()))
         val name = text(ctx, app.label, 23f, k, Color.WHITE, medium)
