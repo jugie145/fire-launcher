@@ -141,6 +141,10 @@ class MainActivity : Activity() {
 
         // Grosse Flaeche mit wechselnden Inhalten
         hero = Hero(this, k)
+        hero.id = View.generateViewId()
+        hero.onOpen = { a, item ->
+            if (item == null || !Apps.openLink(this, a, item.link)) Apps.launch(this, a)
+        }
         content.addView(hero, lp(match, px(460), top = 44))
 
         // App-Leiste
@@ -299,6 +303,8 @@ class MainActivity : Activity() {
             wave.setSpot(cx, cy, accent, spotSet)
             spotSet = true
         }
+        // von der grossen Flaeche mit "Runter" zurueck zu dieser Kachel
+        hero.nextFocusDownId = v.id
         if (shown != app.pkg) {
             shown = app.pkg
             hero.show(app)
@@ -332,6 +338,8 @@ class MainActivity : Activity() {
                 }
                 Apps.launch(this, app, opts)
             }
+            tile.id = View.generateViewId()
+            tile.nextFocusUpId = hero.id
             row.addView(tile, LinearLayout.LayoutParams(w, h).apply { if (i > 0) leftMargin = gap })
             Ui.fadeIn(tile, 60L * i)
         }

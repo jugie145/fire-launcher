@@ -17,6 +17,7 @@ import android.os.Handler
 import android.os.Looper
 import android.text.TextUtils
 import android.view.Gravity
+import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewOutlineProvider
@@ -92,6 +93,12 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
     private var accent = Ui.lastAccent
     private var running = false
     private val next = Runnable { advance() }
+    private var app: AppEntry? = null
+    private var sourceText = ""
+    private val lit = ImageView(ctx)
+
+    /** Wird bei OK auf der Flaeche aufgerufen: App und der gerade gezeigte Eintrag. */
+    var onOpen: ((AppEntry, HeroItem?) -> Unit)? = null
 
     private fun px(v: Int): Int = (v * k).toInt()
     private val wrap = ViewGroup.LayoutParams.WRAP_CONTENT
@@ -104,6 +111,10 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
         glass.setImageResource(R.drawable.glass_hero)
         glass.scaleType = ImageView.ScaleType.FIT_XY
         addView(glass, LayoutParams(px(1768), px(468), Gravity.CENTER))
+        lit.setImageResource(R.drawable.glass_hero_focus)
+        lit.scaleType = ImageView.ScaleType.FIT_XY
+        lit.alpha = 0f
+        addView(lit, LayoutParams(px(1768), px(468), Gravity.CENTER))
 
         val clip = FrameLayout(ctx)
         clip.outlineProvider = object : ViewOutlineProvider() {
@@ -159,12 +170,48 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
         addView(dots, LayoutParams(wrap, wrap, Gravity.START or Gravity.BOTTOM).apply { leftMargin = px(72); bottomMargin = px(38) })
         source = Ui.text(ctx, "", 18f, k, Ui.TEXT_DIM)
         addView(source, LayoutParams(wrap, wrap, Gravity.END or Gravity.BOTTOM).apply { rightMargin = px(44); bottomMargin = px(30) })
+
+        // Mit "Hoch" anwaehlbar: links/rechts blaettert, OK oeffnet den gezeigten Eintrag
+        isFocusable = true
+        setOnFocusChangeListener { _, has ->
+            lit.animate().alpha(if (has) 1f else 0f).setDuration(Ui.d(220)).start()
+            updateSource()
+            if (has) handler.removeCallbacks(next) else schedule()
+        }
+        setOnClickListener {
+            val a = app
+            if (a != null) onOpen?.invoke(a, items.getOrNull(index))
+        }
+        setOnKeyListener { _, code, ev ->
+            if (code == KeyEvent.KEYCODE_DPAD_LEFT || code == KeyEvent.KEYCODE_DPAD_RIGHT) {
+                if (ev.action == KeyEvent.ACTION_DOWN && items.size > 1) {
+                    index = (index + (if (code == KeyEvent.KEYCODE_DPAD_LEFT) -1 else 1) + items.size) % items.size
+                    render()
+                }
+                true
+            } else {
+                false
+            }
+        }
+    }
+
+    private fun updateSource() {
+        if (isFocused) {
+            val link = items.getOrNull(index)?.link ?: ""
+            val what = if (link.startsWith("https://www.youtube.com")) "das Video" else "die App"
+            source.text = if (items.size > 1) "OK öffnet $what  ·  ◀ ▶ blättern" else "OK öffnet $what"
+            source.setTextColor(Color.WHITE)
+        } else {
+            source.text = sourceText
+            source.setTextColor(Ui.TEXT_DIM)
+        }
     }
 
     /** Auf eine App umstellen: erst die App-Karte, dann (falls vorhanden) echte Inhalte. */
     fun show(app: AppEntry) {
         token++
         val my = token
+        this.app = app
         accent = Ui.accentFor(app)
         val res = Ui.logoRes(app)
         if (res != 0) logo.setImageResource(res) else logo.setImageDrawable(app.icon ?: app.banner)
@@ -191,7 +238,8 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
         items = d.items
         index = 0
         label.text = d.label.uppercase()
-        source.text = d.source
+        sourceText = d.source
+        updateSource()
         dots.removeAllViews()
         if (items.size > 1) {
             for (i in items.indices) {
@@ -206,7 +254,7 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
 
     private fun schedule() {
         handler.removeCallbacks(next)
-        if (running && items.size > 1) handler.postDelayed(next, 6000)
+        if (running && items.size > 1 && !isFocused) handler.postDelayed(next, 6000)
     }
 
     private fun advance() {
@@ -219,6 +267,7 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
     private fun render() {
         if (items.isEmpty()) return
         val it = items[index]
+        updateSource()
         title.text = it.title
         meta.text = it.meta
         meta.visibility = if (it.meta.isBlank()) View.GONE else View.VISIBLE

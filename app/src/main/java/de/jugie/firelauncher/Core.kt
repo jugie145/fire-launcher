@@ -70,6 +70,20 @@ object Apps {
         }
     }
 
+    /** Oeffnet einen Direktsprung (z. B. ein Video) in der App. false, wenn die App ihn nicht annimmt. */
+    fun openLink(ctx: Context, app: AppEntry, link: String): Boolean {
+        if (link.isBlank()) return false
+        return try {
+            val i = Intent(Intent.ACTION_VIEW, android.net.Uri.parse(link))
+                .setPackage(app.pkg)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            ctx.startActivity(i)
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
     private class Want(val exact: String, val starts: String, val pkg: String)
 
     /** Standard-Reihenfolge: YouTube, Twitch, Netflix, Prime Video, WOW, Disney+, Spotify */

@@ -22,7 +22,9 @@ class HeroItem(
     val meta: String,
     val desc: String,
     val images: List<String>,
-    val square: Boolean = false
+    val square: Boolean = false,
+    /** Direktsprung in die App, z. B. die Adresse eines Videos. Leer = nur App oeffnen. */
+    val link: String = ""
 )
 
 class HeroData(val label: String, val source: String, val items: List<HeroItem>)
@@ -230,7 +232,8 @@ object Content {
                     "https://i.ytimg.com/vi/" + it.id + "/maxresdefault.jpg",
                     "https://i.ytimg.com/vi/" + it.id + "/sddefault.jpg",
                     "https://i.ytimg.com/vi/" + it.id + "/hqdefault.jpg"
-                )
+                ),
+                false, "https://www.youtube.com/watch?v=" + it.id
             )
         }
         return HeroData("Neu von deinen Kanälen", "Quelle: YouTube", items)
@@ -352,7 +355,12 @@ object Content {
             val r = arr.getJSONObject(i)
             val art = r.optString("artworkUrl100", "")
             val imgs = if (art.isBlank()) emptyList() else listOf(art.replace("100x100bb", "600x600bb"), art)
-            items.add(HeroItem(r.optString("name"), r.optString("artistName"), "Platz " + (i + 1) + " in Deutschland", imgs, true))
+            items.add(
+                HeroItem(
+                    r.optString("name"), r.optString("artistName"), "Platz " + (i + 1) + " in Deutschland", imgs, true,
+                    "spotify:search:" + android.net.Uri.encode(r.optString("name") + " " + r.optString("artistName"))
+                )
+            )
         }
         if (items.isEmpty()) return null
         return HeroData("Charts Deutschland", "Quelle: Apple Music Charts", items)
