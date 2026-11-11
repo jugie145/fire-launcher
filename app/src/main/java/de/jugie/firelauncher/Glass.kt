@@ -68,7 +68,7 @@ class GlassDrawable(private val radius: Float, private val k: Float) : Drawable(
         val i = Ui.intensity
         rim.strokeWidth = Math.max(1.2f, 1.6f * k)
         inner.strokeWidth = Math.max(1f, 1.3f * k)
-        edge.strokeWidth = Math.max(1.8f, 2.6f * k)
+        edge.strokeWidth = Math.max(2f, 3.2f * k)
         val inset = edge.strokeWidth / 2f
         rect.set(b.left + inset, b.top + inset, b.right - inset, b.bottom - inset)
         val r = Math.min(radius, rect.height() / 2f)
@@ -118,7 +118,7 @@ class GlassDrawable(private val radius: Float, private val k: Float) : Drawable(
         canvas.drawPath(path, fill)
         if (accent != Color.WHITE && boost > 0.01f) {
             tint.color = accent
-            tint.alpha = (40 * boost).toInt()
+            tint.alpha = (66 * boost).toInt()
             canvas.drawPath(path, tint)
         }
         val save = canvas.save()
@@ -132,8 +132,8 @@ class GlassDrawable(private val radius: Float, private val k: Float) : Drawable(
         canvas.drawPath(path, rim)
         if (boost > 0.01f) {
             // zurueckhaltender Fokusrahmen: Akzentfarbe mit Weiss aufgehellt, nicht voll deckend
-            edge.color = if (accent == Color.WHITE) Color.WHITE else mix(accent, 0.3f)
-            edge.alpha = ((if (accent == Color.WHITE) 120 else 205) * boost).toInt()
+            edge.color = if (accent == Color.WHITE) Color.WHITE else mix(accent, 0.22f)
+            edge.alpha = ((if (accent == Color.WHITE) 120 else 240) * boost).toInt()
             canvas.drawPath(path, edge)
         }
     }

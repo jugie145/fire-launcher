@@ -249,7 +249,23 @@ object Ui {
             l.contains("netflix") || p.contains("netflix") -> 0xFFE50914.toInt()
             l.startsWith("prime video") || p.contains("firebat") -> 0xFF1A98FF.toInt()
             l.contains("disney") || p.contains("disney") -> 0xFF2B6BFF.toInt()
+            l == "wow" || l.startsWith("wow ") -> 0xFF14A8A4.toInt()
             else -> iconColor(app.icon ?: app.banner)
+        }
+    }
+
+    /** Mitgeliefertes Logo fuer die bekannten Dienste, 0 = Icon der App verwenden. */
+    fun logoRes(app: AppEntry): Int {
+        val l = app.label.lowercase().trim()
+        val p = app.pkg.lowercase()
+        return when {
+            l.contains("spotify") || p.contains("spotify") -> R.drawable.logo_spotify
+            l == "youtube" || p.endsWith(".youtube") -> R.drawable.logo_youtube
+            l.contains("twitch") || p.contains("twitch") -> R.drawable.logo_twitch
+            l.contains("netflix") || p.contains("netflix") -> R.drawable.logo_netflix
+            l == "wow" || l.startsWith("wow ") -> R.drawable.logo_wow
+            l.contains("disney") || p.contains("disney") -> R.drawable.logo_disney
+            else -> 0
         }
     }
 
@@ -321,7 +337,7 @@ object Ui {
 
         val glSize = (w * 1.85f).toInt()
         val glow = View(ctx)
-        glow.background = radial((accent and 0x00FFFFFF) or 0x48000000, glSize)
+        glow.background = radial((accent and 0x00FFFFFF) or 0x66000000, glSize)
         glow.alpha = 0f
         f.addView(glow, FrameLayout.LayoutParams(glSize, glSize, Gravity.CENTER))
 
@@ -335,16 +351,23 @@ object Ui {
         col.orientation = LinearLayout.VERTICAL
         col.gravity = Gravity.CENTER_HORIZONTAL
         val iv = ImageView(ctx)
-        iv.setImageDrawable(app.icon ?: app.banner)
         iv.scaleType = ImageView.ScaleType.FIT_CENTER
-        iv.outlineProvider = object : ViewOutlineProvider() {
-            override fun getOutline(v: View, o: Outline) {
-                o.setRoundRect(0, 0, v.width, v.height, v.width * 0.23f)
+        val logo = logoRes(app)
+        val icH = (h * (if (showLabel) 0.47f else 0.56f)).toInt()
+        if (logo != 0) {
+            // freigestelltes Logo direkt auf dem Glas
+            iv.setImageResource(logo)
+            col.addView(iv, LinearLayout.LayoutParams((w * 0.6f).toInt(), icH))
+        } else {
+            iv.setImageDrawable(app.icon ?: app.banner)
+            iv.outlineProvider = object : ViewOutlineProvider() {
+                override fun getOutline(v: View, o: Outline) {
+                    o.setRoundRect(0, 0, v.width, v.height, v.width * 0.23f)
+                }
             }
+            iv.clipToOutline = true
+            col.addView(iv, LinearLayout.LayoutParams(icH, icH))
         }
-        iv.clipToOutline = true
-        val icSize = (h * (if (showLabel) 0.47f else 0.58f)).toInt()
-        col.addView(iv, LinearLayout.LayoutParams(icSize, icSize))
         if (showLabel) {
             val name = text(ctx, app.label, 23f, k, Color.WHITE, medium)
             name.maxLines = 1

@@ -149,11 +149,14 @@ class MainActivity : Activity() {
         spotIcon.scaleType = ImageView.ScaleType.FIT_CENTER
         spotIcon.outlineProvider = object : ViewOutlineProvider() {
             override fun getOutline(v: View, o: Outline) {
-                o.setRoundRect(0, 0, v.width, v.height, v.width * 0.23f)
+                val s = Math.min(v.width, v.height)
+                val l = (v.width - s) / 2
+                val t = (v.height - s) / 2
+                o.setRoundRect(l, t, l + s, t + s, s * 0.23f)
             }
         }
         spotIcon.clipToOutline = true
-        spotBox.addView(spotIcon, LinearLayout.LayoutParams(px(96), px(96)))
+        spotBox.addView(spotIcon, LinearLayout.LayoutParams(px(124), px(92)))
         spotBox.addView(divider(96), (divider(96).layoutParams as LinearLayout.LayoutParams).apply { leftMargin = px(46); rightMargin = px(46) })
         val sCol = LinearLayout(this)
         sCol.orientation = LinearLayout.VERTICAL
@@ -303,7 +306,14 @@ class MainActivity : Activity() {
         val accent = Ui.accentFor(app)
         Ui.lastAccent = accent
         aurora.setAccent(accent)
-        spotIcon.setImageDrawable(app.icon ?: app.banner)
+        val logo = Ui.logoRes(app)
+        if (logo != 0) {
+            spotIcon.clipToOutline = false
+            spotIcon.setImageResource(logo)
+        } else {
+            spotIcon.clipToOutline = true
+            spotIcon.setImageDrawable(app.icon ?: app.banner)
+        }
         spotTitle.text = app.label
         spotDesc.text = Ui.descFor(app)
         spotBox.animate().cancel()
