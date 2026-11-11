@@ -2,10 +2,11 @@
 
 Eigener, werbefreier Startbildschirm für den Fire TV Stick (Fire OS, nicht Vega OS).
 
-- Uhr, Datum und Wetter (Grabow)
-- 6 Favoriten mit den Original-Bildern der Apps
+- Glas-Design mit animiertem, abstraktem Hintergrund
+- Uhr, Datum, Begrüßung und Wetter (Grabow)
+- 6 Favoriten als Glaskacheln mit den Original-Logos der Apps
 - „Alle Apps“: OK lange halten pinnt eine App als Favorit an oder löst sie
-- Auf einem Favoriten OK lange halten oder die Menü-Taste: verschieben oder entfernen
+- Eigene Einstellungen: Hintergrund, Animationen, Glaseffekt, Uhrzeitformat, App-Reihenfolge
 
 ## Installieren
 
@@ -21,7 +22,7 @@ Computer oder Android-Handy im selben WLAN (ADB-Debugging am Stick einschalten):
     adb connect <IP-des-Sticks>:5555
     adb shell pm grant de.jugie.firelauncher android.permission.WRITE_SECURE_SETTINGS
 
-Danach im Launcher „Launcher einrichten“ öffnen und „Prüfen“ drücken.
+Danach den Launcher einmal öffnen.
 
 ## Rückgängig
 
