@@ -16,9 +16,15 @@ import android.graphics.drawable.Drawable
 import android.view.View
 
 /**
- * Glasflaeche: leicht getoenter Koerper, weicher Verlauf, Lichtreflex oben links
- * und ein feiner heller Rand, der bei Fokus heller wird (boost 0..1).
- * Echte Hintergrundunschaerfe (RenderEffect) gibt es erst ab Android 12; Fire OS 8 ist Android 11.
+ * Liquid-Glass-Flaeche ohne Hintergrundunschaerfe (RenderEffect gibt es erst ab Android 12,
+ * Fire OS 8 ist Android 11). Der Glaseindruck entsteht aus mehreren Schichten:
+ *  1. halbtransparenter dunkler Koerper, durch den der Hintergrund sichtbar bleibt
+ *  2. weicher Verlauf innerhalb der Flaeche
+ *  3. Lichtreflex am oberen Rand
+ *  4. feines inneres Highlight (Kante innen)
+ *  5. feine helle Kontur mit geringer Deckkraft
+ * Bei Fokus (boost 0..1) wird der Koerper durchsichtiger und heller, dazu kommt ein
+ * zurueckhaltender Rahmen in der Akzentfarbe. Gezeichnet wird nur bei Aenderungen.
  */
 class GlassDrawable(private val radius: Float, private val k: Float) : Drawable() {
 
@@ -31,19 +37,25 @@ class GlassDrawable(private val radius: Float, private val k: Float) : Drawable(
     /** Farbe von Rahmen und Toenung bei Fokus. Weiss = neutral. */
     var accent = Color.WHITE
 
-    private val tint = Paint(Paint.ANTI_ALIAS_FLAG)
-    private val edge = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE }
     private val body = Paint(Paint.ANTI_ALIAS_FLAG)
     private val fill = Paint(Paint.ANTI_ALIAS_FLAG)
-    private val shine = Paint(Paint.ANTI_ALIAS_FLAG)
-    private val rim = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.STROKE
-        strokeWidth = Math.max(1.5f, 2f * k)
-    }
+    private val sheen = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val tint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val inner = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE }
+    private val rim = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE }
+    private val edge = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE }
     private val rect = RectF()
+    private val inRect = RectF()
     private val path = Path()
+    private val inPath = Path()
 
     private fun white(a: Float): Int = Color.argb((255f * Math.min(1f, Math.max(0f, a))).toInt(), 255, 255, 255)
+
+    private fun mix(c: Int, t: Float): Int = Color.rgb(
+        (Color.red(c) + (255 - Color.red(c)) * t).toInt(),
+        (Color.green(c) + (255 - Color.green(c)) * t).toInt(),
+        (Color.blue(c) + (255 - Color.blue(c)) * t).toInt()
+    )
 
     override fun onBoundsChange(bounds: Rect) {
         rebuild()
@@ -54,25 +66,44 @@ class GlassDrawable(private val radius: Float, private val k: Float) : Drawable(
         val b = bounds
         if (b.isEmpty) return
         val i = Ui.intensity
-        val inset = rim.strokeWidth / 2f
+        rim.strokeWidth = Math.max(1.2f, 1.6f * k)
+        inner.strokeWidth = Math.max(1f, 1.3f * k)
+        edge.strokeWidth = Math.max(1.8f, 2.6f * k)
+        val inset = edge.strokeWidth / 2f
         rect.set(b.left + inset, b.top + inset, b.right - inset, b.bottom - inset)
         val r = Math.min(radius, rect.height() / 2f)
         path.reset()
         path.addRoundRect(rect, r, r, Path.Direction.CW)
-        body.color = Color.argb(40, 8, 10, 18)
+        val d = Math.max(2f, 3f * k)
+        inRect.set(rect.left + d, rect.top + d, rect.right - d, rect.bottom - d)
+        val ir = Math.max(0f, r - d)
+        inPath.reset()
+        inPath.addRoundRect(inRect, ir, ir, Path.Direction.CW)
+
+        // 2. weicher Verlauf: oben heller, Mitte klar, unten ein Hauch Licht
         fill.shader = LinearGradient(
-            rect.left, rect.top, rect.right, rect.bottom,
-            intArrayOf(white(0.19f * i), white(0.07f * i), white(0.12f * i)),
-            floatArrayOf(0f, 0.55f, 1f), Shader.TileMode.CLAMP
+            0f, rect.top, 0f, rect.bottom,
+            intArrayOf(white(0.13f * i), white(0.03f * i), white(0.07f * i)),
+            floatArrayOf(0f, 0.52f, 1f), Shader.TileMode.CLAMP
         )
-        shine.shader = RadialGradient(
-            rect.left + rect.width() * 0.26f, rect.top, Math.max(1f, rect.width() * 0.8f),
-            white(0.20f * i), white(0f), Shader.TileMode.CLAMP
+        // 3. Lichtreflex am oberen Rand, leicht nach links versetzt
+        sheen.shader = RadialGradient(
+            rect.left + rect.width() * 0.38f, rect.top - rect.height() * 0.28f,
+            Math.max(1f, Math.max(rect.width() * 0.62f, rect.height() * 0.9f)),
+            intArrayOf(white(0.26f * i), white(0.07f * i), white(0f)),
+            floatArrayOf(0f, 0.6f, 1f), Shader.TileMode.CLAMP
         )
-        val ri = 0.55f + 0.45f * i
+        // 4. inneres Highlight: oben sichtbar, laeuft zur Mitte aus, unten ganz leicht
+        inner.shader = LinearGradient(
+            0f, inRect.top, 0f, inRect.bottom,
+            intArrayOf(white(0.22f * i), white(0f), white(0f), white(0.07f * i)),
+            floatArrayOf(0f, 0.34f, 0.8f, 1f), Shader.TileMode.CLAMP
+        )
+        // 5. feine Kontur: oben am hellsten, an den Seiten zurueckhaltend
+        val ri = 0.6f + 0.4f * i
         rim.shader = LinearGradient(
             rect.left, rect.top, rect.right, rect.bottom,
-            intArrayOf(white(0.72f * ri), white(0.16f * ri), white(0.40f * ri)),
+            intArrayOf(white(0.50f * ri), white(0.13f * ri), white(0.24f * ri)),
             floatArrayOf(0f, 0.5f, 1f), Shader.TileMode.CLAMP
         )
         invalidateSelf()
@@ -80,23 +111,29 @@ class GlassDrawable(private val radius: Float, private val k: Float) : Drawable(
 
     override fun draw(canvas: Canvas) {
         if (rect.isEmpty) return
+        // 1. dunkler Koerper: normal dichter, ausgewaehlt durchsichtiger
+        body.color = Color.argb((104 - 50 * boost).toInt(), 9, 12, 22)
         canvas.drawPath(path, body)
-        fill.alpha = (175 + 80 * boost).toInt()
+        fill.alpha = (185 + 70 * boost).toInt()
         canvas.drawPath(path, fill)
-        val save = canvas.save()
-        canvas.clipPath(path)
-        shine.alpha = (190 + 65 * boost).toInt()
-        canvas.drawRect(rect, shine)
-        canvas.restoreToCount(save)
-        rim.alpha = (140 + 115 * boost).toInt()
-        canvas.drawPath(path, rim)
         if (accent != Color.WHITE && boost > 0.01f) {
             tint.color = accent
-            tint.alpha = (54 * boost).toInt()
+            tint.alpha = (40 * boost).toInt()
             canvas.drawPath(path, tint)
-            edge.color = accent
-            edge.strokeWidth = Math.max(2f, 3.5f * k)
-            edge.alpha = (255 * boost).toInt()
+        }
+        val save = canvas.save()
+        canvas.clipPath(path)
+        sheen.alpha = (165 + 90 * boost).toInt()
+        canvas.drawRect(rect, sheen)
+        canvas.restoreToCount(save)
+        inner.alpha = (170 + 85 * boost).toInt()
+        canvas.drawPath(inPath, inner)
+        rim.alpha = (150 + 90 * boost).toInt()
+        canvas.drawPath(path, rim)
+        if (boost > 0.01f) {
+            // zurueckhaltender Fokusrahmen: Akzentfarbe mit Weiss aufgehellt, nicht voll deckend
+            edge.color = if (accent == Color.WHITE) Color.WHITE else mix(accent, 0.3f)
+            edge.alpha = ((if (accent == Color.WHITE) 120 else 205) * boost).toInt()
             canvas.drawPath(path, edge)
         }
     }

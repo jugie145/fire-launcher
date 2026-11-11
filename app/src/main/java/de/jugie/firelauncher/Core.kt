@@ -314,13 +314,14 @@ object Ui {
         val shW = (w * 1.25f).toInt()
         val shadow = View(ctx)
         shadow.background = radial(0xA6000000.toInt(), shW)
-        shadow.translationY = h * 0.16f
-        shadow.alpha = 0.5f
+        shadow.translationY = h * 0.2f
+        shadow.scaleY = 0.82f
+        shadow.alpha = 0.55f
         f.addView(shadow, FrameLayout.LayoutParams(shW, shW, Gravity.CENTER))
 
         val glSize = (w * 1.85f).toInt()
         val glow = View(ctx)
-        glow.background = radial((accent and 0x00FFFFFF) or 0x70000000, glSize)
+        glow.background = radial((accent and 0x00FFFFFF) or 0x48000000, glSize)
         glow.alpha = 0f
         f.addView(glow, FrameLayout.LayoutParams(glSize, glSize, Gravity.CENTER))
 
@@ -361,7 +362,7 @@ object Ui {
             v.animate().scaleX(s).scaleY(s).translationY(if (has) -8f * k else 0f)
                 .setDuration(d(300)).setInterpolator(smooth).start()
             glow.animate().alpha(if (has) 1f else 0f).setDuration(d(300)).start()
-            shadow.animate().alpha(if (has) 0.95f else 0.5f).setDuration(d(300)).start()
+            shadow.animate().alpha(if (has) 1f else 0.55f).translationY(h * (if (has) 0.27f else 0.2f)).setDuration(d(300)).start()
             boostAnim?.cancel()
             val target = if (has) 1f else 0f
             if (anims) {
