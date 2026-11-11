@@ -5,8 +5,6 @@ import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.Canvas
-import android.graphics.Paint
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.os.Handler
@@ -45,7 +43,6 @@ class MainActivity : Activity() {
     private var shown: String? = null
     private var spotSet = false
     private var sig = ""
-    private val selectedBorders = mutableMapOf<String, View>()
 
     private fun px(v: Int): Int = (v * k).toInt()
     private val wrap = ViewGroup.LayoutParams.WRAP_CONTENT
@@ -298,14 +295,6 @@ class MainActivity : Activity() {
     private fun select(app: AppEntry, v: View) {
         val accent = Ui.accentFor(app)
         Ui.lastAccent = accent
-        // Nicht ausgewaehlte Apps behalten ihren farbigen Eckrahmen.
-        // Die fokussierte App zeigt stattdessen das helle Glasbild wie bisher.
-        selectedBorders.forEach { (pkg, border) ->
-            val showAccentCorners = pkg != app.pkg
-            border.animate().cancel()
-            border.alpha = 1f
-            border.visibility = if (showAccentCorners) View.VISIBLE else View.INVISIBLE
-        }
         v.post {
             val loc = IntArray(2)
             v.getLocationInWindow(loc)
@@ -326,7 +315,6 @@ class MainActivity : Activity() {
         if (row.childCount > 0 && list.isNotEmpty() && list.map { it.pkg } == favApps.map { it.pkg }) return
         favApps = list
         row.removeAllViews()
-        selectedBorders.clear()
         if (list.isEmpty()) {
             shown = null
             row.addView(Ui.text(this, "Unter „Alle Apps“ eine App lange gedrückt halten, um sie hier anzupinnen.", 28f, k, Ui.TEXT_DIM))
@@ -363,44 +351,11 @@ class MainActivity : Activity() {
             cell.clipChildren = false
             cell.clipToPadding = false
             cell.addView(tile, FrameLayout.LayoutParams(w, h))
-            val border = CornerBorder(this, Ui.accentFor(app))
-            // Im Ruhezustand ist der App-Farbton dezent an den Glasecken sichtbar.
-            border.visibility = View.VISIBLE
-            cell.addView(border, FrameLayout.LayoutParams(w, h))
-            selectedBorders[app.pkg] = border
             row.addView(cell, LinearLayout.LayoutParams(w, h).apply { if (i > 0) leftMargin = gap })
             Ui.fadeIn(cell, 60L * i)
         }
         val idx = if (lastFocus < list.size) lastFocus else 0
         (row.getChildAt(idx) as? FrameLayout)?.getChildAt(0)?.requestFocus()
-    }
-
-    /** Dezenter, nur an den Ecken gezeichneter Akzent-Rahmen fuer die fokussierte App. */
-    private inner class CornerBorder(context: Context, accent: Int) : View(context) {
-        private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = accent
-            style = Paint.Style.STROKE
-            strokeWidth = px(4).toFloat()
-            strokeCap = Paint.Cap.ROUND
-        }
-
-        override fun onDraw(canvas: Canvas) {
-            super.onDraw(canvas)
-            val inset = px(5).toFloat()
-            val length = px(34).toFloat()
-            val r = width.toFloat() - inset
-            val b = height.toFloat() - inset
-            val l = inset
-            val t = inset
-            canvas.drawLine(l, t, l + length, t, paint)
-            canvas.drawLine(l, t, l, t + length, paint)
-            canvas.drawLine(r - length, t, r, t, paint)
-            canvas.drawLine(r, t, r, t + length, paint)
-            canvas.drawLine(l, b - length, l, b, paint)
-            canvas.drawLine(l, b, l + length, b, paint)
-            canvas.drawLine(r, b - length, r, b, paint)
-            canvas.drawLine(r - length, b, r, b, paint)
-        }
     }
 
     private fun loadWeather() {
