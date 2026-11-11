@@ -9,9 +9,12 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
+import android.os.Bundle
 import android.provider.Settings
 import android.view.ViewGroup
 import android.view.ViewOutlineProvider
+import android.view.animation.DecelerateInterpolator
+import android.view.animation.OvershootInterpolator
 import android.widget.FrameLayout
 import android.widget.ImageView
 
@@ -45,13 +48,13 @@ object Apps {
         return map.values.sortedBy { it.label.lowercase() }
     }
 
-    fun launch(ctx: Context, app: AppEntry) {
+    fun launch(ctx: Context, app: AppEntry, opts: Bundle? = null) {
         try {
             val i = Intent(Intent.ACTION_MAIN)
                 .addCategory(app.category)
                 .setComponent(app.component)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)
-            ctx.startActivity(i)
+            ctx.startActivity(i, opts)
         } catch (e: Exception) {
             val i = ctx.packageManager.getLeanbackLaunchIntentForPackage(app.pkg)
                 ?: ctx.packageManager.getLaunchIntentForPackage(app.pkg)
@@ -137,11 +140,21 @@ object Setup {
 object Ui {
     const val BG = 0xFF0A0A0C.toInt()
     const val PANEL = 0xFF1C1C21.toInt()
+    const val GLASS = 0x16FFFFFF
+    const val GLASS_EDGE = 0x2EFFFFFF
     const val MUTED = 0xFFA1A1AA.toInt()
     const val SOFT = 0xFFE4E4E7.toInt()
 
     fun round(color: Int, radius: Float): GradientDrawable =
         GradientDrawable().apply { setColor(color); cornerRadius = radius }
+
+    /** Halbtransparente "Glas"-Flaeche mit feinem hellen Rand. */
+    fun glass(radius: Float, k: Float): GradientDrawable =
+        GradientDrawable().apply {
+            setColor(GLASS)
+            cornerRadius = radius
+            setStroke(Math.max(1, (1.5f * k).toInt()), GLASS_EDGE)
+        }
 
     fun ring(radius: Float, stroke: Int): GradientDrawable =
         GradientDrawable().apply {
@@ -150,11 +163,11 @@ object Ui {
             setStroke(stroke, Color.WHITE)
         }
 
-    /** Dunkle Durchschnittsfarbe eines App-Bildes fuer die grosse Flaeche oben. */
-    fun shelfColor(src: Drawable?): Int {
-        if (src == null) return PANEL
+    /** Durchschnittsfarbe eines App-Bildes, abgedunkelt um den Faktor f. */
+    fun avgColor(src: Drawable?, f: Double, fallback: Int): Int {
+        if (src == null) return fallback
         return try {
-            val d = src.constantState?.newDrawable()?.mutate() ?: return PANEL
+            val d = src.constantState?.newDrawable()?.mutate() ?: return fallback
             val b = Bitmap.createBitmap(16, 9, Bitmap.Config.ARGB_8888)
             d.setBounds(0, 0, 16, 9)
             d.draw(Canvas(b))
@@ -165,12 +178,11 @@ object Ui {
                 r += Color.red(p); g += Color.green(p); bl += Color.blue(p); n++
             }
             b.recycle()
-            if (n == 0L) return PANEL
-            val f = 0.42
+            if (n == 0L) return fallback
             val rr = (r / n * f).toInt(); val gg = (g / n * f).toInt(); val bb = (bl / n * f).toInt()
-            if (rr + gg + bb < 40) PANEL else Color.rgb(rr, gg, bb)
+            if (rr + gg + bb < 30) fallback else Color.rgb(rr, gg, bb)
         } catch (e: Exception) {
-            PANEL
+            fallback
         }
     }
 
@@ -194,11 +206,17 @@ object Ui {
         f.isFocusable = true
         f.contentDescription = app.label
         f.elevation = 4f * k
-        val ringD = ring(radius, Math.max(2, (4f * k).toInt()))
+        f.alpha = 0.8f
+        val ringD = ring(radius, Math.max(2, (3f * k).toInt()))
+        val pop = OvershootInterpolator(1.6f)
+        val settle = DecelerateInterpolator()
         f.setOnFocusChangeListener { v, has ->
-            val s = if (has) 1.08f else 1f
-            v.animate().scaleX(s).scaleY(s).setDuration(140).start()
-            v.elevation = (if (has) 24f else 4f) * k
+            val s = if (has) 1.12f else 1f
+            v.animate().scaleX(s).scaleY(s).alpha(if (has) 1f else 0.8f)
+                .setDuration(if (has) 240L else 160L)
+                .setInterpolator(if (has) pop else settle)
+                .start()
+            v.elevation = (if (has) 28f else 4f) * k
             v.foreground = if (has) ringD else null
             if (has) onFocus?.invoke()
         }

@@ -10,6 +10,7 @@ import android.text.TextUtils
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
@@ -21,6 +22,17 @@ class AllAppsActivity : Activity() {
     private var k = 1f
     private val handler = Handler(Looper.getMainLooper())
     private lateinit var grid: LinearLayout
+    private lateinit var aurora: Aurora
+
+    override fun onResume() {
+        super.onResume()
+        aurora.start()
+    }
+
+    override fun onPause() {
+        aurora.stop()
+        super.onPause()
+    }
 
     private fun px(v: Int): Int = (v * k).toInt()
 
@@ -28,8 +40,8 @@ class AllAppsActivity : Activity() {
         super.onCreate(savedInstanceState)
         k = resources.displayMetrics.widthPixels / 1920f
 
+        aurora = Aurora(this, k)
         val scroll = ScrollView(this)
-        scroll.setBackgroundColor(Ui.BG)
         scroll.clipChildren = false
         scroll.clipToPadding = false
         scroll.isVerticalScrollBarEnabled = false
@@ -58,7 +70,10 @@ class AllAppsActivity : Activity() {
         col.addView(grid, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = px(40) })
 
         scroll.addView(col)
-        setContentView(scroll)
+        val frame = FrameLayout(this)
+        frame.addView(aurora, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+        frame.addView(scroll, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+        setContentView(frame)
 
         thread {
             val all = Apps.loadAll(this)

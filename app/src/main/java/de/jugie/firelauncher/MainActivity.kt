@@ -1,11 +1,11 @@
 package de.jugie.firelauncher
 
 import android.app.Activity
+import android.app.ActivityOptions
 import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
-import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -17,6 +17,8 @@ import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewOutlineProvider
+import android.view.animation.DecelerateInterpolator
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextClock
@@ -30,8 +32,11 @@ class MainActivity : Activity() {
 
     private var k = 1f
     private val handler = Handler(Looper.getMainLooper())
-    private lateinit var row: LinearLayout
-    private lateinit var shelfBg: GradientDrawable
+    private val ease = DecelerateInterpolator(1.6f)
+    private lateinit var aurora: Aurora
+    private lateinit var content: LinearLayout
+    private lateinit var dock: LinearLayout
+    private lateinit var shelfTexts: LinearLayout
     private lateinit var shelfName: TextView
     private lateinit var shelfImage: ImageView
     private lateinit var temp: TextView
@@ -39,28 +44,42 @@ class MainActivity : Activity() {
     private var favApps: List<AppEntry> = emptyList()
     private var lastFocus = 0
     private var lastWeather = 0L
+    private var shown: String? = null
 
     private fun px(v: Int): Int = (v * k).toInt()
 
-    private fun label(text: String, size: Int, color: Int, bold: Boolean): TextView =
+    private val light: Typeface by lazy { Typeface.create("sans-serif-light", Typeface.NORMAL) }
+    private val medium: Typeface by lazy { Typeface.create("sans-serif-medium", Typeface.NORMAL) }
+
+    private fun label(text: String, size: Int, color: Int, face: Typeface?): TextView =
         TextView(this).apply {
             this.text = text
             setTextSize(TypedValue.COMPLEX_UNIT_PX, size * k)
             setTextColor(color)
             includeFontPadding = false
-            if (bold) typeface = Typeface.DEFAULT_BOLD
+            if (face != null) typeface = face
+        }
+
+    private fun wrap(top: Int = 0, left: Int = 0): LinearLayout.LayoutParams =
+        LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+            topMargin = px(top)
+            leftMargin = px(left)
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         k = resources.displayMetrics.widthPixels / 1920f
 
-        val root = LinearLayout(this)
-        root.orientation = LinearLayout.VERTICAL
-        root.setBackgroundColor(Ui.BG)
-        root.setPadding(px(96), px(72), px(96), px(64))
-        root.clipChildren = false
-        root.clipToPadding = false
+        val root = FrameLayout(this)
+        aurora = Aurora(this, k)
+        root.addView(aurora, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+
+        content = LinearLayout(this)
+        content.orientation = LinearLayout.VERTICAL
+        content.setPadding(px(96), px(60), px(96), px(52))
+        content.clipChildren = false
+        content.clipToPadding = false
+        root.addView(content, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
 
         // Kopfzeile: Uhr + Datum links, Wetter rechts
         val header = LinearLayout(this)
@@ -70,68 +89,68 @@ class MainActivity : Activity() {
         val clock = TextClock(this)
         clock.format24Hour = "HH:mm"
         clock.format12Hour = "HH:mm"
-        clock.setTextSize(TypedValue.COMPLEX_UNIT_PX, 104 * k)
+        clock.setTextSize(TypedValue.COMPLEX_UNIT_PX, 112 * k)
         clock.setTextColor(Color.WHITE)
-        clock.typeface = Typeface.DEFAULT_BOLD
+        clock.typeface = light
         clock.includeFontPadding = false
         val date = TextClock(this)
         date.format24Hour = "EEEE, d. MMMM"
         date.format12Hour = "EEEE, d. MMMM"
         date.setTextSize(TypedValue.COMPLEX_UNIT_PX, 30 * k)
-        date.setTextColor(Ui.MUTED)
+        date.setTextColor(0xD9FFFFFF.toInt())
         date.includeFontPadding = false
         left.addView(clock)
-        left.addView(date, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = px(10) })
+        left.addView(date, wrap(top = 10))
         header.addView(left, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
         val right = LinearLayout(this)
         right.orientation = LinearLayout.VERTICAL
         right.gravity = Gravity.END
-        temp = label("", 64, Color.WHITE, true)
-        weather = label("Grabow", 26, Ui.MUTED, false)
+        temp = label("", 72, Color.WHITE, light)
+        weather = label("Grabow", 26, 0xD9FFFFFF.toInt(), null)
         right.addView(temp)
-        right.addView(weather, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = px(8) })
+        right.addView(weather, wrap(top = 8))
         header.addView(right)
-        root.addView(header)
+        content.addView(header)
 
-        // Grosse Flaeche: zeigt die ausgewaehlte App
+        // Grosse Glasflaeche: zeigt die ausgewaehlte App
         val shelf = LinearLayout(this)
         shelf.orientation = LinearLayout.HORIZONTAL
         shelf.gravity = Gravity.CENTER_VERTICAL
-        shelfBg = Ui.round(Ui.PANEL, 32f * k)
-        shelf.background = shelfBg
-        shelf.setPadding(px(72), px(56), px(72), px(56))
-        val texts = LinearLayout(this)
-        texts.orientation = LinearLayout.VERTICAL
-        texts.gravity = Gravity.BOTTOM
-        val tag = label("AUSGEWÄHLT", 22, 0xC8FFFFFF.toInt(), true)
-        tag.letterSpacing = 0.14f
-        shelfName = label("", 110, Color.WHITE, true)
+        shelf.background = Ui.glass(40f * k, k)
+        shelf.setPadding(px(72), px(48), px(64), px(48))
+        shelfTexts = LinearLayout(this)
+        shelfTexts.orientation = LinearLayout.VERTICAL
+        shelfTexts.gravity = Gravity.CENTER_VERTICAL
+        shelfName = label("", 104, Color.WHITE, medium)
         shelfName.maxLines = 1
-        val hint = label("OK drücken zum Öffnen", 28, 0xC8FFFFFF.toInt(), false)
-        texts.addView(tag)
-        texts.addView(shelfName, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = px(14) })
-        texts.addView(hint, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = px(14) })
-        shelf.addView(texts, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f))
+        val hint = label("OK drücken zum Öffnen", 28, 0xCCFFFFFF.toInt(), null)
+        shelfTexts.addView(shelfName)
+        shelfTexts.addView(hint, wrap(top = 18))
+        shelf.addView(shelfTexts, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f))
         shelfImage = ImageView(this)
         shelfImage.scaleType = ImageView.ScaleType.CENTER_CROP
-        shelfImage.background = Ui.round(0x33000000, 24f * k)
+        shelfImage.background = Ui.round(0x33000000, 28f * k)
         shelfImage.outlineProvider = ViewOutlineProvider.BACKGROUND
         shelfImage.clipToOutline = true
-        shelf.addView(shelfImage, LinearLayout.LayoutParams(px(480), px(270)))
-        root.addView(shelf, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, px(400)).apply { topMargin = px(40) })
+        shelf.addView(shelfImage, LinearLayout.LayoutParams(px(498), px(280)))
+        content.addView(shelf, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, px(376)).apply { topMargin = px(36) })
 
-        // Favoriten
-        row = LinearLayout(this)
-        row.orientation = LinearLayout.HORIZONTAL
-        row.clipChildren = false
-        row.clipToPadding = false
-        root.addView(row, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, px(152)).apply { topMargin = px(52) })
+        // Dock mit den Favoriten
+        dock = LinearLayout(this)
+        dock.orientation = LinearLayout.HORIZONTAL
+        dock.gravity = Gravity.CENTER_VERTICAL
+        dock.background = Ui.glass(38f * k, k)
+        dock.setPadding(px(28), px(28), px(28), px(28))
+        dock.clipChildren = false
+        dock.clipToPadding = false
+        content.addView(dock, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = px(44) })
 
-        root.addView(View(this), LinearLayout.LayoutParams(1, 0, 1f))
+        content.addView(View(this), LinearLayout.LayoutParams(1, 0, 1f))
 
         // Untere Leiste
         val bar = LinearLayout(this)
         bar.orientation = LinearLayout.HORIZONTAL
+        bar.clipChildren = false
         bar.addView(pill("Alle Apps") { startActivity(Intent(this, AllAppsActivity::class.java)) })
         bar.addView(pill("Einstellungen") {
             try {
@@ -139,22 +158,23 @@ class MainActivity : Activity() {
                 startActivity(Intent(Settings.ACTION_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
             } catch (e: Exception) {
             }
-        }, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { leftMargin = px(20) })
-        bar.addView(pill("Launcher einrichten") { startActivity(Intent(this, SetupActivity::class.java)) },
-            LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { leftMargin = px(20) })
-        root.addView(bar)
+        }, wrap(left = 20))
+        bar.addView(pill("Launcher einrichten") { startActivity(Intent(this, SetupActivity::class.java)) }, wrap(left = 20))
+        content.addView(bar)
 
         setContentView(root)
     }
 
     private fun pill(text: String, onClick: () -> Unit): TextView {
-        val t = label(text, 24, Ui.SOFT, false)
-        t.setPadding(px(28), px(16), px(28), px(16))
-        t.background = Ui.round(Ui.PANEL, 999f)
+        val t = label(text, 24, Color.WHITE, null)
+        t.setPadding(px(30), px(16), px(30), px(16))
+        t.background = Ui.glass(999f, k)
         t.isFocusable = true
-        t.setOnFocusChangeListener { _, has ->
-            t.background = Ui.round(if (has) Color.WHITE else Ui.PANEL, 999f)
-            t.setTextColor(if (has) Color.BLACK else Ui.SOFT)
+        t.setOnFocusChangeListener { v, has ->
+            t.background = if (has) Ui.round(Color.WHITE, 999f) else Ui.glass(999f, k)
+            t.setTextColor(if (has) Color.BLACK else Color.WHITE)
+            val s = if (has) 1.06f else 1f
+            v.animate().scaleX(s).scaleY(s).setDuration(160).setInterpolator(ease).start()
         }
         t.setOnClickListener { onClick() }
         return t
@@ -163,8 +183,19 @@ class MainActivity : Activity() {
     override fun onResume() {
         super.onResume()
         if (Prefs.redirect(this) && Setup.canWrite(this) && !Setup.isEnabled(this)) Setup.enable(this)
+        aurora.start()
+        // sanftes Einblenden
+        content.alpha = 0f
+        content.scaleX = 0.975f
+        content.scaleY = 0.975f
+        content.animate().alpha(1f).scaleX(1f).scaleY(1f).setDuration(260).setInterpolator(ease).start()
         loadFavs()
         if (System.currentTimeMillis() - lastWeather > 30 * 60 * 1000L) loadWeather()
+    }
+
+    override fun onPause() {
+        aurora.stop()
+        super.onPause()
     }
 
     private fun loadFavs() {
@@ -181,36 +212,67 @@ class MainActivity : Activity() {
         }
     }
 
+    private fun showShelf(app: AppEntry) {
+        if (shown == app.pkg) return
+        shown = app.pkg
+        val art = app.banner ?: app.icon
+        shelfName.text = app.label
+        shelfImage.setImageDrawable(art)
+        shelfTexts.animate().cancel()
+        shelfTexts.alpha = 0f
+        shelfTexts.translationX = 28f * k
+        shelfTexts.animate().alpha(1f).translationX(0f).setDuration(280).setInterpolator(ease).start()
+        shelfImage.animate().cancel()
+        shelfImage.alpha = 0f
+        shelfImage.scaleX = 0.94f
+        shelfImage.scaleY = 0.94f
+        shelfImage.animate().alpha(1f).scaleX(1f).scaleY(1f).setDuration(320).setInterpolator(ease).start()
+        aurora.setTint(Ui.avgColor(art, 0.34, 0xFF14141A.toInt()))
+    }
+
     private fun showFavs(list: List<AppEntry>) {
+        // Nichts neu aufbauen, wenn sich die Favoriten nicht geaendert haben
+        if (dock.childCount > 0 && list.isNotEmpty() && list.map { it.pkg } == favApps.map { it.pkg }) return
         favApps = list
-        row.removeAllViews()
+        dock.removeAllViews()
         if (list.isEmpty()) {
+            shown = null
             shelfName.text = "Noch keine Favoriten"
             shelfImage.setImageDrawable(null)
-            shelfBg.setColor(Ui.PANEL)
-            val t = label("Unter „Alle Apps“ eine App lange gedrückt halten, um sie hier anzupinnen.", 28, Ui.MUTED, false)
-            row.addView(t)
+            aurora.setTint(Ui.BG)
+            dock.addView(label("Unter „Alle Apps“ eine App lange gedrückt halten, um sie hier anzupinnen.", 28, 0xD9FFFFFF.toInt(), null))
             return
         }
-        val gap = px(40)
-        val w = (resources.displayMetrics.widthPixels - px(192) - gap * (Prefs.MAX_FAVS - 1)) / Prefs.MAX_FAVS
-        val h = px(152)
+        val gap = px(32)
+        val w = (resources.displayMetrics.widthPixels - px(192) - px(56) - gap * (Prefs.MAX_FAVS - 1)) / Prefs.MAX_FAVS
+        val h = w * 9 / 16
         list.forEachIndexed { i, app ->
             val tile = Ui.tile(this, app, h, k) {
                 lastFocus = i
-                shelfName.text = app.label
-                shelfImage.setImageDrawable(app.banner ?: app.icon)
-                shelfBg.setColor(Ui.shelfColor(app.banner ?: app.icon))
+                showShelf(app)
             }
-            tile.setOnClickListener { Apps.launch(this, app) }
+            tile.setOnClickListener { v ->
+                val opts = try {
+                    ActivityOptions.makeScaleUpAnimation(v, 0, 0, v.width, v.height).toBundle()
+                } catch (e: Exception) {
+                    null
+                }
+                Apps.launch(this, app, opts)
+            }
             tile.setOnLongClickListener { editFav(app); true }
             tile.setOnKeyListener { _, code, ev ->
                 if (code == KeyEvent.KEYCODE_MENU && ev.action == KeyEvent.ACTION_UP) { editFav(app); true } else false
             }
-            row.addView(tile, LinearLayout.LayoutParams(w, h).apply { if (i > 0) leftMargin = gap })
+            dock.addView(tile, LinearLayout.LayoutParams(w, h).apply { if (i > 0) leftMargin = gap })
+            // Kacheln nacheinander einblenden
+            tile.translationY = 36f * k
+            val target = tile.alpha
+            tile.alpha = 0f
+            tile.animate().translationY(0f).alpha(target).setStartDelay(60L * i).setDuration(300).setInterpolator(ease)
+                .withEndAction { tile.animate().setStartDelay(0) }.start()
         }
         val idx = if (lastFocus < list.size) lastFocus else 0
-        row.getChildAt(idx)?.requestFocus()
+        dock.getChildAt(idx)?.requestFocus()
     }
 
     private fun editFav(app: AppEntry) {
