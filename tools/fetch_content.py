@@ -61,6 +61,10 @@ def tmdb_sections():
     today = datetime.date.today()
     recent = (today - datetime.timedelta(days=75)).isoformat()
     year = (today - datetime.timedelta(days=365)).isoformat()
+    # Serien mit neuen Folgen, aber keine Dauerbrenner, die seit Jahrzehnten laufen
+    young = (today - datetime.timedelta(days=5 * 365)).isoformat()
+    # Titel, die schon bei einem anderen Anbieter stehen, werden uebersprungen
+    used = set()
 
     def items(results, tv):
         out = []
@@ -69,8 +73,9 @@ def tmdb_sections():
                 break
             backdrop = r.get("backdrop_path")
             title = (r.get("name") if tv else r.get("title")) or ""
-            if not backdrop or not title.strip():
+            if not backdrop or not title.strip() or title.strip().lower() in used:
                 continue
+            used.add(title.strip().lower())
             date = (r.get("first_air_date") if tv else r.get("release_date")) or ""
             parts = []
             if len(date) >= 4:
@@ -94,7 +99,7 @@ def tmdb_sections():
     for key, name, pid in wanted:
         common = dict(language="de-DE", watch_region="DE", with_watch_providers=pid,
                       with_watch_monetization_types="flatrate", sort_by="popularity.desc")
-        tv = items(tmdb("/discover/tv", **dict(common, **{"air_date.gte": recent})).get("results", []), True)
+        tv = items(tmdb("/discover/tv", **dict(common, **{"air_date.gte": recent, "first_air_date.gte": young})).get("results", []), True)
         mv = items(tmdb("/discover/movie", **dict(common, **{"primary_release_date.gte": year})).get("results", []), False)
         mixed = []
         for i in range(max(len(tv), len(mv))):
