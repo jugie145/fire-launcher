@@ -275,7 +275,8 @@ class CinemaActivity : Activity() {
             }
             card.setOnClickListener { select(index) }
             card.setOnKeyListener { _, keyCode, event ->
-                if (keyCode == KeyEvent.KEYCODE_DPAD_UP && event.action == KeyEvent.ACTION_DOWN) {
+                if ((keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_DOWN) &&
+                    event.action == KeyEvent.ACTION_DOWN) {
                     finish()
                     true
                 } else false
