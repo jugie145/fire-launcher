@@ -320,7 +320,17 @@ class CinemaActivity : Activity() {
     }
 
     @Deprecated("Deprecated in Java")
-    override fun onResume() {\n        super.onResume()\n        if (::wave.isInitialized) wave.start()\n    }\n\n    override fun onPause() {\n        if (::wave.isInitialized) wave.stop()\n        super.onPause()\n    }\n\n    override fun onBackPressed() {
+    override fun onResume() {
+        super.onResume()
+        if (::wave.isInitialized) wave.start()
+    }
+
+    override fun onPause() {
+        if (::wave.isInitialized) wave.stop()
+        super.onPause()
+    }
+
+    override fun onBackPressed() {
         finish()
     }
 
