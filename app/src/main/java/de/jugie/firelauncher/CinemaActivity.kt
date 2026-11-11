@@ -216,7 +216,7 @@ class CinemaActivity : Activity() {
                 isClickable = true
                 background = GradientDrawable().apply {
                     cornerRadius = px(15).toFloat()
-                    setColor(0x332FFFFFF)
+                    setColor(0x33FFFFFF)
                     setStroke(px(1), 0x44FFFFFF)
                 }
                 setPadding(px(7), px(7), px(7), px(7))
