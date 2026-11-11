@@ -1,0 +1,42 @@
+name: Inhalte
+
+# Holt regelmaessig Filme/Serien, YouTube-Trends und Twitch-Streams und legt sie als
+# content.json im Zweig "data" ab. Die App liest nur diese Datei; die Schluessel bleiben hier.
+on:
+  schedule:
+    - cron: "7,22,37,52 * * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "tools/**"
+      - ".github/workflows/content.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: content
+  cancel-in-progress: true
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inhalte holen
+        env:
+          TMDB_KEY: ${{ secrets.TMDB_KEY }}
+          YT_KEY: ${{ secrets.YT_KEY }}
+          TWITCH_ID: ${{ secrets.TWITCH_ID }}
+          TWITCH_SECRET: ${{ secrets.TWITCH_SECRET }}
+        run: python3 tools/fetch_content.py out/content.json
+      - name: Veroeffentlichen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cd out
+          git init -q -b data
+          git add content.json
+          git -c user.name="github-actions" -c user.email="actions@github.com" commit -qm "Inhalte aktualisiert"
+          git push -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" data

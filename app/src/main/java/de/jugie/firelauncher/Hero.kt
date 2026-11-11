@@ -95,6 +95,7 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
     private val next = Runnable { advance() }
     private var app: AppEntry? = null
     private var sourceText = ""
+    private var dataLabel = ""
     private val lit = ImageView(ctx)
 
     /** Wird bei OK auf der Flaeche aufgerufen: App und der gerade gezeigte Eintrag. */
@@ -198,7 +199,11 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
     private fun updateSource() {
         if (isFocused) {
             val link = items.getOrNull(index)?.link ?: ""
-            val what = if (link.startsWith("https://www.youtube.com")) "das Video" else "die App"
+            val what = when {
+                link.startsWith("https://www.youtube.com") -> "das Video"
+                link.startsWith("https://www.twitch.tv") -> "den Stream"
+                else -> "die App"
+            }
             source.text = if (items.size > 1) "OK öffnet $what  ·  ◀ ▶ blättern" else "OK öffnet $what"
             source.setTextColor(Color.WHITE)
         } else {
@@ -220,7 +225,7 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
             listOf(HeroItem(app.label, Ui.descFor(app), "OK drücken zum Öffnen", emptyList()))
         )
         val k2 = Content.kind(app)
-        if (k2 == "" || k2 == "twitch") {
+        if (k2 == "") {
             apply(fallback)
             return
         }
@@ -237,7 +242,7 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
         handler.removeCallbacks(next)
         items = d.items
         index = 0
-        label.text = d.label.uppercase()
+        dataLabel = d.label
         sourceText = d.source
         updateSource()
         dots.removeAllViews()
@@ -268,6 +273,7 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
         if (items.isEmpty()) return
         val it = items[index]
         updateSource()
+        label.text = (if (it.label.isNotBlank()) it.label else dataLabel).uppercase()
         title.text = it.title
         meta.text = it.meta
         meta.visibility = if (it.meta.isBlank()) View.GONE else View.VISIBLE

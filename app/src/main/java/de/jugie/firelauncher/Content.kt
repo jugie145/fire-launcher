@@ -24,7 +24,9 @@ class HeroItem(
     val images: List<String>,
     val square: Boolean = false,
     /** Direktsprung in die App, z. B. die Adresse eines Videos. Leer = nur App oeffnen. */
-    val link: String = ""
+    val link: String = "",
+    /** Eigene Ueberschrift fuer diesen Eintrag, z. B. "Trends in Deutschland". Leer = Ueberschrift der Reihe. */
+    val label: String = ""
 )
 
 class HeroData(val label: String, val source: String, val items: List<HeroItem>)
@@ -94,14 +96,15 @@ object Content {
     private val CHANNELS = listOf(
         "Trymacs" to "UC6Gc4KQ1ueDnh8x7plaAD3w",
         "Beam" to "UCp56TyePXVBOaMIsCl1dYyQ",
-        "Eligella" to "UChhbR4PloyFZPhyW4iVNuEQ"
+        "Eligella" to "UChhbR4PloyFZPhyW4iVNuEQ",
+        "SecondTry" to "UCkeWXiGjQPK972Bx_t9e5Ug",
+        "TryReact" to "UC267Hlq_ACFuWzZYfazrDGQ",
+        "tomatolix" to "UCNCktfoFAXtXnMlhjyc9SPA"
     )
 
     private val cache = HashMap<String, Pair<Long, HeroData>>()
     private val pool = Executors.newSingleThreadExecutor()
     private val main = Handler(Looper.getMainLooper())
-    private var genres: Map<Int, String>? = null
-    private var providers: Map<String, Int>? = null
 
     fun kind(app: AppEntry): String {
         val l = app.label.lowercase().trim()
@@ -121,12 +124,14 @@ object Content {
     /** Liefert null, wenn es fuer die App (noch) keine Inhalte gibt. */
     fun load(app: AppEntry, cb: (HeroData?) -> Unit) {
         val k = kind(app)
-        if (k == "" || k == "twitch") {
+        if (k == "") {
             cb(null)
             return
         }
         val hit = synchronized(cache) { cache[k] }
-        if (hit != null && System.currentTimeMillis() - hit.first < 30 * 60 * 1000L) {
+        // Twitch aendert sich schnell, deshalb dort kuerzer zwischenspeichern
+        val ttl = if (k == "twitch") 4 * 60 * 1000L else 20 * 60 * 1000L
+        if (hit != null && System.currentTimeMillis() - hit.first < ttl) {
             cb(hit.second)
             return
         }
@@ -135,7 +140,7 @@ object Content {
                 when (k) {
                     "youtube" -> youtube()
                     "spotify" -> charts()
-                    else -> tmdb(k, app.label)
+                    else -> section(k)
                 }
             } catch (e: Throwable) {
                 null
@@ -188,7 +193,7 @@ object Content {
                 var pub = ""
                 var n = 0
                 var ev = p.eventType
-                while (ev != XmlPullParser.END_DOCUMENT && n < 4) {
+                while (ev != XmlPullParser.END_DOCUMENT && n < 3) {
                     when (ev) {
                         XmlPullParser.START_TAG -> {
                             tag = p.name ?: ""
@@ -225,7 +230,7 @@ object Content {
             }
         }
         if (all.isEmpty()) return null
-        val items = all.sortedByDescending { it.time }.take(6).map {
+        val own = all.sortedByDescending { it.time }.take(8).map {
             HeroItem(
                 it.title, it.channel + "  ·  " + ago(it.time), "",
                 listOf(
@@ -235,6 +240,14 @@ object Content {
                 ),
                 false, "https://www.youtube.com/watch?v=" + it.id
             )
+        }
+        // zwischen die eigenen Kanaele alle zwei Videos eines aus den Trends mischen
+        val trends = (section("youtube_trends")?.items ?: emptyList()).filter { t -> own.none { it.link == t.link } }
+        val items = ArrayList<HeroItem>()
+        var ti = 0
+        own.forEachIndexed { i, v ->
+            items.add(v)
+            if (i % 2 == 1 && ti < trends.size && ti < 4) items.add(trends[ti++])
         }
         return HeroData("Neu von deinen Kanälen", "Quelle: YouTube", items)
     }
@@ -252,97 +265,45 @@ object Content {
         }
     }
 
-    // ---------- Filme und Serien: TMDB (Anbieter-Daten von JustWatch) ----------
+    // ---------- Filme/Serien, Twitch und YouTube-Trends: fertige Datei aus dem Repository ----------
+    // Die Datei wird von GitHub alle paar Minuten neu erzeugt; die Zugangsschluessel bleiben dort.
 
-    private fun tmdbGet(path: String): JSONObject? {
-        val key = BuildConfig.TMDB_KEY.trim()
-        if (key.isEmpty()) return null
-        val base = "https://api.themoviedb.org/3"
-        val txt = if (key.length > 60) get(base + path, key)
-        else get(base + path + (if (path.contains("?")) "&" else "?") + "api_key=" + key)
-        return if (txt == null) null else try { JSONObject(txt) } catch (e: Exception) { null }
+    private const val REMOTE = "https://raw.githubusercontent.com/jugie145/fire-launcher/data/content.json"
+    private var remote: JSONObject? = null
+    private var remoteAt = 0L
+
+    private fun remote(): JSONObject? {
+        val now = System.currentTimeMillis()
+        if (remote != null && now - remoteAt < 5 * 60 * 1000L) return remote
+        val txt = get(REMOTE) ?: return remote
+        try {
+            remote = JSONObject(txt)
+            remoteAt = now
+        } catch (e: Exception) {
+        }
+        return remote
     }
 
-    private fun tmdb(kind: String, appName: String): HeroData? {
-        if (BuildConfig.TMDB_KEY.trim().isEmpty()) return null
-        if (genres == null) {
-            val g = HashMap<Int, String>()
-            for (t in arrayOf("tv", "movie")) {
-                val arr = tmdbGet("/genre/$t/list?language=de")?.optJSONArray("genres") ?: continue
-                for (i in 0 until arr.length()) {
-                    val o = arr.getJSONObject(i)
-                    g[o.getInt("id")] = o.getString("name")
-                }
-            }
-            if (g.isNotEmpty()) genres = g
-        }
-        if (providers == null) {
-            val m = HashMap<String, Int>()
-            val arr = tmdbGet("/watch/providers/tv?watch_region=DE&language=de-DE")?.optJSONArray("results")
-            if (arr != null) {
-                for (i in 0 until arr.length()) {
-                    val o = arr.getJSONObject(i)
-                    m[o.optString("provider_name").lowercase().trim()] = o.optInt("provider_id")
-                }
-            }
-            if (m.isNotEmpty()) providers = m
-        }
-        val pm = providers ?: emptyMap()
-        val pid = when (kind) {
-            "netflix" -> pm["netflix"] ?: 8
-            "prime" -> pm["amazon prime video"] ?: 9
-            "disney" -> pm["disney plus"] ?: 337
-            else -> pm["wow"] ?: 30
-        }
-        val df = SimpleDateFormat("yyyy-MM-dd", Locale.US)
-        val cal = Calendar.getInstance()
-        cal.add(Calendar.DAY_OF_YEAR, -75)
-        val recent = df.format(cal.time)
-        cal.add(Calendar.DAY_OF_YEAR, -290)
-        val year = df.format(cal.time)
-        val common = "language=de-DE&watch_region=DE&with_watch_providers=$pid&with_watch_monetization_types=flatrate&sort_by=popularity.desc"
-        val tv = parse(tmdbGet("/discover/tv?$common&air_date.gte=$recent"), true)
-        val mv = parse(tmdbGet("/discover/movie?$common&primary_release_date.gte=$year"), false)
+    private fun section(key: String): HeroData? {
+        val o = remote()?.optJSONObject(key) ?: return null
+        val arr = o.optJSONArray("items") ?: return null
         val items = ArrayList<HeroItem>()
-        var i = 0
-        while (items.size < 6 && (i < tv.size || i < mv.size)) {
-            if (i < tv.size) items.add(tv[i])
-            if (i < mv.size && items.size < 6) items.add(mv[i])
-            i++
-        }
-        if (items.isEmpty()) return null
-        return HeroData("Neu und beliebt bei $appName", "Daten: TMDB · JustWatch", items)
-    }
-
-    private fun parse(o: JSONObject?, tv: Boolean): List<HeroItem> {
-        val out = ArrayList<HeroItem>()
-        val arr = o?.optJSONArray("results") ?: return out
-        val g = genres ?: emptyMap()
         for (i in 0 until arr.length()) {
-            if (out.size >= 4) break
             val r = arr.getJSONObject(i)
-            val backdrop = r.optString("backdrop_path", "")
-            if (backdrop.isBlank() || backdrop == "null") continue
-            val title = r.optString(if (tv) "name" else "title", "").trim()
+            val title = r.optString("title", "").trim()
             if (title.isBlank()) continue
-            val date = r.optString(if (tv) "first_air_date" else "release_date", "")
-            val parts = ArrayList<String>()
-            if (date.length >= 4) parts.add(date.substring(0, 4))
-            parts.add(if (tv) "Serie" else "Film")
-            val gs = ArrayList<String>()
-            val ga = r.optJSONArray("genre_ids")
-            if (ga != null) for (j in 0 until Math.min(2, ga.length())) g[ga.getInt(j)]?.let { gs.add(it) }
-            if (gs.isNotEmpty()) parts.add(gs.joinToString(", "))
-            val vote = r.optDouble("vote_average", 0.0)
-            if (vote > 0.1) parts.add("★ " + String.format(Locale.GERMANY, "%.1f", vote))
-            out.add(
+            val imgs = ArrayList<String>()
+            val ia = r.optJSONArray("images")
+            if (ia != null) for (j in 0 until ia.length()) imgs.add(ia.getString(j))
+            items.add(
                 HeroItem(
-                    title, parts.joinToString("  ·  "), r.optString("overview", "").trim(),
-                    listOf("https://image.tmdb.org/t/p/w1280$backdrop")
+                    title, r.optString("meta", ""), r.optString("desc", ""), imgs,
+                    r.optBoolean("square", false), r.optString("link", ""), r.optString("label", "")
                 )
             )
         }
-        return out
+        if (items.isEmpty()) return null
+        return HeroData(o.optString("label", ""), o.optString("source", ""), items)
     }
 
     // ---------- Musik: oeffentliche Charts fuer Deutschland ----------
