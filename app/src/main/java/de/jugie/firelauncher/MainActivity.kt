@@ -9,6 +9,7 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
 import android.provider.Settings
 import android.util.TypedValue
 import android.view.Gravity
@@ -134,6 +135,7 @@ class MainActivity : Activity() {
         bar.addView(pill("Alle Apps") { startActivity(Intent(this, AllAppsActivity::class.java)) })
         bar.addView(pill("Einstellungen") {
             try {
+                HomeService.settingsUntil = SystemClock.uptimeMillis() + 3000
                 startActivity(Intent(Settings.ACTION_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
             } catch (e: Exception) {
             }

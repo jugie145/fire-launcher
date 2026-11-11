@@ -1,28 +1,29 @@
 package de.jugie.firelauncher
 
 import android.app.Activity
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.os.SystemClock
+import android.provider.Settings
 import android.util.TypedValue
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
-import dadb.AdbKeyPair
-import dadb.Dadb
-import java.io.File
-import kotlin.concurrent.thread
+import java.net.Inet4Address
+import java.net.NetworkInterface
+import java.util.Collections
 
-/** Richtet die Home-Tasten-Umleitung direkt am Stick ein (ohne PC). */
+/**
+ * Home-Tasten-Umleitung einrichten. Amazon blockiert ADB-Verbindungen vom Stick zu sich selbst,
+ * deshalb muss die Berechtigung einmalig von einem anderen Geraet aus erteilt werden.
+ */
 class SetupActivity : Activity() {
 
     private var k = 1f
-    private val handler = Handler(Looper.getMainLooper())
     private lateinit var status: TextView
     private lateinit var toggle: TextView
-    private var busy = false
 
     private fun px(v: Int): Int = (v * k).toInt()
 
@@ -47,6 +48,19 @@ class SetupActivity : Activity() {
         return t
     }
 
+    private fun ip(): String {
+        try {
+            for (ni in Collections.list(NetworkInterface.getNetworkInterfaces())) {
+                if (!ni.isUp || ni.isLoopback) continue
+                for (a in Collections.list(ni.inetAddresses)) {
+                    if (a is Inet4Address && !a.isLoopbackAddress) return a.hostAddress ?: continue
+                }
+            }
+        } catch (e: Exception) {
+        }
+        return "IP-DES-STICKS"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         k = resources.displayMetrics.widthPixels / 1920f
@@ -54,78 +68,80 @@ class SetupActivity : Activity() {
         val col = LinearLayout(this)
         col.orientation = LinearLayout.VERTICAL
         col.setBackgroundColor(Ui.BG)
-        col.setPadding(px(160), px(120), px(160), px(96))
+        col.setPadding(px(160), px(96), px(160), px(72))
 
-        col.addView(text("Home-Taste einrichten", 64, Color.WHITE, true))
+        col.addView(text("Home-Taste einrichten", 60, Color.WHITE, true))
         col.addView(
             text(
-                "Damit die Home-Taste hier landet statt bei Amazon:\n\n" +
-                    "1.  In den Fire-TV-Einstellungen muss „ADB-Debugging“ eingeschaltet sein.\n" +
-                    "2.  Unten auf „Jetzt einrichten“ drücken.\n" +
-                    "3.  Erscheint „Debugging zulassen?“: „Immer zulassen“ anhaken und OK drücken.",
-                30, Ui.SOFT, false
-            ).apply { setLineSpacing(0f, 1.25f) },
-            LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = px(32) }
+                "Einmalig von einem Computer oder Android-Handy im selben WLAN diese zwei Befehle ausführen " +
+                    "(ADB-Debugging muss am Stick eingeschaltet sein):",
+                28, Ui.SOFT, false
+            ).apply { setLineSpacing(0f, 1.2f) },
+            LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = px(28) }
+        )
+        val cmd = text(
+            "adb connect " + ip() + ":5555\n" +
+                "adb shell pm grant " + packageName + " android.permission.WRITE_SECURE_SETTINGS",
+            28, Color.WHITE, false
+        )
+        cmd.typeface = Typeface.MONOSPACE
+        cmd.setLineSpacing(0f, 1.3f)
+        cmd.setPadding(px(32), px(24), px(32), px(24))
+        cmd.background = Ui.round(Ui.PANEL, 20f * k)
+        col.addView(cmd, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = px(24) })
+        col.addView(
+            text(
+                "Nach dem ersten Befehl erscheint am Fernseher „Debugging zulassen?“: „Immer zulassen“ anhaken und OK. " +
+                    "Danach hier auf „Prüfen“ drücken.",
+                28, Ui.SOFT, false
+            ).apply { setLineSpacing(0f, 1.2f) },
+            LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = px(24) }
         )
 
         val bar = LinearLayout(this)
         bar.orientation = LinearLayout.HORIZONTAL
-        val run = button("Jetzt einrichten") { runSetup() }
-        bar.addView(run)
+        val check = button("Prüfen") {
+            if (Prefs.redirect(this)) Setup.enable(this)
+            refresh()
+        }
+        bar.addView(check)
         toggle = button("") {
             val on = !Prefs.redirect(this)
             Prefs.setRedirect(this, on)
-            if (on) Setup.enable(this)
-            refresh(null)
+            if (on) Setup.enable(this) else Setup.disable(this)
+            refresh()
         }
         bar.addView(toggle, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { leftMargin = px(24) })
-        col.addView(bar, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = px(56) })
+        bar.addView(button("Bedienungshilfen öffnen") {
+            try {
+                HomeService.settingsUntil = SystemClock.uptimeMillis() + 3000
+                startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            } catch (e: Exception) {
+                status.text = "Die Bedienungshilfen lassen sich auf diesem Stick nicht direkt öffnen."
+            }
+        }, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { leftMargin = px(24) })
+        col.addView(bar, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = px(44) })
 
         status = text("", 28, Ui.MUTED, false)
-        col.addView(status, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = px(48) })
+        col.addView(status, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = px(40) })
 
         setContentView(col)
-        run.requestFocus()
-        refresh(null)
+        check.requestFocus()
     }
 
-    private fun refresh(extra: String?) {
+    override fun onResume() {
+        super.onResume()
+        if (Prefs.redirect(this) && Setup.canWrite(this)) Setup.enable(this)
+        refresh()
+    }
+
+    private fun refresh() {
         toggle.text = if (Prefs.redirect(this)) "Umleitung: an" else "Umleitung: aus"
-        val base = when {
-            Setup.isEnabled(this) && Prefs.redirect(this) -> "Status: aktiv. Die Home-Taste führt zu diesem Launcher."
-            Setup.isEnabled(this) -> "Status: eingerichtet, aber Umleitung ist ausgeschaltet."
-            Setup.canWrite(this) -> "Status: Berechtigung vorhanden, Dienst noch nicht aktiv."
-            else -> "Status: noch nicht eingerichtet."
-        }
-        status.text = if (extra == null) base else extra + "\n\n" + base
-    }
-
-    private fun runSetup() {
-        if (busy) return
-        busy = true
-        status.text = "Verbinde … Falls ein Fenster „Debugging zulassen?“ erscheint: „Immer zulassen“ anhaken und OK."
-        thread {
-            var msg: String
-            try {
-                val priv = File(filesDir, "adbkey")
-                val pub = File(filesDir, "adbkey.pub")
-                if (!priv.exists() || !pub.exists()) AdbKeyPair.generate(priv, pub)
-                val kp = AdbKeyPair.read(priv, pub)
-                Dadb.create("127.0.0.1", 5555, kp).use { d ->
-                    val r = d.shell("pm grant $packageName android.permission.WRITE_SECURE_SETTINGS")
-                    msg = if (r.exitCode == 0) "" else "Antwort vom Stick: " + r.allOutput.trim()
-                }
-                Prefs.setRedirect(this, true)
-                val ok = Setup.enable(this)
-                msg = if (ok) "Fertig. Drück jetzt die Home-Taste zum Testen." else ("Berechtigung konnte nicht gesetzt werden. " + msg)
-            } catch (e: Exception) {
-                msg = "Hat nicht geklappt: " + (e.message ?: e.javaClass.simpleName) +
-                    "\nIst ADB-Debugging in den Entwickleroptionen eingeschaltet?"
-            }
-            handler.post {
-                busy = false
-                refresh(msg)
-            }
+        status.text = when {
+            Setup.isEnabled(this) && Prefs.redirect(this) -> "Status: aktiv. Drück die Home-Taste zum Testen."
+            !Prefs.redirect(this) -> "Status: Umleitung ist ausgeschaltet. Die Home-Taste führt zu Amazon."
+            Setup.canWrite(this) -> "Status: Berechtigung vorhanden, Dienst konnte aber nicht aktiviert werden."
+            else -> "Status: Berechtigung fehlt noch. Bitte die zwei Befehle oben ausführen."
         }
     }
 }

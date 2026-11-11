@@ -41,6 +41,3 @@ android {
     }
 }
 
-dependencies {
-    implementation("dev.mobile:dadb:1.2.10")
-}

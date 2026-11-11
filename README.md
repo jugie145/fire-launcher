@@ -13,8 +13,15 @@ In der Downloader-App auf dem Stick diese Adresse eingeben:
 
     https://github.com/jugie145/fire-launcher/releases/latest/download/fire-launcher.apk
 
-Danach im Launcher unten „Launcher einrichten“ öffnen und „Jetzt einrichten“ drücken,
-damit die Home-Taste zum Launcher führt (ADB-Debugging muss eingeschaltet sein).
+## Home-Taste einrichten
+
+Fire OS blockiert ADB-Verbindungen vom Stick zu sich selbst. Deshalb einmalig von einem
+Computer oder Android-Handy im selben WLAN (ADB-Debugging am Stick einschalten):
+
+    adb connect <IP-des-Sticks>:5555
+    adb shell pm grant de.jugie.firelauncher android.permission.WRITE_SECURE_SETTINGS
+
+Danach im Launcher „Launcher einrichten“ öffnen und „Prüfen“ drücken.
 
 ## Rückgängig
 
