@@ -1,4 +1,4 @@
-# Fire Launcher
+# Liquid TV
 
 Eigener, werbefreier Startbildschirm für den Fire TV Stick (Fire OS, nicht Vega OS).
 

@@ -54,7 +54,7 @@ class SettingsActivity : Activity() {
         glassSig = Prefs.glass(this)
 
         aurora = Aurora(this, k)
-        aurora.configure(Prefs.bg(this), Prefs.bgAnim(this))
+        aurora.configure(Prefs.bg(this), Prefs.bgAnim(this), Ui.lastAccent)
         val scroll = ScrollView(this)
         scroll.clipChildren = false
         scroll.clipToPadding = false
@@ -199,7 +199,7 @@ class SettingsActivity : Activity() {
         val nb = "" + Prefs.bg(this) + Prefs.bgAnim(this)
         if (nb != bgSig) {
             bgSig = nb
-            aurora.configure(Prefs.bg(this), Prefs.bgAnim(this))
+            aurora.configure(Prefs.bg(this), Prefs.bgAnim(this), Ui.lastAccent)
         }
         if (Prefs.glass(this) != glassSig) {
             glassSig = Prefs.glass(this)
@@ -218,9 +218,9 @@ class SettingsActivity : Activity() {
         }
         orderHint.text = if (grabbed >= 0) "Mit ◀ ▶ verschieben, OK zum Ablegen."
         else "OK greift eine App, dann mit ◀ ▶ verschieben."
-        val size = px(118)
+        val size = px(112)
         favs.forEachIndexed { i, app ->
-            val tile = Ui.glassTile(this, app, size, k)
+            val tile = Ui.glassTile(this, app, size, size, k, false)
             if (i == grabbed) tile.alpha = 0.72f
             tile.setOnClickListener {
                 grabbed = if (grabbed == i) -1 else i
@@ -252,7 +252,7 @@ class SettingsActivity : Activity() {
                     false
                 }
             }
-            orderRow.addView(tile, LinearLayout.LayoutParams(size, size).apply { if (i > 0) leftMargin = px(40) })
+            orderRow.addView(tile, LinearLayout.LayoutParams(size, size).apply { if (i > 0) leftMargin = px(46) })
         }
         if (focus >= 0 && focus < orderRow.childCount) orderRow.getChildAt(focus).requestFocus()
     }

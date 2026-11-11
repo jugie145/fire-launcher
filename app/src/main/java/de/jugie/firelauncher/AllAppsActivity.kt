@@ -33,7 +33,7 @@ class AllAppsActivity : Activity() {
         Ui.load(this)
 
         aurora = Aurora(this, k)
-        aurora.configure(Prefs.bg(this), Prefs.bgAnim(this))
+        aurora.configure(Prefs.bg(this), Prefs.bgAnim(this), Ui.lastAccent)
         val scroll = ScrollView(this)
         scroll.clipChildren = false
         scroll.clipToPadding = false
@@ -94,7 +94,7 @@ class AllAppsActivity : Activity() {
             cell.orientation = LinearLayout.VERTICAL
             cell.clipChildren = false
             cell.clipToPadding = false
-            val tile = Ui.glassTile(this, app, size, k)
+            val tile = Ui.glassTile(this, app, size, size, k, false)
             tile.setOnClickListener { Apps.launch(this, app) }
             tile.setOnLongClickListener { toggleFav(app); true }
             cell.addView(tile, LinearLayout.LayoutParams(size, size))

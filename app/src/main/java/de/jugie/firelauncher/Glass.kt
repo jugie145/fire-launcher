@@ -28,6 +28,11 @@ class GlassDrawable(private val radius: Float, private val k: Float) : Drawable(
             invalidateSelf()
         }
 
+    /** Farbe von Rahmen und Toenung bei Fokus. Weiss = neutral. */
+    var accent = Color.WHITE
+
+    private val tint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val edge = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE }
     private val body = Paint(Paint.ANTI_ALIAS_FLAG)
     private val fill = Paint(Paint.ANTI_ALIAS_FLAG)
     private val shine = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -85,6 +90,15 @@ class GlassDrawable(private val radius: Float, private val k: Float) : Drawable(
         canvas.restoreToCount(save)
         rim.alpha = (140 + 115 * boost).toInt()
         canvas.drawPath(path, rim)
+        if (accent != Color.WHITE && boost > 0.01f) {
+            tint.color = accent
+            tint.alpha = (54 * boost).toInt()
+            canvas.drawPath(path, tint)
+            edge.color = accent
+            edge.strokeWidth = Math.max(2f, 3.5f * k)
+            edge.alpha = (255 * boost).toInt()
+            canvas.drawPath(path, edge)
+        }
     }
 
     override fun setAlpha(alpha: Int) {}
@@ -222,5 +236,82 @@ class WifiIcon(ctx: Context) : View(ctx) {
             c.drawArc(oval, 225f, 90f, false, line)
         }
         c.drawCircle(cx, cy - s * 0.08f, s * 0.08f, dot)
+    }
+}
+
+/** Standort-Nadel. */
+class PinIcon(ctx: Context) : View(ctx) {
+    private val line = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.WHITE
+        alpha = 200
+        style = Paint.Style.STROKE
+        strokeJoin = Paint.Join.ROUND
+        strokeCap = Paint.Cap.ROUND
+    }
+    private val path = Path()
+    private val oval = RectF()
+
+    override fun onDraw(c: Canvas) {
+        val s = Math.min(width, height).toFloat()
+        if (s <= 0f) return
+        line.strokeWidth = s * 0.08f
+        oval.set(s * 0.2f, s * 0.08f, s * 0.8f, s * 0.68f)
+        path.reset()
+        path.addArc(oval, 150f, 240f)
+        path.lineTo(s * 0.5f, s * 0.94f)
+        path.close()
+        c.drawPath(path, line)
+        c.drawCircle(s * 0.5f, s * 0.38f, s * 0.09f, line)
+    }
+}
+
+/** Zahnrad fuer die Fussleiste. */
+class GearIcon(ctx: Context) : View(ctx) {
+    private val line = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.WHITE
+        alpha = 200
+        style = Paint.Style.STROKE
+        strokeCap = Paint.Cap.ROUND
+    }
+
+    override fun onDraw(c: Canvas) {
+        val s = Math.min(width, height).toFloat()
+        if (s <= 0f) return
+        val cx = s / 2f
+        val cy = s / 2f
+        line.strokeWidth = s * 0.13f
+        c.drawCircle(cx, cy, s * 0.24f, line)
+        line.strokeWidth = s * 0.15f
+        for (i in 0 until 8) {
+            val a = Math.PI * 2 * i / 8
+            val cs = Math.cos(a).toFloat()
+            val sn = Math.sin(a).toFloat()
+            c.drawLine(cx + cs * s * 0.35f, cy + sn * s * 0.35f, cx + cs * s * 0.41f, cy + sn * s * 0.41f, line)
+        }
+    }
+}
+
+/** Runder Wiedergabe-Knopf im Spotlight. */
+class PlayIcon(ctx: Context) : View(ctx) {
+    private val disc = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.argb(34, 255, 255, 255) }
+    private val ring = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.argb(70, 255, 255, 255)
+        style = Paint.Style.STROKE
+    }
+    private val tri = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE }
+    private val path = Path()
+
+    override fun onDraw(c: Canvas) {
+        val s = Math.min(width, height).toFloat()
+        if (s <= 0f) return
+        ring.strokeWidth = Math.max(1.5f, s * 0.02f)
+        c.drawCircle(s / 2f, s / 2f, s * 0.48f, disc)
+        c.drawCircle(s / 2f, s / 2f, s * 0.48f, ring)
+        path.reset()
+        path.moveTo(s * 0.41f, s * 0.32f)
+        path.lineTo(s * 0.68f, s * 0.5f)
+        path.lineTo(s * 0.41f, s * 0.68f)
+        path.close()
+        c.drawPath(path, tri)
     }
 }

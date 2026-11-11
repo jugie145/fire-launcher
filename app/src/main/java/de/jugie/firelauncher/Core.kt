@@ -6,6 +6,8 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Outline
 import android.graphics.Typeface
@@ -21,6 +23,7 @@ import android.view.ViewOutlineProvider
 import android.view.animation.PathInterpolator
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 
 class AppEntry(
@@ -69,14 +72,15 @@ object Apps {
 
     private class Want(val exact: String, val starts: String, val pkg: String)
 
-    /** Standard-Reihenfolge: YouTube, Twitch, Netflix, Prime Video, WOW, Disney+ */
+    /** Standard-Reihenfolge: YouTube, Twitch, Netflix, Prime Video, WOW, Disney+, Spotify */
     private val DEFAULTS = listOf(
         Want("youtube", "youtube", "youtube"),
         Want("twitch", "twitch", "twitch"),
         Want("netflix", "netflix", "netflix"),
         Want("prime video", "prime video", "firebat"),
         Want("wow", "wow ", "wowtv"),
-        Want("disney+", "disney", "disney")
+        Want("disney+", "disney", "disney"),
+        Want("spotify", "spotify", "spotify")
     )
 
     fun defaultFavs(all: List<AppEntry>): List<String> {
@@ -93,8 +97,8 @@ object Apps {
 }
 
 object Prefs {
-    const val MAX_FAVS = 6
-    const val FAVS_VERSION = 4
+    const val MAX_FAVS = 7
+    const val FAVS_VERSION = 5
     private fun sp(c: Context) = c.getSharedPreferences("launcher", Context.MODE_PRIVATE)
 
     fun favs(c: Context): List<String>? =
@@ -103,6 +107,9 @@ object Prefs {
         sp(c).edit().putString("favs", l.joinToString("\n")).putInt("favs_v", FAVS_VERSION).apply()
     }
     fun favsVersion(c: Context): Int = sp(c).getInt("favs_v", 0)
+
+    fun flag(c: Context, key: String): Boolean = sp(c).getBoolean(key, false)
+    fun setFlag(c: Context, key: String) { sp(c).edit().putBoolean(key, true).apply() }
 
     fun redirect(c: Context): Boolean = sp(c).getBoolean("redirect", true)
     fun setRedirect(c: Context, v: Boolean) { sp(c).edit().putBoolean("redirect", v).apply() }
@@ -183,6 +190,8 @@ object Ui {
     /** Staerke des Glaseffekts (0.6 dezent, 1.0 normal, 1.45 stark). */
     @Volatile var intensity = 1f
     @Volatile var anims = true
+    /** Akzentfarbe der zuletzt ausgewaehlten App, damit Unterseiten denselben Hintergrund zeigen. */
+    @Volatile var lastAccent = 0xFFFF2A3D.toInt()
 
     val smooth = PathInterpolator(0.22f, 0.9f, 0.3f, 1f)
     val light: Typeface by lazy { Typeface.create("sans-serif-light", Typeface.NORMAL) }
@@ -229,33 +238,101 @@ object Ui {
         return t
     }
 
+    /** Akzentfarbe einer App: feste Farben fuer die bekannten Dienste, sonst aus dem App-Icon. */
+    fun accentFor(app: AppEntry): Int {
+        val l = app.label.lowercase()
+        val p = app.pkg.lowercase()
+        return when {
+            l.contains("spotify") || p.contains("spotify") -> 0xFF1DB954.toInt()
+            l.contains("youtube") || p.contains("youtube") -> 0xFFFF2A3D.toInt()
+            l.contains("twitch") || p.contains("twitch") -> 0xFF9146FF.toInt()
+            l.contains("netflix") || p.contains("netflix") -> 0xFFE50914.toInt()
+            l.startsWith("prime video") || p.contains("firebat") -> 0xFF1A98FF.toInt()
+            l.contains("disney") || p.contains("disney") -> 0xFF2B6BFF.toInt()
+            else -> iconColor(app.icon ?: app.banner)
+        }
+    }
+
+    fun descFor(app: AppEntry): String {
+        val l = app.label.lowercase()
+        val p = app.pkg.lowercase()
+        return when {
+            l.contains("spotify") || p.contains("spotify") -> "Deine Musik. Jederzeit."
+            l.contains("youtube") || p.contains("youtube") -> "Deine Lieblingsvideos – jederzeit und überall."
+            l.contains("twitch") || p.contains("twitch") -> "Livestreams, Gaming und mehr."
+            l.contains("netflix") || p.contains("netflix") -> "Filme und Serien ohne Ende."
+            l.startsWith("prime video") || p.contains("firebat") -> "Filme, Serien und Sport."
+            l == "wow" || l.startsWith("wow ") -> "Serien, Filme und Live-Sport."
+            l.contains("disney") || p.contains("disney") -> "Geschichten, die begeistern."
+            else -> "OK drücken zum Öffnen."
+        }
+    }
+
+    /** Kraeftige Farbe aus einem App-Icon; bei farblosen Icons ein ruhiges Violettblau. */
+    private fun iconColor(src: Drawable?): Int {
+        val fallback = 0xFF6F7BFF.toInt()
+        if (src == null) return fallback
+        return try {
+            val d = src.constantState?.newDrawable()?.mutate() ?: return fallback
+            val b = Bitmap.createBitmap(12, 12, Bitmap.Config.ARGB_8888)
+            d.setBounds(0, 0, 12, 12)
+            d.draw(Canvas(b))
+            var r = 0f; var g = 0f; var bl = 0f; var n = 0f
+            val hsv = FloatArray(3)
+            for (x in 0 until 12) for (y in 0 until 12) {
+                val px = b.getPixel(x, y)
+                if (Color.alpha(px) < 128) continue
+                Color.colorToHSV(px, hsv)
+                val w = hsv[1] * hsv[2]
+                r += Color.red(px) * w; g += Color.green(px) * w; bl += Color.blue(px) * w; n += w
+            }
+            b.recycle()
+            if (n < 4f) return fallback
+            Color.colorToHSV(Color.rgb((r / n).toInt(), (g / n).toInt(), (bl / n).toInt()), hsv)
+            if (hsv[1] < 0.25f) return fallback
+            hsv[1] = Math.max(hsv[1], 0.65f)
+            hsv[2] = 0.95f
+            Color.HSVToColor(hsv)
+        } catch (e: Exception) {
+            fallback
+        }
+    }
+
     /**
-     * Quadratische Glaskachel mit dem Original-Logo der App.
-     * Bei Fokus: 112 %, leicht angehoben, hellerer Rand, dezenter Lichtschein.
+     * Glaskachel mit dem Original-Icon der App, optional mit Name darunter.
+     * Bei Fokus: 112 %, leicht angehoben, Rahmen und Lichtschein in der Akzentfarbe.
      */
-    fun glassTile(ctx: Context, app: AppEntry, size: Int, k: Float, onFocus: (() -> Unit)? = null): FrameLayout {
+    fun glassTile(
+        ctx: Context, app: AppEntry, w: Int, h: Int, k: Float,
+        showLabel: Boolean, onFocus: (() -> Unit)? = null
+    ): FrameLayout {
+        val accent = accentFor(app)
         val f = FrameLayout(ctx)
         f.clipChildren = false
         f.clipToPadding = false
 
-        val shSize = (size * 1.3f).toInt()
+        val shW = (w * 1.25f).toInt()
         val shadow = View(ctx)
-        shadow.background = radial(0xA6000000.toInt(), shSize)
-        shadow.translationY = size * 0.16f
+        shadow.background = radial(0xA6000000.toInt(), shW)
+        shadow.translationY = h * 0.16f
         shadow.alpha = 0.5f
-        f.addView(shadow, FrameLayout.LayoutParams(shSize, shSize, Gravity.CENTER))
+        f.addView(shadow, FrameLayout.LayoutParams(shW, shW, Gravity.CENTER))
 
-        val glSize = (size * 1.9f).toInt()
+        val glSize = (w * 1.85f).toInt()
         val glow = View(ctx)
-        glow.background = radial(0x5A9FE3F2, glSize)
+        glow.background = radial((accent and 0x00FFFFFF) or 0x70000000, glSize)
         glow.alpha = 0f
         f.addView(glow, FrameLayout.LayoutParams(glSize, glSize, Gravity.CENTER))
 
-        val glass = GlassDrawable(size * 0.27f, k)
+        val glass = GlassDrawable(Math.min(w, h) * 0.2f, k)
+        glass.accent = accent
         val panel = View(ctx)
         panel.background = glass
         f.addView(panel, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
 
+        val col = LinearLayout(ctx)
+        col.orientation = LinearLayout.VERTICAL
+        col.gravity = Gravity.CENTER_HORIZONTAL
         val iv = ImageView(ctx)
         iv.setImageDrawable(app.icon ?: app.banner)
         iv.scaleType = ImageView.ScaleType.FIT_CENTER
@@ -265,8 +342,16 @@ object Ui {
             }
         }
         iv.clipToOutline = true
-        val icSize = (size * 0.58f).toInt()
-        f.addView(iv, FrameLayout.LayoutParams(icSize, icSize, Gravity.CENTER))
+        val icSize = (h * (if (showLabel) 0.47f else 0.58f)).toInt()
+        col.addView(iv, LinearLayout.LayoutParams(icSize, icSize))
+        if (showLabel) {
+            val name = text(ctx, app.label, 23f, k, Color.WHITE, medium)
+            name.maxLines = 1
+            name.ellipsize = android.text.TextUtils.TruncateAt.END
+            name.gravity = Gravity.CENTER_HORIZONTAL
+            col.addView(name, LinearLayout.LayoutParams(w - (24 * k).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = (h * 0.075f).toInt() })
+        }
+        f.addView(col, FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER))
 
         f.isFocusable = true
         f.contentDescription = app.label

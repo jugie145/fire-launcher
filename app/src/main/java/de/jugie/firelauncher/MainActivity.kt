@@ -5,8 +5,8 @@ import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.Outline
 import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -14,7 +14,9 @@ import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewOutlineProvider
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextClock
 import android.widget.TextView
@@ -31,23 +33,24 @@ class MainActivity : Activity() {
     private lateinit var aurora: Aurora
     private lateinit var content: LinearLayout
     private lateinit var row: LinearLayout
-    private lateinit var appName: TextView
     private lateinit var greet: TextView
-    private lateinit var greetSub: TextView
+    private lateinit var spotBox: LinearLayout
+    private lateinit var spotIcon: ImageView
+    private lateinit var spotTitle: TextView
+    private lateinit var spotDesc: TextView
     private lateinit var wIcon: WeatherIcon
     private lateinit var wTemp: TextView
     private lateinit var wCond: TextView
-    private lateinit var wExtra: TextView
     private lateinit var wifiIcon: WifiIcon
-    private lateinit var wifiText: TextView
     private var favApps: List<AppEntry> = emptyList()
     private var lastFocus = 0
     private var lastWeather = 0L
-    private var weatherCode = -1
     private var shown: String? = null
     private var sig = ""
 
     private fun px(v: Int): Int = (v * k).toInt()
+    private val wrap = ViewGroup.LayoutParams.WRAP_CONTENT
+    private val match = ViewGroup.LayoutParams.MATCH_PARENT
 
     private fun lp(w: Int, h: Int, top: Int = 0, left: Int = 0): LinearLayout.LayoutParams =
         LinearLayout.LayoutParams(w, h).apply {
@@ -55,8 +58,12 @@ class MainActivity : Activity() {
             leftMargin = px(left)
         }
 
-    private val wrap = ViewGroup.LayoutParams.WRAP_CONTENT
-    private val match = ViewGroup.LayoutParams.MATCH_PARENT
+    private fun divider(height: Int): View {
+        val v = View(this)
+        v.setBackgroundColor(0x40FFFFFF)
+        v.layoutParams = LinearLayout.LayoutParams(Math.max(1, px(2)), px(height))
+        return v
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,113 +80,146 @@ class MainActivity : Activity() {
 
         val root = FrameLayout(this)
         aurora = Aurora(this, k)
-        aurora.configure(Prefs.bg(this), Prefs.bgAnim(this))
+        aurora.configure(Prefs.bg(this), Prefs.bgAnim(this), Ui.lastAccent)
         root.addView(aurora, FrameLayout.LayoutParams(match, match))
 
         content = LinearLayout(this)
         content.orientation = LinearLayout.VERTICAL
-        content.setPadding(px(120), px(64), px(120), px(44))
+        content.setPadding(px(80), px(48), px(80), px(34))
         content.clipChildren = false
         content.clipToPadding = false
         root.addView(content, FrameLayout.LayoutParams(match, match))
 
-        // Oben links: Uhrzeit und Datum. Oben rechts: Wetter.
+        // Kopfzeile: Uhr | Datum, Begruessung, Standort | Wetter
         val header = LinearLayout(this)
         header.orientation = LinearLayout.HORIZONTAL
-        header.clipChildren = false
-        val left = LinearLayout(this)
-        left.orientation = LinearLayout.VERTICAL
-        val fmt = if (Prefs.h24(this)) "HH:mm" else "h:mm a"
+        header.gravity = Gravity.CENTER_VERTICAL
+        val fmt = if (Prefs.h24(this)) "HH:mm" else "h:mm"
         val clock = TextClock(this)
         clock.format24Hour = fmt
         clock.format12Hour = fmt
-        clock.setTextSize(TypedValue.COMPLEX_UNIT_PX, 118 * k)
+        clock.setTextSize(TypedValue.COMPLEX_UNIT_PX, 86 * k)
         clock.setTextColor(Color.WHITE)
         clock.typeface = Ui.light
         clock.includeFontPadding = false
-        clock.letterSpacing = -0.02f
-        val date = TextClock(this)
-        date.format24Hour = "EEEE, d. MMMM yyyy"
-        date.format12Hour = "EEEE, d. MMMM yyyy"
-        date.setTextSize(TypedValue.COMPLEX_UNIT_PX, 28 * k)
-        date.setTextColor(Ui.TEXT_DIM)
-        date.includeFontPadding = false
-        left.addView(clock)
-        left.addView(date, lp(wrap, wrap, top = 12))
-        header.addView(left, LinearLayout.LayoutParams(0, wrap, 1f))
-        header.addView(weatherWidget())
+        header.addView(clock)
+        header.addView(divider(80), (divider(80).layoutParams as LinearLayout.LayoutParams).apply { leftMargin = px(38); rightMargin = px(36) })
+        val dateCol = LinearLayout(this)
+        dateCol.orientation = LinearLayout.VERTICAL
+        for (f in arrayOf("EEEE,", "d. MMMM")) {
+            val t = TextClock(this)
+            t.format24Hour = f
+            t.format12Hour = f
+            t.setTextSize(TypedValue.COMPLEX_UNIT_PX, 28 * k)
+            t.setTextColor(Ui.TEXT_DIM)
+            t.includeFontPadding = false
+            dateCol.addView(t, lp(wrap, wrap, top = if (f == "EEEE,") 0 else 8))
+        }
+        header.addView(dateCol)
+        greet = Ui.text(this, "", 37f, k, Color.WHITE)
+        header.addView(greet, LinearLayout.LayoutParams(0, wrap, 1f).apply { leftMargin = px(110) })
+
+        header.addView(PinIcon(this), LinearLayout.LayoutParams(px(34), px(34)))
+        header.addView(Ui.text(this, "Grabow", 29f, k, Ui.TEXT_DIM), lp(wrap, wrap, left = 12))
+        header.addView(divider(72), (divider(72).layoutParams as LinearLayout.LayoutParams).apply { leftMargin = px(36); rightMargin = px(34) })
+        wIcon = WeatherIcon(this)
+        header.addView(wIcon, LinearLayout.LayoutParams(px(66), px(66)))
+        val wCol = LinearLayout(this)
+        wCol.orientation = LinearLayout.VERTICAL
+        wCol.gravity = Gravity.END
+        wTemp = Ui.text(this, "–°C", 42f, k, Color.WHITE)
+        wCond = Ui.text(this, "", 22f, k, Ui.TEXT_DIM)
+        wCol.addView(wTemp)
+        wCol.addView(wCond, lp(wrap, wrap, top = 8))
+        header.addView(wCol, lp(wrap, wrap, left = 22))
         content.addView(header)
 
-        content.addView(View(this), LinearLayout.LayoutParams(1, 0, 0.85f))
+        content.addView(View(this), LinearLayout.LayoutParams(1, 0, 3f))
 
-        // Begruessung
-        greet = Ui.text(this, "", 66f, k, Color.WHITE, Ui.light)
-        greet.gravity = Gravity.CENTER_HORIZONTAL
-        greetSub = Ui.text(this, "", 28f, k, Ui.TEXT_DIM)
-        greetSub.gravity = Gravity.CENTER_HORIZONTAL
-        content.addView(greet, lp(match, wrap))
-        content.addView(greetSub, lp(match, wrap, top = 16))
+        // Spotlight: zeigt die ausgewaehlte App
+        val spot = LinearLayout(this)
+        spot.orientation = LinearLayout.HORIZONTAL
+        spot.gravity = Gravity.CENTER_VERTICAL
+        spot.background = GlassDrawable(42f * k, k)
+        spot.setPadding(px(52), 0, px(42), 0)
+        spotBox = LinearLayout(this)
+        spotBox.orientation = LinearLayout.HORIZONTAL
+        spotBox.gravity = Gravity.CENTER_VERTICAL
+        spotIcon = ImageView(this)
+        spotIcon.scaleType = ImageView.ScaleType.FIT_CENTER
+        spotIcon.outlineProvider = object : ViewOutlineProvider() {
+            override fun getOutline(v: View, o: Outline) {
+                o.setRoundRect(0, 0, v.width, v.height, v.width * 0.23f)
+            }
+        }
+        spotIcon.clipToOutline = true
+        spotBox.addView(spotIcon, LinearLayout.LayoutParams(px(96), px(96)))
+        spotBox.addView(divider(96), (divider(96).layoutParams as LinearLayout.LayoutParams).apply { leftMargin = px(46); rightMargin = px(46) })
+        val sCol = LinearLayout(this)
+        sCol.orientation = LinearLayout.VERTICAL
+        spotTitle = Ui.text(this, "", 40f, k, Color.WHITE, Ui.medium)
+        spotDesc = Ui.text(this, "", 27f, k, Ui.TEXT_DIM)
+        sCol.addView(spotTitle)
+        sCol.addView(spotDesc, lp(wrap, wrap, top = 14))
+        spotBox.addView(sCol)
+        spot.addView(spotBox, LinearLayout.LayoutParams(0, wrap, 1f))
+        spot.addView(PlayIcon(this), LinearLayout.LayoutParams(px(82), px(82)))
+        content.addView(spot, LinearLayout.LayoutParams(match, px(152)))
 
-        // Sechs Glaskacheln in einer Reihe
+        // App-Leiste
         row = LinearLayout(this)
         row.orientation = LinearLayout.HORIZONTAL
         row.gravity = Gravity.CENTER
         row.clipChildren = false
         row.clipToPadding = false
-        content.addView(row, lp(match, px(216), top = 84))
-
-        appName = Ui.text(this, "", 38f, k, Color.WHITE, Ui.medium)
-        appName.gravity = Gravity.CENTER_HORIZONTAL
-        content.addView(appName, lp(match, wrap, top = 52))
+        content.addView(row, lp(match, px(206), top = 62))
 
         content.addView(View(this), LinearLayout.LayoutParams(1, 0, 1f))
 
-        // Dezente Systemleiste
+        // Fussleiste
         val bar = LinearLayout(this)
         bar.orientation = LinearLayout.HORIZONTAL
         bar.gravity = Gravity.CENTER_VERTICAL
         bar.clipChildren = false
-        val status = LinearLayout(this)
-        status.orientation = LinearLayout.HORIZONTAL
-        status.gravity = Gravity.CENTER_VERTICAL
+        bar.addView(footItem(GearIcon(this), "Einstellungen") { startActivity(Intent(this, SettingsActivity::class.java)) })
+        bar.addView(footItem(null, "Alle Apps") { startActivity(Intent(this, AllAppsActivity::class.java)) }, lp(wrap, wrap, left = 14))
+        bar.addView(View(this), LinearLayout.LayoutParams(0, 1, 1f))
         wifiIcon = WifiIcon(this)
-        wifiText = Ui.text(this, "", 20f, k, Ui.TEXT_FAINT)
-        status.addView(wifiIcon, LinearLayout.LayoutParams(px(26), px(26)))
-        status.addView(wifiText, lp(wrap, wrap, left = 12))
-        bar.addView(status, LinearLayout.LayoutParams(0, wrap, 1f))
-        bar.addView(Ui.pill(this, "Alle Apps", k) { startActivity(Intent(this, AllAppsActivity::class.java)) })
-        bar.addView(Ui.pill(this, "Einstellungen", k) { startActivity(Intent(this, SettingsActivity::class.java)) }, lp(wrap, wrap, left = 18))
-        val ver = Ui.text(this, "Fire Launcher " + versionName(), 20f, k, Ui.TEXT_FAINT)
-        ver.gravity = Gravity.END
-        bar.addView(ver, LinearLayout.LayoutParams(0, wrap, 1f))
+        bar.addView(wifiIcon, LinearLayout.LayoutParams(px(26), px(26)))
+        bar.addView(divider(40), (divider(40).layoutParams as LinearLayout.LayoutParams).apply { leftMargin = px(26); rightMargin = px(26) })
+        bar.addView(Ui.text(this, "LIQUID TV · v" + versionName(), 21f, k, Ui.TEXT_DIM))
         content.addView(bar)
 
         setContentView(root)
     }
 
-    private fun versionName(): String =
-        try { packageManager.getPackageInfo(packageName, 0).versionName ?: "" } catch (e: Exception) { "" }
-
-    private fun weatherWidget(): View {
+    private fun footItem(icon: View?, label: String, onClick: () -> Unit): View {
         val box = LinearLayout(this)
         box.orientation = LinearLayout.HORIZONTAL
         box.gravity = Gravity.CENTER_VERTICAL
-        box.background = GlassDrawable(34f * k, k)
-        box.setPadding(px(28), px(22), px(34), px(22))
-        wIcon = WeatherIcon(this)
-        box.addView(wIcon, LinearLayout.LayoutParams(px(68), px(68)))
-        wTemp = Ui.text(this, "–°", 62f, k, Color.WHITE, Ui.light)
-        box.addView(wTemp, lp(wrap, wrap, left = 18))
-        val col = LinearLayout(this)
-        col.orientation = LinearLayout.VERTICAL
-        col.addView(Ui.text(this, "Grabow", 24f, k, Color.WHITE, Ui.medium))
-        wCond = Ui.text(this, "Wetter wird geladen", 21f, k, Ui.TEXT_DIM)
-        wExtra = Ui.text(this, "", 19f, k, Ui.TEXT_FAINT)
-        col.addView(wCond, lp(wrap, wrap, top = 6))
-        col.addView(wExtra, lp(wrap, wrap, top = 5))
-        box.addView(col, lp(wrap, wrap, left = 24))
+        box.setPadding(px(20), px(12), px(26), px(12))
+        val g = GlassDrawable(999f, k)
+        val t = Ui.text(this, label, 23f, k, Ui.TEXT_DIM)
+        if (icon != null) {
+            box.addView(icon, LinearLayout.LayoutParams(px(38), px(38)))
+            box.addView(t, lp(wrap, wrap, left = 18))
+        } else {
+            box.addView(t, lp(wrap, wrap, left = 6))
+        }
+        box.isFocusable = true
+        box.setOnFocusChangeListener { v, has ->
+            g.boost = if (has) 1f else 0f
+            box.background = if (has) g else null
+            t.setTextColor(if (has) Color.WHITE else Ui.TEXT_DIM)
+            val s = if (has) 1.05f else 1f
+            v.animate().scaleX(s).scaleY(s).setDuration(Ui.d(180)).setInterpolator(Ui.smooth).start()
+        }
+        box.setOnClickListener { onClick() }
         return box
     }
+
+    private fun versionName(): String =
+        try { packageManager.getPackageInfo(packageName, 0).versionName ?: "" } catch (e: Exception) { "" }
 
     override fun onResume() {
         super.onResume()
@@ -208,77 +248,72 @@ class MainActivity : Activity() {
         val c = Calendar.getInstance()
         val h = c.get(Calendar.HOUR_OF_DAY)
         val dow = c.get(Calendar.DAY_OF_WEEK)
-        val wet = weatherCode in intArrayOf(51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82, 95, 96, 99)
-        val snow = weatherCode in intArrayOf(71, 73, 75, 77, 85, 86)
-        greet.text = when (h) {
-            in 5..10 -> "Guten Morgen, $name"
-            in 11..13 -> "Mahlzeit, $name"
-            in 14..17 -> "Hallo $name"
-            in 18..22 -> "Guten Abend, $name"
-            else -> "Noch wach, $name?"
-        }
-        greetSub.text = when {
-            h >= 23 || h < 5 -> "Eine Folge geht noch."
-            wet && h >= 16 -> "Draußen ist es nass. Perfektes Wetter für die Couch."
-            snow -> "Draußen schneit es. Mach es dir gemütlich."
-            dow == Calendar.FRIDAY && h >= 16 -> "Feierabend. Das Wochenende gehört dir."
-            dow == Calendar.SATURDAY && h < 12 -> "Entspannter Start ins Wochenende."
-            dow == Calendar.SUNDAY && h >= 18 -> "Lass den Sonntag gemütlich ausklingen."
-            dow == Calendar.SUNDAY -> "Entspannten Sonntag."
-            h in 5..10 -> "Hab einen guten Start in den Tag."
-            h in 18..22 -> "Zeit zum Abschalten. Was schauen wir heute?"
-            else -> "Was schauen wir heute?"
+        greet.text = when {
+            h >= 23 || h < 5 -> "Noch wach, $name? 🌙"
+            h in 5..10 -> "Guten Morgen, $name. ☀️"
+            dow == Calendar.FRIDAY && h >= 16 -> "Schönes Wochenende, $name. 👋"
+            h in 11..13 -> "Mahlzeit, $name. 👋"
+            h in 14..17 -> "Hallo $name. 👋"
+            else -> "Guten Abend, $name. 👋"
         }
     }
 
     private fun updateWifi() {
-        var txt = "Offline"
         var on = false
         try {
             val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            val caps = cm.getNetworkCapabilities(cm.activeNetwork)
-            if (caps != null) {
-                on = true
-                txt = when {
-                    caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> "WLAN verbunden"
-                    caps.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> "LAN verbunden"
-                    else -> "Verbunden"
-                }
-            }
+            on = cm.getNetworkCapabilities(cm.activeNetwork) != null
         } catch (e: Exception) {
         }
         wifiIcon.connected = on
-        wifiText.text = txt
     }
 
     private fun loadFavs() {
         thread {
             val all = Apps.loadAll(this)
-            var favs = Prefs.favs(this)
+            var favs: List<String>? = Prefs.favs(this)
             if (favs == null || Prefs.favsVersion(this) < Prefs.FAVS_VERSION) {
                 val merged = ArrayList(Apps.defaultFavs(all))
                 favs?.forEach { if (!merged.contains(it) && merged.size < Prefs.MAX_FAVS) merged.add(it) }
                 favs = merged
                 Prefs.setFavs(this, merged)
             }
+            var cur: List<String> = favs
+            // Spotify einmalig als siebte App ergaenzen, sobald es installiert ist
+            if (!Prefs.flag(this, "spotify_done")) {
+                val sp = all.firstOrNull { it.pkg.lowercase().contains("spotify") || it.label.lowercase().startsWith("spotify") }
+                if (sp != null) {
+                    if (!cur.contains(sp.pkg) && cur.size < Prefs.MAX_FAVS) {
+                        cur = cur + sp.pkg
+                        Prefs.setFavs(this, cur)
+                    }
+                    Prefs.setFlag(this, "spotify_done")
+                }
+            }
             val byPkg = all.associateBy { it.pkg }
-            val list = favs.mapNotNull { byPkg[it] }.take(Prefs.MAX_FAVS)
+            val list = cur.mapNotNull { byPkg[it] }.take(Prefs.MAX_FAVS)
             handler.post { showFavs(list) }
         }
     }
 
-    private fun showName(app: AppEntry) {
+    /** Spotlight und Hintergrund auf die ausgewaehlte App umstellen. */
+    private fun select(app: AppEntry) {
         if (shown == app.pkg) return
         shown = app.pkg
-        appName.animate().cancel()
-        appName.text = app.label
+        val accent = Ui.accentFor(app)
+        Ui.lastAccent = accent
+        aurora.setAccent(accent)
+        spotIcon.setImageDrawable(app.icon ?: app.banner)
+        spotTitle.text = app.label
+        spotDesc.text = Ui.descFor(app)
+        spotBox.animate().cancel()
         if (Ui.anims) {
-            appName.alpha = 0f
-            appName.translationY = 10f * k
-            appName.animate().alpha(1f).translationY(0f).setDuration(280).setInterpolator(Ui.smooth).start()
+            spotBox.alpha = 0f
+            spotBox.translationX = 26f * k
+            spotBox.animate().alpha(1f).translationX(0f).setDuration(320).setInterpolator(Ui.smooth).start()
         } else {
-            appName.alpha = 1f
-            appName.translationY = 0f
+            spotBox.alpha = 1f
+            spotBox.translationX = 0f
         }
     }
 
@@ -288,18 +323,21 @@ class MainActivity : Activity() {
         row.removeAllViews()
         if (list.isEmpty()) {
             shown = null
-            appName.text = ""
-            row.addView(Ui.text(this, "Unter „Alle Apps“ eine App lange gedrückt halten, um sie hier anzupinnen.", 28f, k, Ui.TEXT_DIM))
+            spotTitle.text = "Noch keine Favoriten"
+            spotDesc.text = "Unter „Alle Apps“ eine App lange gedrückt halten, um sie anzupinnen."
+            spotIcon.setImageDrawable(null)
             return
         }
-        // gleichmaessig ueber die Breite verteilt
-        val size = px(216)
-        val avail = resources.displayMetrics.widthPixels - px(240)
-        val gap = if (list.size > 1) Math.min(px(120), (avail - size * list.size) / (list.size - 1)) else 0
+        // Kacheln fuellen die Breite gleichmaessig; Groesse richtet sich nach der Anzahl
+        val n = list.size
+        val gap = px(28)
+        val avail = resources.displayMetrics.widthPixels - px(160)
+        val w = Math.min(px(270), (avail - gap * (n - 1)) / n)
+        val h = Math.min(px(206), (w * 0.9f).toInt())
         list.forEachIndexed { i, app ->
-            val tile = Ui.glassTile(this, app, size, k) {
+            val tile = Ui.glassTile(this, app, w, h, k, true) {
                 lastFocus = i
-                showName(app)
+                select(app)
             }
             tile.setOnClickListener { v ->
                 val opts = try {
@@ -309,8 +347,8 @@ class MainActivity : Activity() {
                 }
                 Apps.launch(this, app, opts)
             }
-            row.addView(tile, LinearLayout.LayoutParams(size, size).apply { if (i > 0) leftMargin = gap })
-            Ui.fadeIn(tile, 70L * i)
+            row.addView(tile, LinearLayout.LayoutParams(w, h).apply { if (i > 0) leftMargin = gap })
+            Ui.fadeIn(tile, 60L * i)
         }
         val idx = if (lastFocus < list.size) lastFocus else 0
         row.getChildAt(idx)?.requestFocus()
@@ -322,33 +360,23 @@ class MainActivity : Activity() {
             try {
                 val url = URL(
                     "https://api.open-meteo.com/v1/forecast?latitude=53.28&longitude=11.57" +
-                        "&current=temperature_2m,apparent_temperature,weather_code,is_day" +
-                        "&daily=temperature_2m_max,temperature_2m_min&forecast_days=1&timezone=auto"
+                        "&current=temperature_2m,weather_code,is_day&timezone=auto"
                 )
                 val c = url.openConnection() as HttpURLConnection
                 c.connectTimeout = 8000
                 c.readTimeout = 8000
                 val txt = c.inputStream.bufferedReader().use { it.readText() }
-                val json = JSONObject(txt)
-                val cur = json.getJSONObject("current")
+                val cur = JSONObject(txt).getJSONObject("current")
                 val t = Math.round(cur.getDouble("temperature_2m")).toInt()
-                val feels = Math.round(cur.getDouble("apparent_temperature")).toInt()
                 val code = cur.getInt("weather_code")
                 val day = cur.optInt("is_day", 1) == 1
-                val daily = json.getJSONObject("daily")
-                val hi = Math.round(daily.getJSONArray("temperature_2m_max").getDouble(0)).toInt()
-                val lo = Math.round(daily.getJSONArray("temperature_2m_min").getDouble(0)).toInt()
                 handler.post {
-                    weatherCode = code
                     wIcon.kind = WeatherIcon.kindFor(code, day)
-                    wTemp.text = "$t°"
+                    wTemp.text = "$t°C"
                     wCond.text = weatherText(code)
-                    wExtra.text = "Gefühlt $feels°  ·  H $hi°  T $lo°"
-                    updateGreeting()
                 }
             } catch (e: Exception) {
                 lastWeather = 0L
-                handler.post { wCond.text = "Wetter nicht verfügbar" }
             }
         }
     }
@@ -356,7 +384,7 @@ class MainActivity : Activity() {
     private fun weatherText(code: Int): String = when (code) {
         0 -> "Klar"
         1 -> "Überwiegend klar"
-        2 -> "Teils bewölkt"
+        2 -> "Leicht bewölkt"
         3 -> "Bewölkt"
         45, 48 -> "Nebel"
         51, 53, 55, 56, 57 -> "Nieselregen"
