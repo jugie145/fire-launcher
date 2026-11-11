@@ -3,11 +3,13 @@ package de.jugie.firelauncher
 import android.app.Activity
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
+import android.graphics.Outline
 import android.os.Bundle
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewOutlineProvider
 import android.webkit.WebChromeClient
 import android.webkit.WebSettings
 import android.webkit.WebView
@@ -58,36 +60,48 @@ class CinemaActivity : Activity() {
         loadContent()
     }
 
+    private lateinit var wave: WaveBackground
+
     private fun build() {
-        val root = LinearLayout(this).apply {
+        Ui.load(this)
+        val root = FrameLayout(this).apply { setBackgroundColor(Ui.BG) }
+        wave = WaveBackground(this)
+        root.addView(wave, FrameLayout.LayoutParams(match, match))
+
+        val content = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(px(80), px(34), px(80), px(28))
-            background = GradientDrawable(
-                GradientDrawable.Orientation.TL_BR,
-                intArrayOf(0xFF080A12.toInt(), 0xFF11172A.toInt(), 0xFF080A12.toInt())
-            )
+            setPadding(px(80), px(42), px(80), px(30))
+            clipChildren = false
+            clipToPadding = false
         }
+        root.addView(content, FrameLayout.LayoutParams(match, match))
 
         val header = LinearLayout(this).apply {
             gravity = Gravity.CENTER_VERTICAL
             orientation = LinearLayout.HORIZONTAL
         }
-        header.addView(Ui.text(this, "LIQUID", 34f, scale, Color.WHITE, Ui.medium))
-        header.addView(Ui.text(this, " CINEMA", 34f, scale, 0xFF76D9F2.toInt(), Ui.medium))
-        header.addView(Ui.text(this, "   FILME  ·  SERIEN  ·  TRAILER", 19f, scale, Ui.TEXT_DIM))
+        header.addView(Ui.text(this, "LIQUID", 32f, scale, Color.WHITE, Ui.medium))
+        header.addView(Ui.text(this, " CINEMA", 32f, scale, 0xFF82DDF2.toInt(), Ui.medium))
         header.addView(View(this), LinearLayout.LayoutParams(0, 1, 1f))
-        header.addView(Ui.text(this, "▼  ZURÜCK ZUR STARTSEITE", 18f, scale, Ui.TEXT_DIM))
-        root.addView(header, LinearLayout.LayoutParams(match, px(48)))
+        header.addView(Ui.text(this, "▼  ZURÜCK", 19f, scale, Ui.TEXT_DIM))
+        content.addView(header, LinearLayout.LayoutParams(match, px(48)))
 
         val hero = FrameLayout(this).apply {
             clipChildren = true
-            background = GradientDrawable().apply {
-                cornerRadius = px(28).toFloat()
-                setColor(0xFF101522.toInt())
+            outlineProvider = object : ViewOutlineProvider() {
+                override fun getOutline(v: View, o: Outline) {
+                    o.setRoundRect(0, 0, v.width, v.height, px(34).toFloat())
+                }
             }
+            clipToOutline = true
         }
+        val glass = ImageView(this).apply {
+            setImageResource(R.drawable.glass_hero)
+            scaleType = ImageView.ScaleType.FIT_XY
+        }
+        hero.addView(glass, FrameLayout.LayoutParams(match, match))
         backdrop = ImageView(this).apply { scaleType = ImageView.ScaleType.CENTER_CROP }
-        hero.addView(backdrop, FrameLayout.LayoutParams(match, match))
+        hero.addView(backdrop, FrameLayout.LayoutParams(px(1120), match, Gravity.END))
         player = WebView(this).apply {
             setBackgroundColor(Color.BLACK)
             settings.javaScriptEnabled = true
@@ -100,42 +114,42 @@ class CinemaActivity : Activity() {
             isFocusable = false
             visibility = View.GONE
         }
-        hero.addView(player, FrameLayout.LayoutParams(match, match))
+        hero.addView(player, FrameLayout.LayoutParams(px(1120), match, Gravity.END))
         val shade = View(this).apply {
             background = GradientDrawable(
                 GradientDrawable.Orientation.LEFT_RIGHT,
-                intArrayOf(0xF0080A12.toInt(), 0xB0080A12.toInt(), 0x00080A12)
+                intArrayOf(0xF0080A12.toInt(), 0xD0080A12.toInt(), 0x00080A12)
             )
         }
         hero.addView(shade, FrameLayout.LayoutParams(match, match))
         val info = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER_VERTICAL
-            setPadding(px(48), px(28), px(30), px(28))
+            setPadding(px(66), px(28), px(30), px(34))
         }
-        info.addView(Ui.text(this, "JETZT IM TREND", 19f, scale, 0xFF83DDF2.toInt(), Ui.medium))
-        title = Ui.text(this, "Dein Kino. Direkt auf dem Startbildschirm.", 42f, scale, Color.WHITE, Ui.medium)
+        info.addView(Ui.text(this, "JETZT ENTDECKEN", 18f, scale, 0xFF82DDF2.toInt(), Ui.medium))
+        title = Ui.text(this, "Dein Kino. Direkt auf dem Startbildschirm.", 54f, scale, Color.WHITE, Ui.medium)
         title.maxLines = 2
-        info.addView(title, LinearLayout.LayoutParams(px(780), wrap).apply { topMargin = px(14) })
-        meta = Ui.text(this, "Filme und Serien entdecken", 21f, scale, 0xFFD6E0EF.toInt())
-        info.addView(meta, LinearLayout.LayoutParams(wrap, wrap).apply { topMargin = px(12) })
-        description = Ui.text(this, "Trailer starten automatisch, sobald du einen Titel auswählst.", 20f, scale, 0xCFFFFFFF.toInt())
+        info.addView(title, LinearLayout.LayoutParams(px(800), wrap).apply { topMargin = px(16) })
+        meta = Ui.text(this, "FILME  ·  SERIEN  ·  TRAILER", 23f, scale, Ui.TEXT_DIM)
+        info.addView(meta, LinearLayout.LayoutParams(wrap, wrap).apply { topMargin = px(18) })
+        description = Ui.text(this, "Trailer starten automatisch, sobald du einen Titel auswählst.", 21f, scale, 0xDFFFFFFF.toInt())
         description.maxLines = 3
         info.addView(description, LinearLayout.LayoutParams(px(720), wrap).apply { topMargin = px(14) })
-        info.addView(Ui.text(this, "OK  Trailer abspielen     ·     BACK  Zurück", 18f, scale, 0xBFFFFFFF.toInt()),
-            LinearLayout.LayoutParams(wrap, wrap).apply { topMargin = px(24) })
+        info.addView(Ui.text(this, "OK  Trailer abspielen", 18f, scale, Ui.TEXT_DIM),
+            LinearLayout.LayoutParams(wrap, wrap).apply { topMargin = px(26) })
         hero.addView(info, FrameLayout.LayoutParams(match, match))
-        root.addView(hero, LinearLayout.LayoutParams(match, px(430)).apply { topMargin = px(24) })
+        content.addView(hero, LinearLayout.LayoutParams(match, px(450)).apply { topMargin = px(26) })
 
         val rowHead = LinearLayout(this).apply {
             gravity = Gravity.CENTER_VERTICAL
             orientation = LinearLayout.HORIZONTAL
         }
-        rowHead.addView(Ui.text(this, "FÜR DICH ENTDECKT", 23f, scale, Color.WHITE, Ui.medium))
+        rowHead.addView(Ui.text(this, "FÜR DICH ENTDECKT", 24f, scale, Color.WHITE, Ui.medium))
         rowHead.addView(View(this), LinearLayout.LayoutParams(0, 1, 1f))
-        status = Ui.text(this, "Daten von TMDB", 16f, scale, Ui.TEXT_FAINT)
+        status = Ui.text(this, "INHALTE VON TMDB", 16f, scale, Ui.TEXT_FAINT)
         rowHead.addView(status)
-        root.addView(rowHead, LinearLayout.LayoutParams(match, px(34)).apply { topMargin = px(22) })
+        content.addView(rowHead, LinearLayout.LayoutParams(match, px(38)).apply { topMargin = px(28) })
 
         val scroll = HorizontalScrollView(this).apply {
             isHorizontalScrollBarEnabled = false
@@ -150,16 +164,10 @@ class CinemaActivity : Activity() {
             clipToPadding = false
         }
         scroll.addView(strip, ViewGroup.LayoutParams(wrap, wrap))
-        root.addView(scroll, LinearLayout.LayoutParams(match, px(210)).apply { topMargin = px(10) })
-
-        val footer = LinearLayout(this).apply {
-            gravity = Gravity.CENTER_VERTICAL
-            addView(Ui.text(this@CinemaActivity, "LIQUID GLASS  ·  CINEMA MODE", 16f, scale, Ui.TEXT_FAINT))
-            addView(View(this@CinemaActivity), LinearLayout.LayoutParams(0, 1, 1f))
-            addView(Ui.text(this@CinemaActivity, "BACK ZUM STARTBILDSCHIRM", 16f, scale, Ui.TEXT_DIM))
-        }
-        root.addView(View(this), LinearLayout.LayoutParams(1, 0, 1f))
-        root.addView(footer, LinearLayout.LayoutParams(match, px(30)))
+        content.addView(scroll, LinearLayout.LayoutParams(match, px(220)).apply { topMargin = px(14) })
+        content.addView(View(this), LinearLayout.LayoutParams(1, 0, 1f))
+        content.addView(Ui.text(this, "LIQUID GLASS  ·  BACK ZUM STARTBILDSCHIRM", 16f, scale, Ui.TEXT_FAINT),
+            LinearLayout.LayoutParams(match, px(28)))
         setContentView(root)
     }
 
@@ -209,37 +217,59 @@ class CinemaActivity : Activity() {
         }
         status.text = "${items.size} Titel · TMDB"
         items.take(16).forEachIndexed { index, item ->
-            val card = LinearLayout(this).apply {
-                orientation = LinearLayout.VERTICAL
-                gravity = Gravity.TOP
+            val card = FrameLayout(this).apply {
                 isFocusable = true
                 isClickable = true
+                clipChildren = false
+                clipToPadding = false
                 background = GradientDrawable().apply {
-                    cornerRadius = px(15).toFloat()
+                    cornerRadius = px(22).toFloat()
                     setColor(0x33FFFFFF)
-                    setStroke(px(1), 0x44FFFFFF)
+                    setStroke(px(1), 0x55FFFFFF)
                 }
-                setPadding(px(7), px(7), px(7), px(7))
             }
             val image = ImageView(this).apply {
                 scaleType = ImageView.ScaleType.CENTER_CROP
                 background = GradientDrawable().apply {
-                    cornerRadius = px(10).toFloat()
+                    cornerRadius = px(17).toFloat()
                     setColor(0xFF1C2434.toInt())
                 }
+                outlineProvider = object : ViewOutlineProvider() {
+                    override fun getOutline(v: View, o: Outline) {
+                        o.setRoundRect(0, 0, v.width, v.height, px(17).toFloat())
+                    }
+                }
+                clipToOutline = true
             }
-            card.addView(image, LinearLayout.LayoutParams(px(150), px(150)))
-            val label = Ui.text(this, item.title, 16f, scale, Color.WHITE, Ui.medium)
+            card.addView(image, FrameLayout.LayoutParams(match, match).apply {
+                setMargins(px(6), px(6), px(6), px(6))
+            })
+            val shade = View(this).apply {
+                background = GradientDrawable(
+                    GradientDrawable.Orientation.BOTTOM_TOP,
+                    intArrayOf(0xEE080A12.toInt(), 0x00080A12)
+                )
+            }
+            card.addView(shade, FrameLayout.LayoutParams(match, px(88), Gravity.BOTTOM).apply {
+                setMargins(px(6), 0, px(6), px(6))
+            })
+            val provider = Ui.text(this, item.provider, 12f, scale, 0xFF82DDF2.toInt(), Ui.medium)
+            card.addView(provider, FrameLayout.LayoutParams(wrap, wrap, Gravity.BOTTOM or Gravity.START).apply {
+                leftMargin = px(17); bottomMargin = px(40)
+            })
+            val label = Ui.text(this, item.title, 17f, scale, Color.WHITE, Ui.medium)
             label.maxLines = 1
             label.ellipsize = android.text.TextUtils.TruncateAt.END
-            card.addView(label, LinearLayout.LayoutParams(px(150), wrap).apply { topMargin = px(8) })
+            card.addView(label, FrameLayout.LayoutParams(px(170), wrap, Gravity.BOTTOM or Gravity.START).apply {
+                leftMargin = px(17); bottomMargin = px(16)
+            })
             val imageUrl = if (item.poster.isNotBlank()) item.poster else item.backdrop
             if (imageUrl.isNotBlank()) Images.load(listOf(imageUrl)) { bitmap ->
                 if (bitmap != null) image.setImageBitmap(bitmap)
             }
             card.setOnFocusChangeListener { v, focused ->
-                v.animate().scaleX(if (focused) 1.08f else 1f).scaleY(if (focused) 1.08f else 1f)
-                    .translationY(if (focused) -px(6).toFloat() else 0f)
+                v.animate().scaleX(if (focused) 1.06f else 1f).scaleY(if (focused) 1.06f else 1f)
+                    .translationY(if (focused) -px(5).toFloat() else 0f)
                     .setDuration(Ui.d(180)).start()
                 if (focused) select(index)
             }
@@ -250,8 +280,8 @@ class CinemaActivity : Activity() {
                     true
                 } else false
             }
-            strip.addView(card, LinearLayout.LayoutParams(px(166), px(204)).apply {
-                if (index > 0) leftMargin = px(18)
+            strip.addView(card, LinearLayout.LayoutParams(px(190), px(210)).apply {
+                if (index > 0) leftMargin = px(20)
             })
             if (index == 0) card.post { card.requestFocus() }
         }
@@ -290,7 +320,7 @@ class CinemaActivity : Activity() {
     }
 
     @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
+    override fun onResume() {\n        super.onResume()\n        if (::wave.isInitialized) wave.start()\n    }\n\n    override fun onPause() {\n        if (::wave.isInitialized) wave.stop()\n        super.onPause()\n    }\n\n    override fun onBackPressed() {
         finish()
     }
 
