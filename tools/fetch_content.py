@@ -256,13 +256,23 @@ def youtube_channels(names):
     out = []
     for name in names:
         try:
-            url = "https://www.youtube.com/results?" + urllib.parse.urlencode({"search_query": name, "sp": "EgIQAg==", "hl": "de", "gl": "DE"})
+            if name.startswith("@"):
+                url = "https://www.youtube.com/" + urllib.parse.quote(name) + "?hl=de&gl=DE"
+            else:
+                url = "https://www.youtube.com/results?" + urllib.parse.urlencode({"search_query": name, "sp": "EgIQAg==", "hl": "de", "gl": "DE"})
             req = urllib.request.Request(url, headers={
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36",
                 "Accept-Language": "de-DE,de;q=0.9",
                 "Cookie": "CONSENT=YES+1; SOCS=CAI"})
             with urllib.request.urlopen(req, timeout=25) as r:
                 html = r.read().decode("utf-8", "replace")
+            if name.startswith("@"):
+                cid = re.search(r'<link rel="canonical" href="https://www\.youtube\.com/channel/(UC[\w-]{22})"', html) \
+                    or re.search(r'"externalId":"(UC[\w-]{22})"', html)
+                title = re.search(r'<meta property="og:title" content="([^"]*)"', html)
+                if cid:
+                    out.append({"query": name, "id": cid.group(1), "name": title.group(1) if title else name[1:]})
+                continue
             m = re.search(r'"channelRenderer":\{"channelId":"(UC[\w-]{22})","title":\{"simpleText":"([^"]*)"', html)
             if m:
                 out.append({"query": name, "id": m.group(1), "name": m.group(2)})
