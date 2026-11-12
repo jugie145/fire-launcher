@@ -57,9 +57,11 @@ object Weather {
         51, 53, 55 -> "Nieselregen"
         56, 57, 66, 67 -> "Eisregen"
         61, 63, 65 -> "Regen"
-        71, 73, 75, 77 -> "Schnee"
+        75 -> "Starker Schnee"
+        71, 73, 77 -> "Schnee"
         80, 81, 82 -> "Regenschauer"
-        85, 86 -> "Schneeschauer"
+        85 -> "Schneeschauer"
+        86 -> "Starke Schneeschauer"
         95, 96, 99 -> "Gewitter"
         else -> ""
     }

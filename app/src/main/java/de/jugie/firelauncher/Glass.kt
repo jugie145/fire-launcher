@@ -164,6 +164,7 @@ class WeatherIcon(ctx: Context) : View(ctx) {
         const val SHOWERS = 10
         const val SLEET = 11
         const val WIND = 12
+        const val HEAVY_SNOW = 13
 
         fun kindFor(code: Int, day: Boolean, gust: Double = Weather.gust): Int {
             val k = when (code) {
@@ -175,7 +176,8 @@ class WeatherIcon(ctx: Context) : View(ctx) {
                 56, 57, 66, 67 -> SLEET
                 61, 63, 65 -> RAIN
                 80, 81, 82 -> if (day) SHOWERS else RAIN
-                71, 73, 75, 77, 85, 86 -> SNOW
+                75, 86 -> HEAVY_SNOW
+                71, 73, 77, 85 -> SNOW
                 95, 96, 99 -> STORM
                 else -> CLOUD
             }
@@ -355,7 +357,7 @@ class WeatherIcon(ctx: Context) : View(ctx) {
                 clouds(c, t, anim, 1f, false)
             }
             FOG -> {
-                clouds(c, t, anim, -2.5f, true)
+                clouds(c, t, anim, -2.5f, false)
                 line.color = 0xE6DCE4F0.toInt()
                 line.strokeWidth = 1.3f
                 val rows = arrayOf(floatArrayOf(6f, 18f, 18.6f), floatArrayOf(4.5f, 15.5f, 20.9f), floatArrayOf(9f, 19.5f, 23f))
@@ -367,11 +369,11 @@ class WeatherIcon(ctx: Context) : View(ctx) {
                 line.alpha = 255
             }
             RAIN -> {
-                clouds(c, t, anim, -3.5f, true)
+                clouds(c, t, anim, -3.5f, false)
                 fall(c, t, anim, floatArrayOf(9.3f, 12.8f, 16.3f), 18.6f, 2.2f, 0.6f, 1100L, 370L, 5f, 1.4f, RAIN_C)
             }
             DRIZZLE -> {
-                clouds(c, t, anim, -3.5f, true)
+                clouds(c, t, anim, -3.5f, false)
                 fall(c, t, anim, floatArrayOf(8.6f, 11.4f, 14.2f, 17f), 19.9f, 0.9f, 0.2f, 1700L, 420L, 3.6f, 1f, RAIN_C, 0.85f)
             }
             SHOWERS -> {
@@ -380,7 +382,7 @@ class WeatherIcon(ctx: Context) : View(ctx) {
                 fall(c, t, anim, floatArrayOf(10.3f, 13.8f), 19.6f, 2.2f, 0.6f, 1100L, 550L, 5f, 1.4f, RAIN_C)
             }
             SLEET -> {
-                clouds(c, t, anim, -3.5f, true)
+                clouds(c, t, anim, -3.5f, false)
                 val xs = floatArrayOf(9.3f, 12.8f, 16.3f)
                 for (i in xs.indices) {
                     var dy = 0f
@@ -405,7 +407,7 @@ class WeatherIcon(ctx: Context) : View(ctx) {
                 fill.alpha = 255
             }
             STORM -> {
-                clouds(c, t, anim, -3.5f, true)
+                clouds(c, t, anim, -3.5f, false)
                 fall(c, t, anim, floatArrayOf(9.3f, 12.8f, 16.3f), 18.6f, 2.2f, 0.6f, 1100L, 370L, 5f, 1.4f, RAIN_C)
                 // Blitz zuckt ab und zu doppelt auf
                 val f = (t % 3000L) / 3000f
@@ -439,7 +441,7 @@ class WeatherIcon(ctx: Context) : View(ctx) {
                 }
             }
             SNOW -> {
-                clouds(c, t, anim, -3.5f, true)
+                clouds(c, t, anim, -3.5f, false)
                 fill.color = Color.WHITE
                 val xs = floatArrayOf(9.3f, 12.8f, 16.3f)
                 for (i in xs.indices) {
@@ -464,6 +466,41 @@ class WeatherIcon(ctx: Context) : View(ctx) {
                 fill.alpha = 255
             }
             MOON -> moon(c, t, anim, 13.2f, 12f, 1f)
+            HEAVY_SNOW -> {
+                clouds(c, t, anim, -3.5f, false)
+                // Schneekristall dreht sich langsam und schwebt, daneben fallen Flocken
+                val cx = 12.8f
+                val cy = 19.4f + (if (anim) swing(t, 3000, -0.4f, 0.4f) else 0f)
+                val rot = if (anim) (t % 12000L) * 360f / 12000f else 0f
+                line.color = Color.WHITE
+                line.alpha = 255
+                line.strokeWidth = 0.9f
+                c.save()
+                c.rotate(rot, cx, cy)
+                for (i in 0 until 6) {
+                    c.save()
+                    c.rotate(i * 60f, cx, cy)
+                    c.drawLine(cx, cy, cx, cy - 2.6f, line)
+                    c.drawLine(cx, cy - 1.6f, cx - 0.75f, cy - 2.25f, line)
+                    c.drawLine(cx, cy - 1.6f, cx + 0.75f, cy - 2.25f, line)
+                    c.restore()
+                }
+                c.restore()
+                fill.color = Color.WHITE
+                val xs = floatArrayOf(8.2f, 17.4f)
+                for (i in xs.indices) {
+                    var dy = 0f
+                    var a = 1f
+                    if (anim) {
+                        val f = ((t - i * 900L) % 2000L + 2000L) % 2000L / 2000f
+                        dy = -1.5f + 4f * f
+                        a = if (f < 0.25f) f / 0.25f else 1f - (f - 0.25f) / 0.75f
+                    }
+                    fill.alpha = (255 * a).toInt()
+                    c.drawCircle(xs[i], 19.2f + dy, 0.85f, fill)
+                }
+                fill.alpha = 255
+            }
         }
         c.restore()
         if (anim) postInvalidateDelayed(33)
