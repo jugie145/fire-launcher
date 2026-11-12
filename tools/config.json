@@ -6,17 +6,50 @@
   "montanablack88"
  ],
  "youtube": [
-  "Beam in Serie",
-  "Die Crew",
-  "Einsatz Amerika",
-  "Aaron Troschke",
-  "HandOfBlood",
-  "Mattin",
-  "@MontanaBlack88",
-  "@zarbex",
-  "MrGeil",
-  "Richtiger Kevin",
-  "SurvivalMattin",
-  "ZarbexLive"
+  {
+   "name": "Beam in Serie",
+   "id": "UC8kho6CFD2eKqY1XqO5RD5A"
+  },
+  {
+   "name": "Die Crew",
+   "id": "UCSfMSePxSvUG8bGAhqzLUVw"
+  },
+  {
+   "name": "Einsatz Amerika",
+   "id": "UCjcV8Sg9U9qESPTB-mj9y7A"
+  },
+  {
+   "name": "Aaron Troschke",
+   "id": "UCCprsL2xVSoReeKCCnWkd7Q"
+  },
+  {
+   "name": "HandOfBlood",
+   "id": "UC9YTp5M6yYgSd6t0SeL2GQw"
+  },
+  {
+   "name": "Mattin",
+   "id": "UC5iYuXSliCgk_mtUJa25eoQ"
+  },
+  "@MontanaBlack",
+  {
+   "name": "Zarbex",
+   "id": "UCk5IRwxIo4lYyV4PzHhWxsg"
+  },
+  {
+   "name": "MrGeil",
+   "id": "UCEMOfc4WSYvEfAXelBiJyEQ"
+  },
+  {
+   "name": "Richtiger Kevin",
+   "id": "UCo6utge9KpJI61gXe7ngUJQ"
+  },
+  {
+   "name": "SurvivalMattin",
+   "id": "UCyQAraT4FYcXgnUTLOj796Q"
+  },
+  {
+   "name": "ZarbexLive",
+   "id": "UCqUkIkT0NvKxRQP-5_CMR3Q"
+  }
  ]
 }

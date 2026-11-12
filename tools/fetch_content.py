@@ -255,6 +255,10 @@ def youtube_channels(names):
     import re
     out = []
     for name in names:
+        if isinstance(name, dict):
+            # fest eingetragener Kanal
+            out.append({"query": name.get("name", ""), "id": name.get("id", ""), "name": name.get("name", "")})
+            continue
         try:
             if name.startswith("@"):
                 url = "https://www.youtube.com/" + urllib.parse.quote(name) + "?hl=de&gl=DE"
