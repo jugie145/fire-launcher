@@ -168,7 +168,7 @@ class FlipClock(
     private var flipAt = 0L
     private var running = false
     private val t0 = SystemClock.uptimeMillis()
-    private val PAD = 16f
+    private val PAD = 48f
 
     private fun digits(t: Long): String = SimpleDateFormat(if (h24) "HHmm" else "hhmm", Locale.GERMANY).format(Date(t))
 

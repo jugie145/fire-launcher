@@ -125,6 +125,7 @@ def tmdb_sections():
                 "images": ["https://image.tmdb.org/t/p/w1280" + backdrop],
                 "poster": "https://image.tmdb.org/t/p/w500" + poster_path if poster_path else "",
                 "trailer": trailer_for("tv" if tv else "movie", r.get("id")) if len(out) < trailers else "",
+                "tmdb": ("tv/" if tv else "movie/") + str(r.get("id")),
             })
         return out
 
@@ -324,6 +325,32 @@ def hsv():
     return games[:4]
 
 
+# ---------------- Netflix-Titelnummern (Wikidata, frei nutzbar) ----------------
+# Damit oeffnet OK direkt die Seite des Titels in der Netflix-App statt nur der App.
+
+def netflix_ids(tmdb_keys):
+    """tmdb_keys: Liste wie ["movie/123", "tv/456"] -> {key: netflix_id}"""
+    out = {}
+    keys = [k for k in dict.fromkeys(tmdb_keys) if k]
+    for i in range(0, len(keys), 150):
+        part = keys[i:i + 150]
+        movies = " ".join('"%s"' % k.split("/")[1] for k in part if k.startswith("movie/"))
+        shows = " ".join('"%s"' % k.split("/")[1] for k in part if k.startswith("tv/"))
+        q = """SELECT ?kind ?tid ?nf WHERE {
+          { VALUES ?tid { %s } ?item wdt:P4947 ?tid . BIND("movie" AS ?kind) }
+          UNION
+          { VALUES ?tid { %s } ?item wdt:P4983 ?tid . BIND("tv" AS ?kind) }
+          ?item wdt:P1874 ?nf . }""" % (movies or '"0"', shows or '"0"')
+        try:
+            data = http("https://query.wikidata.org/sparql?format=json&query=" + urllib.parse.quote(q),
+                        {"User-Agent": "LiquidTV/1.0 (github.com/jugie145/fire-launcher)", "Accept": "application/sparql-results+json"})
+            for b in data.get("results", {}).get("bindings", []):
+                out[b["kind"]["value"] + "/" + b["tid"]["value"]] = b["nf"]["value"]
+        except Exception:  # noqa: BLE001
+            continue
+    return out
+
+
 # ---------------- Live-Sport bei WOW (OpenLigaDB) ----------------
 # WOW zeigt das Sky-Programm: Bundesliga freitags und samstags, die ganze 2. Bundesliga, DFB-Pokal.
 
@@ -376,7 +403,7 @@ def search_index():
     try:
         old = http(SEARCH_URL)
         ts = datetime.datetime.strptime(old.get("updated", ""), "%Y-%m-%dT%H:%M:%SZ")
-        if datetime.datetime.utcnow() - ts < datetime.timedelta(hours=20) and len(old.get("items", [])) > 100:
+        if old.get("v") == 2 and datetime.datetime.utcnow() - ts < datetime.timedelta(hours=20) and len(old.get("items", [])) > 100:
             return old, False
     except Exception:  # noqa: BLE001
         pass
@@ -398,23 +425,25 @@ def search_index():
             e = {"t": title, "o": ((r.get("original_name") if tv else r.get("original_title")) or "").strip(),
                  "y": date[:4], "k": "Serie" if tv else "Film", "p": [],
                  "img": ("https://image.tmdb.org/t/p/w342" + r["poster_path"]) if r.get("poster_path") else "",
-                 "pop": r.get("popularity") or 0}
+                 "pop": r.get("popularity") or 0, "id": key[0].replace("f", "movie/").replace("s", "tv/") + str(r.get("id"))}
             found[key] = e
         if prov not in e["p"]:
             e["p"].append(prov)
 
+    # beliebt jetzt UND meistbewertet (damit auch Klassiker wie "The Wolf of Wall Street" drin sind)
     for prov, pid in wanted:
         for kind in ("movie", "tv"):
-            for page in range(1, 11):
-                try:
-                    res = tmdb("/discover/" + kind, language="de-DE", watch_region="DE", with_watch_providers=pid,
-                               with_watch_monetization_types="flatrate", sort_by="popularity.desc", page=page)
-                except Exception:  # noqa: BLE001
-                    break
-                for r in res.get("results", []):
-                    add(r, kind == "tv", prov)
-                if page >= (res.get("total_pages") or 1):
-                    break
+            for sort in ("popularity.desc", "vote_count.desc"):
+                for page in range(1, 16):
+                    try:
+                        res = tmdb("/discover/" + kind, language="de-DE", watch_region="DE", with_watch_providers=pid,
+                                   with_watch_monetization_types="flatrate|free|ads", sort_by=sort, page=page)
+                    except Exception:  # noqa: BLE001
+                        break
+                    for r in res.get("results", []):
+                        add(r, kind == "tv", prov)
+                    if page >= (res.get("total_pages") or 1):
+                        break
     for page in (1, 2, 3):
         try:
             for r in tmdb("/movie/now_playing", language="de-DE", region="DE", page=page).get("results", []):
@@ -422,9 +451,13 @@ def search_index():
         except Exception:  # noqa: BLE001
             break
     items = sorted(found.values(), key=lambda e: -e["pop"])
+    nf = netflix_ids([e["id"] for e in items if "Netflix" in e["p"]])
     for e in items:
         e.pop("pop", None)
-    return {"updated": datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"), "items": items}, True
+        tid = e.pop("id", "")
+        if tid in nf and "Netflix" in e["p"]:
+            e["nf"] = nf[tid]
+    return {"v": 2, "updated": datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"), "items": items}, True
 
 
 def main():
@@ -437,6 +470,11 @@ def main():
     if os.environ.get("TMDB_KEY", "").strip():
         try:
             sections = tmdb_sections()
+            if "netflix" in sections:
+                ids = netflix_ids([it.get("tmdb", "") for it in sections["netflix"]["items"]])
+                for it in sections["netflix"]["items"]:
+                    if it.get("tmdb") in ids:
+                        it["link"] = "https://www.netflix.com/title/" + ids[it["tmdb"]]
             out.update(sections)
             out["status"]["tmdb"] = "ok (" + ", ".join("%s %d" % (k, len(v["items"])) for k, v in sections.items()) + ")"
         except Exception as e:  # noqa: BLE001

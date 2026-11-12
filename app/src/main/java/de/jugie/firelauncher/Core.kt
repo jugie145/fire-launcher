@@ -78,7 +78,9 @@ object Apps {
             try {
                 val i = Intent(Intent.ACTION_VIEW, android.net.Uri.parse(l))
                     .setPackage(app.pkg)
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                // Netflix auf dem Fire TV nimmt Direktspruenge nur mit dieser Kennung an
+                if (app.pkg.contains("netflix")) i.putExtra("source", "30")
                 if (i.resolveActivity(ctx.packageManager) == null) continue
                 ctx.startActivity(i)
                 return true

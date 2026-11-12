@@ -88,6 +88,12 @@ class NowCard(ctx: Context, private val k: Float, private val saver: Boolean = f
     private val controls = LinearLayout(ctx)
     private val toggle = MediaIcon(ctx, "toggle")
     private val textBox = LinearLayout(ctx)
+    /** Die drei Knoepfe sind einzeln anwaehlbar: beim Hingehen steht man auf Pause. */
+    val prevBtn = FrameLayout(ctx)
+    val toggleBtn = FrameLayout(ctx)
+    val nextBtn = FrameLayout(ctx)
+    var onAction: ((String) -> Unit)? = null
+    private var sel = false
     private var coverUrl = ""
     private val tick = object : Runnable {
         override fun run() {
@@ -151,23 +157,40 @@ class NowCard(ctx: Context, private val k: Float, private val saver: Boolean = f
 
         controls.orientation = LinearLayout.HORIZONTAL
         controls.gravity = Gravity.CENTER_VERTICAL
+        val btns = listOf(prevBtn, toggleBtn, nextBtn)
+        val acts = listOf("prev", "toggle", "next")
         for ((i, v) in listOf(MediaIcon(ctx, "prev"), toggle, MediaIcon(ctx, "next")).withIndex()) {
             val sz = if (i == 1) 48 else 40
-            val box = FrameLayout(ctx)
-            box.background = GradientDrawable().apply {
+            val box = btns[i]
+            val bg = GradientDrawable().apply {
                 shape = GradientDrawable.OVAL
                 setColor(if (i == 1) 0x2EFFFFFF else 0x1AFFFFFF)
             }
+            box.background = bg
             box.addView(v, LayoutParams(px(if (i == 1) 30 else 26), px(if (i == 1) 30 else 26), Gravity.CENTER))
+            box.id = View.generateViewId()
+            if (!saver) {
+                box.isFocusable = true
+                box.setOnFocusChangeListener { b, has ->
+                    bg.setColor(if (has) 0x59FFFFFF else if (i == 1) 0x2EFFFFFF else 0x1AFFFFFF)
+                    bg.setStroke(if (has) Math.max(1, (2 * k).toInt()) else 0, Color.WHITE)
+                    val s2 = if (has) 1.15f else 1f
+                    b.animate().scaleX(s2).scaleY(s2).setDuration(Ui.d(160)).setInterpolator(Ui.smooth).start()
+                    post { focus(hasFocus()) }
+                }
+                box.setOnClickListener { onAction?.invoke(acts[i]) }
+            }
             controls.addView(box, LinearLayout.LayoutParams(px(sz), px(sz)).apply { if (i > 0) leftMargin = px(10) })
         }
+        controls.clipChildren = false
+        prevBtn.nextFocusRightId = toggleBtn.id
+        toggleBtn.nextFocusLeftId = prevBtn.id
+        toggleBtn.nextFocusRightId = nextBtn.id
+        nextBtn.nextFocusLeftId = toggleBtn.id
         controls.alpha = if (saver) 1f else 0f
         addView(controls, LayoutParams(-2, px(104), Gravity.END or Gravity.TOP).apply { rightMargin = px(50 + 20); topMargin = px(50) })
 
-        if (!saver) {
-            isFocusable = true
-            setOnFocusChangeListener { _, has -> focus(has) }
-        }
+        descendantFocusability = FOCUS_AFTER_DESCENDANTS
     }
 
     override fun onAttachedToWindow() {
@@ -176,6 +199,8 @@ class NowCard(ctx: Context, private val k: Float, private val saver: Boolean = f
     }
 
     private fun focus(has: Boolean) {
+        if (has == sel) return
+        sel = has
         val d = Ui.d(300)
         on.animate().alpha(if (has) 1f else 0f).setDuration(d).start()
         off.animate().alpha(if (has) 0f else 1f).setDuration(d).start()

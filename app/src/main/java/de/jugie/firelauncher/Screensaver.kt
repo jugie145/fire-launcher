@@ -476,16 +476,75 @@ class ScreensaverView(ctx: Context) : FrameLayout(ctx) {
     private val wCond2 = Ui.text(ctx, "", 26f, k, 0xBFFFFFFF.toInt())
 
     private val npCard = NowCard(ctx, k, saver = true)
+    // Kopfzeile wie auf dem Startbildschirm (nur solange Spotify laeuft): Uhr | Datum, Spotify mittig, Ort | Wetter
+    private val homeHead = FrameLayout(ctx)
+    private val headClock = RollingClock(ctx, 86 * k, Ui.medium, Prefs.h24(ctx))
+    private val headIcon = WeatherIcon(ctx)
+    private val headTemp = Ui.text(ctx, "", 86f, k, Color.WHITE, Ui.medium)
+    private val headCond = Ui.text(ctx, "", 28f, k, Ui.TEXT_DIM)
+    private var topRight: View? = null
+    private var playing = false
     private val npListen: (Spotify.Track?) -> Unit = { t ->
         npCard.set(t)
         val want = t != null
-        if (want != (npCard.visibility == View.VISIBLE)) {
+        if (want != playing) {
+            playing = want
+            val d = 600L
             if (want) {
-                npCard.visibility = View.VISIBLE
-                npCard.alpha = 0f
-                npCard.animate().alpha(1f).setDuration(600).start()
-            } else npCard.visibility = View.GONE
+                for (v in listOf<View>(npCard, homeHead)) {
+                    v.visibility = View.VISIBLE
+                    v.alpha = 0f
+                    v.animate().alpha(1f).setDuration(d).start()
+                }
+                headClock.start()
+                headIcon.live = true
+            } else {
+                npCard.visibility = View.GONE
+                homeHead.visibility = View.GONE
+                headClock.stop()
+                headIcon.live = false
+            }
+            applyHead()
         }
+    }
+
+    /** Waehrend Spotify laeuft, ersetzt die Kopfzeile die Uhr des Schoners. */
+    private fun applyHead() {
+        topRight?.visibility = if (playing) View.INVISIBLE else View.VISIBLE
+        block.visibility = if (playing) View.INVISIBLE else View.VISIBLE
+    }
+
+    private fun buildHead() {
+        homeHead.clipChildren = false
+        homeHead.setPadding(px(80f), px(48f), px(80f), 0)
+        val line = LinearLayout(context)
+        line.orientation = LinearLayout.HORIZONTAL
+        line.gravity = Gravity.CENTER_VERTICAL
+        line.clipChildren = false
+        line.addView(headClock)
+        fun divider() = View(context).apply { setBackgroundColor(0x40FFFFFF) }
+        line.addView(divider(), LinearLayout.LayoutParams(Math.max(1, px(2f)), px(80f)).apply { leftMargin = px(38f); rightMargin = px(36f) })
+        val dateCol = LinearLayout(context)
+        dateCol.orientation = LinearLayout.VERTICAL
+        dateCol.addView(clock("EEEE,", 28f, Ui.TEXT_DIM, null))
+        dateCol.addView(clock("d. MMMM", 28f, Ui.TEXT_DIM, null), lp(top = 8f))
+        line.addView(dateCol)
+        line.addView(View(context), LinearLayout.LayoutParams(0, 1, 1f))
+        val placeCol = LinearLayout(context)
+        placeCol.orientation = LinearLayout.VERTICAL
+        placeCol.gravity = Gravity.END
+        placeCol.addView(Ui.text(context, "Grabow", 28f, k, Ui.TEXT_DIM))
+        headCond.maxLines = 1
+        placeCol.addView(headCond, lp(top = 8f))
+        line.addView(placeCol)
+        line.addView(divider(), LinearLayout.LayoutParams(Math.max(1, px(2f)), px(80f)).apply { leftMargin = px(38f); rightMargin = px(34f) })
+        line.addView(headIcon, LinearLayout.LayoutParams(px(76f), px(76f)))
+        headTemp.maxLines = 1
+        line.addView(headTemp, lp(left = 16f))
+        for (t in listOf(headTemp, headCond)) t.setShadowLayer(24f * k, 0f, 2f * k, shadow)
+        homeHead.addView(line, LayoutParams(match, wrap))
+        homeHead.visibility = View.GONE
+        addView(homeHead, LayoutParams(match, wrap, Gravity.TOP))
     }
 
     /** ◀ voriger, OK Pause, ▶ naechster Titel (und die Mediatasten), solange Musik laeuft. */
@@ -590,6 +649,7 @@ class ScreensaverView(ctx: Context) : FrameLayout(ctx) {
         kinoGroup.addView(shade, LayoutParams(match, match))
 
         val topRight = LinearLayout(context)
+        this.topRight = topRight
         topRight.orientation = LinearLayout.VERTICAL
         topRight.gravity = Gravity.END
         topRight.addView(smallFlip)
@@ -654,9 +714,10 @@ class ScreensaverView(ctx: Context) : FrameLayout(ctx) {
         kinoGroup.visibility = View.GONE
         addView(kinoGroup, LayoutParams(match, match))
 
-        // Spotify oben wie die HSV-Nachricht, auf einer Hoehe mit der Uhr
+        // Spotify oben mittig an Stelle der Begruessung, auf einer Hoehe mit Uhr und Wetter
+        buildHead()
         npCard.visibility = View.GONE
-        addView(npCard, LayoutParams(px(740f), px(204f), Gravity.TOP or Gravity.CENTER_HORIZONTAL).apply { topMargin = px(36f) })
+        addView(npCard, LayoutParams(px(740f), px(204f), Gravity.TOP or Gravity.CENTER_HORIZONTAL).apply { topMargin = px(-11f) })
     }
 
     fun start() {
@@ -704,6 +765,8 @@ class ScreensaverView(ctx: Context) : FrameLayout(ctx) {
         if (running) {
             NowPlaying.unlisten(npListen)
             NowPlaying.stop()
+            headClock.stop()
+            headIcon.live = false
         }
         running = false
         bigFlip.stop()
@@ -755,8 +818,7 @@ class ScreensaverView(ctx: Context) : FrameLayout(ctx) {
 
     private fun showWellen() {
         mode = WELLEN
-        (npCard.layoutParams as LayoutParams).topMargin = px(-20f)
-        npCard.requestLayout()
+        applyHead()
         handler.removeCallbacksAndMessages(null)
         kinoGroup.visibility = View.GONE
         wellen.visibility = View.VISIBLE
@@ -766,8 +828,7 @@ class ScreensaverView(ctx: Context) : FrameLayout(ctx) {
 
     private fun showKino() {
         mode = KINO
-        (npCard.layoutParams as LayoutParams).topMargin = px(36f)
-        npCard.requestLayout()
+        applyHead()
         handler.removeCallbacksAndMessages(null)
         wellen.visibility = View.GONE
         kinoGroup.visibility = View.VISIBLE
@@ -866,6 +927,9 @@ class ScreensaverView(ctx: Context) : FrameLayout(ctx) {
         wTemp2.text = "$t°"
         wCond.text = Weather.text(Weather.code)
         wCond2.text = Weather.text(Weather.code)
+        headIcon.kind = kind
+        headTemp.text = "$t°"
+        headCond.text = Weather.text(Weather.code)
         weatherRow.visibility = View.VISIBLE
         weatherRow2.visibility = View.VISIBLE
     }

@@ -227,25 +227,39 @@ class WeatherIcon(ctx: Context) : View(ctx) {
         return a + (b - a) * inOut.getInterpolation(half)
     }
 
+    private val glowPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val discPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+
     private fun sun(c: Canvas, cx: Float, cy: Float, r: Float, t: Long, anim: Boolean) {
-        // Leuchten
+        // weiches Leuchten: Verlauf von warmem Gelb nach durchsichtig, atmet langsam
         val g = if (anim) swing(t, 3200, 0f, 1f) else 0.5f
-        fill.color = SUN_C
-        fill.alpha = (255 * (0.18f + 0.24f * g)).toInt()
-        c.drawCircle(cx, cy, r * 2f * (0.88f + 0.24f * g), fill)
-        // Strahlen
+        val gr = r * (2.3f + 0.35f * g)
+        glowPaint.shader = android.graphics.RadialGradient(
+            cx, cy, gr,
+            intArrayOf(0x8CFFC94D.toInt(), 0x40FFB347, 0x14FFA040, 0x00FFA040),
+            floatArrayOf(0.35f, 0.55f, 0.78f, 1f), android.graphics.Shader.TileMode.CLAMP
+        )
+        glowPaint.alpha = (255 * (0.75f + 0.25f * g)).toInt()
+        c.drawCircle(cx, cy, gr, glowPaint)
+        // Strahlen mit runden Enden
         line.color = SUN_C
-        line.alpha = 255
-        line.strokeWidth = 1.2f
+        line.alpha = 235
+        line.strokeWidth = 1.3f
+        line.strokeCap = Paint.Cap.ROUND
         val rot = if (anim) (t % 24000L) * 360f / 24000f else 0f
         for (i in 0 until 8) {
             val a = Math.toRadians((i * 45 + rot).toDouble())
             val cs = Math.cos(a).toFloat()
             val sn = Math.sin(a).toFloat()
-            c.drawLine(cx + cs * r * 1.35f, cy + sn * r * 1.35f, cx + cs * r * 1.8f, cy + sn * r * 1.8f, line)
+            c.drawLine(cx + cs * r * 1.4f, cy + sn * r * 1.4f, cx + cs * r * 1.85f, cy + sn * r * 1.85f, line)
         }
-        fill.alpha = 255
-        c.drawCircle(cx, cy, r, fill)
+        // Sonne mit hellem Kern
+        discPaint.shader = android.graphics.RadialGradient(
+            cx - r * 0.3f, cy - r * 0.3f, r * 1.3f,
+            intArrayOf(0xFFFFF1B8.toInt(), SUN_C, 0xFFFFA93A.toInt()), floatArrayOf(0f, 0.55f, 1f),
+            android.graphics.Shader.TileMode.CLAMP
+        )
+        c.drawCircle(cx, cy, r, discPaint)
     }
 
     private fun clouds(c: Canvas, t: Long, anim: Boolean, dy: Float, back: Boolean) {

@@ -442,7 +442,12 @@ object Content {
                 val login = link.substringAfterLast("/", "")
                 if (login.isBlank()) link else "twitch://stream/$login|twitch://open?stream=$login|$link"
             }
-            "netflix" -> "https://www.netflix.com/search?q=$q|nflx://www.netflix.com/search?q=$q"
+            "netflix" -> {
+                // mit Titelnummer direkt auf die Seite des Titels, sonst Suche
+                val id = Regex("netflix\\.com/title/(\\d+)").find(link)?.groupValues?.get(1)
+                (if (id != null) "https://www.netflix.com/title/$id|nflx://www.netflix.com/title/$id|" else "") +
+                    "https://www.netflix.com/search?q=$q|nflx://www.netflix.com/search?q=$q"
+            }
             "disney" -> "https://www.disneyplus.com/search?q=$q|disneyplus://search?q=$q"
             "prime" -> "https://app.primevideo.com/search?phrase=$q|https://www.amazon.de/gp/video/search?phrase=$q"
             else -> link

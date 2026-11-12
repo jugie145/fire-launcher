@@ -29,7 +29,7 @@ import java.util.concurrent.Executors
 
 /** Suchindex (Filme und Serien bei Netflix, Prime Video, WOW, Disney+, im Kino), von GitHub einmal am Tag erzeugt. */
 object SearchIndex {
-    class Entry(val title: String, val orig: String, val year: String, val kind: String, val providers: List<String>, val img: String) {
+    class Entry(val title: String, val orig: String, val year: String, val kind: String, val providers: List<String>, val img: String, val nf: String = "") {
         val key = norm(title) + " " + norm(orig)
     }
 
@@ -59,7 +59,7 @@ object SearchIndex {
                     val o = arr.getJSONObject(i)
                     val p = o.optJSONArray("p")
                     out.add(Entry(o.optString("t"), o.optString("o"), o.optString("y"), o.optString("k"),
-                        (0 until (p?.length() ?: 0)).map { p!!.getString(it) }, o.optString("img")))
+                        (0 until (p?.length() ?: 0)).map { p!!.getString(it) }, o.optString("img"), o.optString("nf")))
                 }
                 if (out.isNotEmpty()) {
                     items = out
@@ -118,8 +118,10 @@ class SearchOverlay(ctx: Context, private val k: Float, private val apps: () -> 
             gradientType = GradientDrawable.RADIAL_GRADIENT
             gradientRadius = 1300f * k
             setGradientCenter(0.5f, 0.3f)
-            colors = intArrayOf(0x8C080A12.toInt(), 0xE6080A12.toInt())
+            // undurchsichtig: vom Startbildschirm ist nichts mehr zu sehen
+            colors = if (Theme.gta) intArrayOf(0xFF2A1240.toInt(), 0xFF12061F.toInt()) else intArrayOf(0xFF161C2C.toInt(), 0xFF080A12.toInt())
         }
+        clipChildren = false
         addView(panel, LayoutParams(px(1760), px(952)).apply { leftMargin = px(80); topMargin = px(64) })
 
         barBg.cornerRadius = 48f * k
@@ -160,6 +162,9 @@ class SearchOverlay(ctx: Context, private val k: Float, private val apps: () -> 
         for ((i, r) in rows.withIndex()) {
             r.orientation = LinearLayout.HORIZONTAL
             r.clipChildren = false
+            r.clipToPadding = false
+            // etwas Abstand zum Rand, damit vergroesserte Poster ganz zu sehen sind
+            r.setPadding(px(37), 0, px(37), 0)
             grid.addView(r, LinearLayout.LayoutParams(-1, px(366)).apply { topMargin = px(if (i == 0) 22 else 30) })
         }
         none.orientation = LinearLayout.VERTICAL
@@ -223,7 +228,7 @@ class SearchOverlay(ctx: Context, private val k: Float, private val apps: () -> 
         for (r in rows) r.removeAllViews()
         hits.forEachIndexed { i, e ->
             val r = rows[i / 6]
-            r.addView(card(e, i), LinearLayout.LayoutParams(px(266), -1).apply { if (i % 6 > 0) leftMargin = px(32) })
+            r.addView(card(e, i), LinearLayout.LayoutParams(px(256), -1).apply { if (i % 6 > 0) leftMargin = px(30) })
         }
         none.removeAllViews()
         none.visibility = if (q.isNotBlank() && hits.isEmpty()) View.VISIBLE else View.GONE
@@ -270,7 +275,17 @@ class SearchOverlay(ctx: Context, private val k: Float, private val apps: () -> 
             chips.addView(t, LinearLayout.LayoutParams(-2, -2).apply { rightMargin = px(6) })
         }
         poster.addView(chips, LayoutParams(-2, -2, Gravity.BOTTOM or Gravity.START).apply { leftMargin = px(14); bottomMargin = px(14) })
-        box.addView(poster, LinearLayout.LayoutParams(-1, px(300)))
+        // Rahmen wie bei den App-Kacheln: Lichtpunkt laeuft um das ausgewaehlte Poster
+        val pw = FrameLayout(context)
+        pw.clipChildren = false
+        pw.addView(poster, LayoutParams(-1, -1))
+        val ring = CometRing(context, k, if (Theme.gta) Theme.PINK else c0, 22f)
+        ring.visibility = View.INVISIBLE
+        pw.addView(ring, LayoutParams(px(256 + 2 * CometRing.PAD), px(300 + 2 * CometRing.PAD)).apply {
+            leftMargin = -px(CometRing.PAD)
+            topMargin = -px(CometRing.PAD)
+        })
+        box.addView(pw, LinearLayout.LayoutParams(-1, px(300)))
         val t = Ui.text(context, e.title, 22f, k, Color.WHITE, Ui.medium)
         t.maxLines = 1
         t.ellipsize = TextUtils.TruncateAt.END
@@ -281,8 +296,14 @@ class SearchOverlay(ctx: Context, private val k: Float, private val apps: () -> 
         box.setOnFocusChangeListener { v, has ->
             val s = if (has) 1.06f else 1f
             v.animate().scaleX(s).scaleY(s).translationY(if (has) -6f * k else 0f).setDuration(Ui.d(200)).setInterpolator(Ui.smooth).start()
-            (poster.background as GradientDrawable).setStroke(Math.max(1, ((if (has) 3f else 1.5f) * k).toInt()),
-                if (has) (if (Theme.gta) Theme.PINK else Color.WHITE) else 0x47FFFFFF)
+            (poster.background as GradientDrawable).setStroke(Math.max(1, (1.5f * k).toInt()), if (has) 0x00FFFFFF else 0x47FFFFFF)
+            if (has) {
+                ring.visibility = View.VISIBLE
+                ring.start()
+            } else {
+                ring.stop()
+                ring.visibility = View.INVISIBLE
+            }
         }
         box.setOnClickListener { open(e) }
         if (Ui.anims) {
@@ -295,13 +316,13 @@ class SearchOverlay(ctx: Context, private val k: Float, private val apps: () -> 
 
     /** In der ersten installierten App suchen, in der der Titel laeuft. */
     private fun open(e: SearchIndex.Entry) {
-        for (p in e.providers) if (openIn(p, e.title)) return
+        for (p in e.providers) if (openIn(p, e.title, if (p == "Netflix" && e.nf.isNotBlank()) "https://www.netflix.com/title/" + e.nf else "")) return
     }
 
-    private fun openIn(provider: String, title: String): Boolean {
+    private fun openIn(provider: String, title: String, link: String = ""): Boolean {
         val kind = KIND[provider] ?: return false
         val app = apps().firstOrNull { Content.kind(it) == kind } ?: return false
-        if (!Apps.openLink(context, app, Content.links(kind, title, ""))) Apps.launch(context, app)
+        if (!Apps.openLink(context, app, Content.links(kind, title, link))) Apps.launch(context, app)
         return true
     }
 

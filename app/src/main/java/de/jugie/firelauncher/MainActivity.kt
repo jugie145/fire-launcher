@@ -252,7 +252,7 @@ class MainActivity : Activity() {
         nowCard = NowCard(this, k)
         nowCard.id = View.generateViewId()
         nowCard.visibility = View.GONE
-        nowCard.setOnClickListener { NowPlaying.control(this, "toggle") }
+        nowCard.onAction = { a -> NowPlaying.control(this, a) }
         bar.addView(nowCard, FrameLayout.LayoutParams(px(740), px(204)).apply {
             leftMargin = px(560 - 50)
             topMargin = px(-20 - 50)
@@ -268,7 +268,7 @@ class MainActivity : Activity() {
             topMargin = px(30 - 50)
         })
 
-        search = SearchOverlay(this, k) { favApps }
+        search = SearchOverlay(this, k) { Apps.loadAll(this) }
         search.onClose = { fSearch.requestFocus() }
         root.addView(search, FrameLayout.LayoutParams(match, match))
 
@@ -298,7 +298,7 @@ class MainActivity : Activity() {
         }
         t.maxLines = 1
         line.addView(t, lp(wrap, wrap, left = 16))
-        box.addView(line, FrameLayout.LayoutParams(wrap, wrap, Gravity.START or Gravity.CENTER_VERTICAL).apply { leftMargin = px(22) })
+        box.addView(line, FrameLayout.LayoutParams(wrap, wrap, Gravity.CENTER))
         box.isFocusable = true
         box.setOnFocusChangeListener { v, has ->
             glass.animate().alpha(if (has) 1f else 0f).setDuration(Ui.d(180)).start()
@@ -327,15 +327,16 @@ class MainActivity : Activity() {
         }
         fSettings.nextFocusRightId = fSleep.id
         fSleep.nextFocusLeftId = fSettings.id
-        fSleep.nextFocusRightId = if (with) nowCard.id else fSearch.id
-        fSearch.nextFocusLeftId = if (with) nowCard.id else fSleep.id
+        // zur Karte: man landet auf Pause, links/rechts davon voriger/naechster Titel
+        fSleep.nextFocusRightId = if (with) nowCard.toggleBtn.id else fSearch.id
+        fSearch.nextFocusLeftId = if (with) nowCard.toggleBtn.id else fSleep.id
         fSearch.nextFocusRightId = fApps.id
         fApps.nextFocusLeftId = fSearch.id
-        nowCard.nextFocusLeftId = fSleep.id
-        nowCard.nextFocusRightId = fSearch.id
+        nowCard.prevBtn.nextFocusLeftId = fSleep.id
+        nowCard.nextBtn.nextFocusRightId = fSearch.id
     }
 
-    private fun nowCardFocused() = ::nowCard.isInitialized && nowCard.isFocused
+    private fun nowCardFocused() = ::nowCard.isInitialized && nowCard.hasFocus()
 
     /** Karte "Laeuft gerade": nur wenn Musik laeuft und nicht schon gross oben (Spotify ausgewaehlt). */
     private fun updateNow(t: Spotify.Track?) {
@@ -354,7 +355,7 @@ class MainActivity : Activity() {
                     .setInterpolator(android.view.animation.PathInterpolator(0.2f, 1.25f, 0.35f, 1f)).start()
             }
         } else {
-            if (nowCard.isFocused) fSearch.requestFocus()
+            if (nowCard.hasFocus()) fSearch.requestFocus()
             if (Ui.anims) {
                 nowCard.animate().alpha(0f).translationY(200f * k).setStartDelay(0).setDuration(620)
                     .setInterpolator(android.view.animation.PathInterpolator(0.45f, 0f, 0.7f, 0.2f))
