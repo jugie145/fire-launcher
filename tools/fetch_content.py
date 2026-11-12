@@ -14,6 +14,7 @@ import os
 import sys
 import urllib.error
 import urllib.parse
+import time
 import urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -335,8 +336,8 @@ def netflix_ids(tmdb_keys):
     """tmdb_keys: Liste wie ["movie/123", "tv/456"] -> {key: netflix_id}"""
     out = {}
     keys = [k for k in dict.fromkeys(tmdb_keys) if k]
-    for i in range(0, len(keys), 150):
-        part = keys[i:i + 150]
+    for i in range(0, len(keys), 80):
+        part = keys[i:i + 80]
         movies = " ".join('"%s"' % k.split("/")[1] for k in part if k.startswith("movie/"))
         shows = " ".join('"%s"' % k.split("/")[1] for k in part if k.startswith("tv/"))
         q = """SELECT ?kind ?tid ?nf WHERE {
@@ -345,8 +346,13 @@ def netflix_ids(tmdb_keys):
           { VALUES ?tid { %s } ?item wdt:P4983 ?tid . BIND("tv" AS ?kind) }
           ?item wdt:P1874 ?nf . }""" % (movies or '"0"', shows or '"0"')
         try:
-            data = http("https://query.wikidata.org/sparql?format=json&query=" + urllib.parse.quote(q),
-                        {"User-Agent": "LiquidTV/1.0 (github.com/jugie145/fire-launcher)", "Accept": "application/sparql-results+json"})
+            if i:
+                time.sleep(1.5)
+            data = http("https://query.wikidata.org/sparql",
+                        {"User-Agent": "LiquidTV/1.0 (github.com/jugie145/fire-launcher)",
+                         "Accept": "application/sparql-results+json",
+                         "Content-Type": "application/x-www-form-urlencoded"},
+                        urllib.parse.urlencode({"query": q, "format": "json"}).encode())
             for b in data.get("results", {}).get("bindings", []):
                 out[b["kind"]["value"] + "/" + b["tid"]["value"]] = b["nf"]["value"]
         except Exception as e:  # noqa: BLE001
@@ -407,7 +413,7 @@ def search_index():
     try:
         old = http(SEARCH_URL)
         ts = datetime.datetime.strptime(old.get("updated", ""), "%Y-%m-%dT%H:%M:%SZ")
-        if old.get("v") == 3 and datetime.datetime.utcnow() - ts < datetime.timedelta(hours=20) and len(old.get("items", [])) > 100:
+        if old.get("v") == 4 and datetime.datetime.utcnow() - ts < datetime.timedelta(hours=20) and len(old.get("items", [])) > 100:
             return old, False
     except Exception:  # noqa: BLE001
         pass
@@ -461,7 +467,7 @@ def search_index():
         tid = e.pop("id", "")
         if tid in nf and "Netflix" in e["p"]:
             e["nf"] = nf[tid]
-    return {"v": 3, "updated": datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"), "items": items}, True
+    return {"v": 4, "updated": datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"), "items": items}, True
 
 
 def main():
@@ -526,7 +532,8 @@ def main():
             idx, fresh = search_index()
             with open(os.path.join(os.path.dirname(os.path.abspath(target)), "search.json"), "w", encoding="utf-8") as f:
                 json.dump(idx, f, ensure_ascii=False, separators=(",", ":"))
-            out["status"]["suche"] = "ok (%d Titel%s)" % (len(idx["items"]), ", neu" if fresh else "")
+            out["status"]["suche"] = "ok (%d Titel, %d mit Netflix-Nummer%s) %s" % (
+                len(idx["items"]), sum(1 for e in idx["items"] if e.get("nf")), ", neu" if fresh else "", NF_INFO["err"])
         except Exception as e:  # noqa: BLE001
             out["status"]["suche"] = problem(e)
 
