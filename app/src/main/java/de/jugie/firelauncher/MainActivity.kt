@@ -550,7 +550,12 @@ class MainActivity : Activity() {
             val cy = loc[1] + v.height * v.scaleY / 2f
             spotX = cx
             spotY = cy
-            wave.setSpot(cx, cy, accent, spotSet, if (Content.kind(app) in setOf("prime", "wow", "disney")) 1.7f else 1f)
+            val boost = when (Content.kind(app)) {
+                "prime" -> 1.7f
+                "wow", "disney" -> 2.4f
+                else -> 1f
+            }
+            wave.setSpot(cx, cy, accent, spotSet, boost)
             spotSet = true
         }
         // Spiegelungen neigen sich zur ausgewaehlten Kachel

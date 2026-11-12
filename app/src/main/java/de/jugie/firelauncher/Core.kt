@@ -293,7 +293,7 @@ object Ui {
             l.contains("twitch") || p.contains("twitch") -> 0xFF9246FF.toInt()
             l.contains("netflix") || p.contains("netflix") -> 0xFFE50000.toInt()
             l.startsWith("prime video") || p.contains("firebat") -> 0xFF2896D3.toInt()
-            l.contains("disney") || p.contains("disney") -> 0xFF31BADD.toInt()
+            l.contains("disney") || p.contains("disney") -> 0xFF284ED7.toInt()
             l == "wow" || l.startsWith("wow ") -> 0xFF02AAB2.toInt()
             else -> iconColor(app.icon ?: app.banner)
         }
