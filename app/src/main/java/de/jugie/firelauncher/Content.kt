@@ -165,9 +165,9 @@ object Content {
     fun loadSaver(cb: (List<SaverItem>) -> Unit) {
         pool.execute {
             val lists = ArrayList<List<SaverItem>>()
-            for (k in listOf("netflix", "prime", "wow", "disney")) {
+            for (k in listOf("netflix", "prime", "wow", "disney", "kino")) {
                 val d = try { section(k) } catch (e: Throwable) { null } ?: continue
-                lists.add(d.items.filter { it.images.isNotEmpty() }.map { SaverItem(k, it) })
+                lists.add(d.items.filter { it.images.isNotEmpty() }.shuffled().map { SaverItem(k, it) })
             }
             val out = ArrayList<SaverItem>()
             val seen = HashSet<String>()
@@ -198,7 +198,7 @@ object Content {
         // Twitch aendert sich schnell, deshalb dort kuerzer zwischenspeichern
         val ttl = if (k == "twitch") 4 * 60 * 1000L else 20 * 60 * 1000L
         if (hit != null && System.currentTimeMillis() - hit.first < ttl) {
-            cb(hit.second)
+            cb(mix(hit.second))
             return
         }
         pool.execute {
@@ -213,11 +213,32 @@ object Content {
             }
             if (d != null && d.items.isNotEmpty()) {
                 synchronized(cache) { cache[k] = Pair(System.currentTimeMillis(), d) }
-                main.post { cb(d) }
+                main.post { cb(mix(d)) }
             } else {
-                main.post { cb(hit?.second) }
+                main.post { cb(hit?.second?.let { mix(it) }) }
             }
         }
+    }
+
+    /**
+     * Jedes Mal eine neue Auswahl: Eintraege nach Rubrik gruppieren, jede Rubrik mischen und
+     * reihum in zufaelliger Rubrik-Reihenfolge ziehen. So wechseln Rubriken und Titel staendig.
+     */
+    private fun mix(d: HeroData, n: Int = 10): HeroData {
+        if (d.items.size <= 1) return d
+        val groups = d.items.groupBy { it.label }.values.map { it.shuffled().toMutableList() }.shuffled()
+        val out = ArrayList<HeroItem>()
+        var added = true
+        while (out.size < n && added) {
+            added = false
+            for (g in groups) {
+                if (g.isNotEmpty() && out.size < n) {
+                    out.add(g.removeAt(0))
+                    added = true
+                }
+            }
+        }
+        return HeroData(d.label, d.source, out)
     }
 
     private fun get(u: String, bearer: String? = null): String? {
@@ -241,7 +262,7 @@ object Content {
 
     // ---------- YouTube: neueste Videos der Kanaele ueber deren oeffentliche Feeds ----------
 
-    private class Video(val id: String, val title: String, val channel: String, val time: Long)
+    private class Video(val id: String, val title: String, val channel: String, val time: Long, val views: Long)
 
     private fun youtube(): HeroData? {
         val fmt = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.US)
@@ -257,9 +278,10 @@ object Content {
                 var vid = ""
                 var title = ""
                 var pub = ""
+                var views = 0L
                 var n = 0
                 var ev = p.eventType
-                while (ev != XmlPullParser.END_DOCUMENT && n < 3) {
+                while (ev != XmlPullParser.END_DOCUMENT && n < 15) {
                     when (ev) {
                         XmlPullParser.START_TAG -> {
                             tag = p.name ?: ""
@@ -268,6 +290,10 @@ object Content {
                                 vid = ""
                                 title = ""
                                 pub = ""
+                                views = 0L
+                            }
+                            if (tag == "media:statistics") {
+                                views = p.getAttributeValue(null, "views")?.toLongOrNull() ?: 0L
                             }
                         }
                         XmlPullParser.TEXT -> if (inEntry) {
@@ -283,7 +309,7 @@ object Content {
                                 val t = try { fmt.parse(pub.trim())?.time ?: 0L } catch (e: Exception) { 0L }
                                 val ttl = title.trim()
                                 if (vid.isNotBlank() && ttl.isNotBlank() && !ttl.lowercase().contains("#shorts")) {
-                                    all.add(Video(vid.trim(), ttl, name, t))
+                                    all.add(Video(vid.trim(), ttl, name, t, views))
                                     n++
                                 }
                             }
@@ -296,26 +322,36 @@ object Content {
             }
         }
         if (all.isEmpty()) return null
-        val own = all.sortedByDescending { it.time }.take(8).map {
-            HeroItem(
-                it.title, it.channel + "  ·  " + ago(it.time), "",
-                listOf(
-                    "https://i.ytimg.com/vi/" + it.id + "/maxresdefault.jpg",
-                    "https://i.ytimg.com/vi/" + it.id + "/sddefault.jpg",
-                    "https://i.ytimg.com/vi/" + it.id + "/hqdefault.jpg"
-                ),
-                false, "https://www.youtube.com/watch?v=" + it.id
-            )
+        fun item(v: Video, label: String, meta: String) = HeroItem(
+            v.title, meta, "",
+            listOf(
+                "https://i.ytimg.com/vi/" + v.id + "/maxresdefault.jpg",
+                "https://i.ytimg.com/vi/" + v.id + "/sddefault.jpg",
+                "https://i.ytimg.com/vi/" + v.id + "/hqdefault.jpg"
+            ),
+            false, "https://www.youtube.com/watch?v=" + v.id, label
+        )
+        fun views(n: Long): String = when {
+            n >= 1_000_000 -> String.format(Locale.GERMANY, "%.1f Mio. Aufrufe", n / 1_000_000.0)
+            n >= 1000 -> (n / 1000).toString() + " Tsd. Aufrufe"
+            else -> "$n Aufrufe"
         }
-        // zwischen die eigenen Kanaele alle zwei Videos eines aus den Trends mischen
-        val trends = (section("youtube_trends")?.items ?: emptyList()).filter { t -> own.none { it.link == t.link } }
+        val byTime = all.sortedByDescending { it.time }
+        // Neu: je Kanal das neueste, dann die naechstneuen
+        val fresh = byTime.take(10)
+        val freshIds = fresh.map { it.id }.toSet()
+        // Beliebt: meistgesehene Videos der letzten Wochen, die nicht schon unter "Neu" stehen
+        val popular = all.filter { it.id !in freshIds }.sortedByDescending { it.views }.take(8)
+        val popIds = popular.map { it.id }.toSet()
+        // Aelter: zufaellige Videos, die man vielleicht verpasst hat
+        val older = all.filter { it.id !in freshIds && it.id !in popIds }.shuffled().take(8)
         val items = ArrayList<HeroItem>()
-        var ti = 0
-        own.forEachIndexed { i, v ->
-            items.add(v)
-            if (i % 2 == 1 && ti < trends.size && ti < 4) items.add(trends[ti++])
-        }
-        return HeroData("Neu von deinen Kanälen", "Quelle: YouTube", items)
+        fresh.forEach { items.add(item(it, "Neu von deinen Kanälen", it.channel + "  ·  " + ago(it.time))) }
+        popular.forEach { items.add(item(it, "Beliebt bei deinen Kanälen", it.channel + "  ·  " + views(it.views))) }
+        older.forEach { items.add(item(it, "Schon gesehen?", it.channel + "  ·  " + ago(it.time))) }
+        val trends = (section("youtube_trends")?.items ?: emptyList()).filter { t -> items.none { it.link == t.link } }
+        items.addAll(trends.take(8))
+        return HeroData("YouTube", "Quelle: YouTube", items)
     }
 
     private fun ago(t: Long): String {
@@ -375,21 +411,24 @@ object Content {
     // ---------- Musik: oeffentliche Charts fuer Deutschland ----------
 
     private fun charts(): HeroData? {
-        val txt = get("https://rss.applemarketingtools.com/api/v2/de/music/most-played/10/songs.json") ?: return null
-        val arr = JSONObject(txt).optJSONObject("feed")?.optJSONArray("results") ?: return null
         val items = ArrayList<HeroItem>()
-        for (i in 0 until Math.min(6, arr.length())) {
-            val r = arr.getJSONObject(i)
-            val art = r.optString("artworkUrl100", "")
-            val imgs = if (art.isBlank()) emptyList() else listOf(art.replace("100x100bb", "600x600bb"), art)
-            items.add(
-                HeroItem(
-                    r.optString("name"), r.optString("artistName"), "Platz " + (i + 1) + " in Deutschland", imgs, true,
-                    "spotify:search:" + android.net.Uri.encode(r.optString("name") + " " + r.optString("artistName"))
+        for ((kind, label) in listOf("songs" to "Top-Songs Deutschland", "albums" to "Top-Alben Deutschland")) {
+            val txt = get("https://rss.applemarketingtools.com/api/v2/de/music/most-played/25/$kind.json") ?: continue
+            val arr = try { JSONObject(txt).optJSONObject("feed")?.optJSONArray("results") } catch (e: Exception) { null } ?: continue
+            for (i in 0 until arr.length()) {
+                val r = arr.getJSONObject(i)
+                val art = r.optString("artworkUrl100", "")
+                val imgs = if (art.isBlank()) emptyList() else listOf(art.replace("100x100bb", "600x600bb"), art)
+                items.add(
+                    HeroItem(
+                        r.optString("name"), r.optString("artistName"), "Platz " + (i + 1) + " in Deutschland", imgs, true,
+                        "spotify:search:" + android.net.Uri.encode(r.optString("name") + " " + r.optString("artistName")),
+                        label
+                    )
                 )
-            )
+            }
         }
         if (items.isEmpty()) return null
-        return HeroData("Charts Deutschland", "Quelle: Apple Music Charts", items)
+        return HeroData("Charts", "Quelle: Apple Music Charts", items)
     }
 }

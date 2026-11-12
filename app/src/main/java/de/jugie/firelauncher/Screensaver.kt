@@ -471,6 +471,8 @@ class ScreensaverView(ctx: Context) : FrameLayout(ctx) {
     private val meta = Ui.text(ctx, "", 28f, k, 0xC7FFFFFF.toInt())
     private val desc = Ui.text(ctx, "", 26f, k, 0x9EFFFFFF.toInt())
     private val progFill = View(ctx)
+    private val saverLabel = Ui.text(ctx, "NEU UND BELIEBT", 22f, k, 0xCCFFFFFF.toInt(), Ui.medium)
+    private val saverDiv = View(ctx)
 
     private var items: List<Content.SaverItem> = emptyList()
     private var step = -1
@@ -565,15 +567,14 @@ class ScreensaverView(ctx: Context) : FrameLayout(ctx) {
         logo.adjustViewBounds = true
         logo.scaleType = ImageView.ScaleType.FIT_CENTER
         head.addView(logo, LinearLayout.LayoutParams(wrap, px(44f)))
-        val div = View(context)
+        val div = saverDiv
         div.setBackgroundColor(0x4DFFFFFF)
         head.addView(div, LinearLayout.LayoutParams(Math.max(1, px(2f)), px(30f)).apply {
             leftMargin = px(20f)
             rightMargin = px(20f)
         })
-        val label = Ui.text(context, "NEU UND BELIEBT", 22f, k, 0xCCFFFFFF.toInt(), Ui.medium)
-        label.letterSpacing = 3f / 22f
-        head.addView(label)
+        saverLabel.letterSpacing = 3f / 22f
+        head.addView(saverLabel)
         info.addView(head)
 
         title.maxLines = 2
@@ -750,10 +751,18 @@ class ScreensaverView(ctx: Context) : FrameLayout(ctx) {
         kino.now = slideAt
         kino.push(b, slideAt, if (step % 2 == 0) 0.3f else 0.7f)
         val s = items[i]
-        logo.setImageResource(logoFor(s.kind))
-        val llp = logo.layoutParams
-        llp.height = px(if (s.kind == "wow") 30f else 44f)
-        logo.layoutParams = llp
+        val kino = s.kind == "kino"
+        logo.visibility = if (kino) View.GONE else View.VISIBLE
+        saverDiv.visibility = logo.visibility
+        if (!kino) {
+            logo.setImageResource(logoFor(s.kind))
+            val llp = logo.layoutParams
+            llp.height = px(if (s.kind == "wow") 30f else 44f)
+            logo.layoutParams = llp
+        }
+        // Rubrik ohne den Anbieternamen (der steht schon als Logo davor)
+        val rub = s.item.label.replace(Regex(" bei .*$"), "").trim()
+        saverLabel.text = (if (rub.isBlank()) "Neu und beliebt" else rub).uppercase()
         title.text = s.item.title
         meta.text = s.item.meta.replace("  ·  ", " · ")
         desc.text = s.item.desc
@@ -777,6 +786,7 @@ class ScreensaverView(ctx: Context) : FrameLayout(ctx) {
     }
 
     private fun accentFor(kind: String): Int = when (kind) {
+        "kino" -> 0xFFE8B450.toInt()
         "netflix" -> 0xFFE50000.toInt()
         "prime" -> 0xFF2896D3.toInt()
         "wow" -> 0xFF02AAB2.toInt()

@@ -44,6 +44,27 @@ def tmdb(path, **params):
     return http("https://api.themoviedb.org/3" + path + "?" + urllib.parse.urlencode(params), headers)
 
 
+def trailer_for(kind, tid):
+    """Offizieller YouTube-Trailer (deutsch bevorzugt), sonst leer."""
+    try:
+        videos = tmdb("/%s/%s/videos" % (kind, tid), language="de-DE").get("results", [])
+        if not videos:
+            videos = tmdb("/%s/%s/videos" % (kind, tid), language="en-US").get("results", [])
+        cands = [v for v in videos if v.get("site") == "YouTube" and v.get("type") == "Trailer" and v.get("key")]
+        cands.sort(key=lambda v: (not v.get("official", False), v.get("iso_639_1") not in ("de", "en")))
+        return "https://www.youtube.com/watch?v=" + cands[0]["key"] if cands else ""
+    except Exception:  # noqa: BLE001
+        return ""
+
+
+MONTHS = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August",
+          "September", "Oktober", "November", "Dezember"]
+
+# Genre des Tages (TMDB-Film-Genres), wechselt taeglich
+DAY_GENRES = [(28, "Action"), (35, "Komödie"), (53, "Thriller"), (878, "Science Fiction"),
+              (27, "Horror"), (16, "Animation"), (80, "Krimi"), (12, "Abenteuer"), (10749, "Liebesfilm")]
+
+
 def tmdb_sections():
     genres = {}
     for kind in ("tv", "movie"):
@@ -63,19 +84,18 @@ def tmdb_sections():
     year = (today - datetime.timedelta(days=365)).isoformat()
     # Serien mit neuen Folgen, aber keine Dauerbrenner, die seit Jahrzehnten laufen
     young = (today - datetime.timedelta(days=5 * 365)).isoformat()
-    # Titel, die schon bei einem anderen Anbieter stehen, werden uebersprungen
-    used = set()
+    gid, gname = DAY_GENRES[today.toordinal() % len(DAY_GENRES)]
 
-    def items(results, tv):
+    def items(results, tv, label, limit, used, trailers=0):
         out = []
         for r in results:
-            if len(out) >= 4:
+            if len(out) >= limit:
                 break
             backdrop = r.get("backdrop_path")
-            title = (r.get("name") if tv else r.get("title")) or ""
-            if not backdrop or not title.strip() or title.strip().lower() in used:
+            title = ((r.get("name") if tv else r.get("title")) or "").strip()
+            if not backdrop or not title or title.lower() in used:
                 continue
-            used.add(title.strip().lower())
+            used.add(title.lower())
             date = (r.get("first_air_date") if tv else r.get("release_date")) or ""
             parts = []
             if len(date) >= 4:
@@ -88,49 +108,78 @@ def tmdb_sections():
             if vote > 0.1:
                 parts.append("★ " + ("%.1f" % vote).replace(".", ","))
             poster_path = r.get("poster_path") or ""
-            poster = "https://image.tmdb.org/t/p/w500" + poster_path if poster_path else ""
-            trailer = ""
-            # Fuer die ersten drei Titel je Anbieter den offiziellen YouTube-Trailer laden.
-            if len(out) < 3:
-                try:
-                    kind = "tv" if tv else "movie"
-                    videos = tmdb("/%s/%s/videos" % (kind, r.get("id")), language="de-DE").get("results", [])
-                    if not videos:
-                        videos = tmdb("/%s/%s/videos" % (kind, r.get("id")), language="en-US").get("results", [])
-                    candidates = [v for v in videos if v.get("site") == "YouTube" and v.get("type") == "Trailer" and v.get("key")]
-                    candidates.sort(key=lambda v: (not v.get("official", False), v.get("iso_639_1") not in ("de", "en")))
-                    if candidates:
-                        trailer = "https://www.youtube.com/watch?v=" + candidates[0]["key"]
-                except Exception:
-                    trailer = ""
             out.append({
-                "title": title.strip(),
+                "title": title,
                 "meta": "  ·  ".join(parts),
                 "desc": (r.get("overview") or "").strip(),
+                "label": label,
                 "images": ["https://image.tmdb.org/t/p/w1280" + backdrop],
-                "poster": poster,
-                "trailer": trailer,
+                "poster": "https://image.tmdb.org/t/p/w500" + poster_path if poster_path else "",
+                "trailer": trailer_for("tv" if tv else "movie", r.get("id")) if len(out) < trailers else "",
             })
         return out
+
+    def discover(kind, **extra):
+        try:
+            return tmdb("/discover/" + kind, **extra).get("results", [])
+        except Exception:  # noqa: BLE001
+            return []
 
     sections = {}
     for key, name, pid in wanted:
         common = dict(language="de-DE", watch_region="DE", with_watch_providers=pid,
-                      with_watch_monetization_types="flatrate", sort_by="popularity.desc")
-        tv = items(tmdb("/discover/tv", **dict(common, **{"air_date.gte": recent, "first_air_date.gte": young})).get("results", []), True)
-        mv = items(tmdb("/discover/movie", **dict(common, **{"primary_release_date.gte": year})).get("results", []), False)
+                      with_watch_monetization_types="flatrate")
+        used = set()
+        groups = [
+            items(discover("tv", sort_by="popularity.desc", **dict(common, **{"air_date.gte": recent, "first_air_date.gte": young})),
+                  True, "Neue Folgen bei " + name, 6, used, trailers=3),
+            items(discover("movie", sort_by="popularity.desc", **dict(common, **{"primary_release_date.gte": year})),
+                  False, "Neue Filme bei " + name, 6, used, trailers=3),
+            items(discover("movie", sort_by="popularity.desc", **common), False, "Gerade angesagt", 5, used),
+            items(discover("tv", sort_by="popularity.desc", **common), True, "Beliebte Serien", 5, used),
+            items(discover("movie", sort_by="vote_average.desc", **dict(common, **{"vote_count.gte": 1500})),
+                  False, "Bestbewertete Filme", 5, used),
+            items(discover("tv", sort_by="vote_average.desc", **dict(common, **{"vote_count.gte": 500})),
+                  True, "Bestbewertete Serien", 4, used),
+            items(discover("movie", sort_by="popularity.desc", with_genres=gid, **common),
+                  False, "Heute empfohlen: " + gname, 5, used),
+        ]
+        # reihum aus allen Gruppen, damit es abwechslungsreich bleibt
         mixed = []
-        for i in range(max(len(tv), len(mv))):
-            if i < len(tv):
-                mixed.append(tv[i])
-            if i < len(mv):
-                mixed.append(mv[i])
+        for i in range(max(len(g) for g in groups)):
+            for g in groups:
+                if i < len(g):
+                    mixed.append(g[i])
         if mixed:
             sections[key] = {
-                "label": "Neu und beliebt bei " + name,
+                "label": name,
                 "source": "Daten: TMDB · JustWatch",
-                "items": mixed[:6],
+                "items": mixed,
             }
+
+    # Kino: was gerade laeuft und was demnaechst startet
+    kino = []
+    used = set()
+    try:
+        now_playing = tmdb("/movie/now_playing", language="de-DE", region="DE").get("results", [])
+        kino += items(now_playing, False, "Jetzt im Kino", 10, used, trailers=4)
+    except Exception:  # noqa: BLE001
+        pass
+    try:
+        upcoming = [r for r in tmdb("/movie/upcoming", language="de-DE", region="DE").get("results", [])
+                    if (r.get("release_date") or "") > today.isoformat()]
+        soon = items(upcoming, False, "Bald im Kino", 8, used, trailers=3)
+        # Kinostart in die Infozeile schreiben
+        dates = {(r.get("title") or "").strip(): r.get("release_date") or "" for r in upcoming}
+        for it in soon:
+            d = dates.get(it["title"], "")
+            if len(d) == 10:
+                it["meta"] = "Kinostart %d. %s  ·  " % (int(d[8:]), MONTHS[int(d[5:7]) - 1]) + it["meta"]
+        kino += soon
+    except Exception:  # noqa: BLE001
+        pass
+    if kino:
+        sections["kino"] = {"label": "Kino", "source": "Daten: TMDB", "items": kino}
     return sections
 
 
@@ -173,21 +222,23 @@ def twitch(logins):
     if logins:
         q = "&".join("user_login=" + urllib.parse.quote(x) for x in logins[:100])
         streams += http("https://api.twitch.tv/helix/streams?first=20&" + q, headers).get("data", [])
-    if len(streams) < 5:
+    if len(streams) < 10:
         seen = set(s.get("user_login") for s in streams)
-        for s in http("https://api.twitch.tv/helix/streams?first=10&language=de", headers).get("data", []):
-            if s.get("user_login") not in seen and len(streams) < 6:
+        for s in http("https://api.twitch.tv/helix/streams?first=20&language=de", headers).get("data", []):
+            if s.get("user_login") not in seen and len(streams) < 10:
                 streams.append(s)
     stamp = datetime.datetime.utcnow().strftime("%Y%m%d%H%M")
     out = []
-    for s in streams[:6]:
+    for s in streams[:10]:
         thumb = (s.get("thumbnail_url") or "").replace("{width}", "1280").replace("{height}", "720")
         viewers = "{:,}".format(s.get("viewer_count", 0)).replace(",", ".")
         meta = ["LIVE"]
         if s.get("game_name"):
             meta.append(s["game_name"])
         meta.append(viewers + " Zuschauer")
+        mine = (s.get("user_login") or "").lower() in logins
         out.append({
+            "label": "Deine Streamer sind live" if mine else "Gerade beliebt auf Twitch",
             "title": s.get("user_name") or s.get("user_login") or "",
             "meta": "  ·  ".join(meta),
             "desc": (s.get("title") or "").strip(),
@@ -237,7 +288,7 @@ def main():
         try:
             sections = tmdb_sections()
             out.update(sections)
-            out["status"]["tmdb"] = "ok (%d Anbieter)" % len(sections)
+            out["status"]["tmdb"] = "ok (" + ", ".join("%s %d" % (k, len(v["items"])) for k, v in sections.items()) + ")"
         except Exception as e:  # noqa: BLE001
             out["status"]["tmdb"] = problem(e)
     else:
