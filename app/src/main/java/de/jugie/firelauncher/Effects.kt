@@ -162,6 +162,7 @@ class FlipClock(
     private var flipAt = 0L
     private var running = false
     private val t0 = SystemClock.uptimeMillis()
+    private val PAD = 16f
 
     private fun digits(t: Long): String = SimpleDateFormat(if (h24) "HHmm" else "hhmm", Locale.GERMANY).format(Date(t))
 
@@ -196,7 +197,8 @@ class FlipClock(
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val w = (4 * tileW + 4 * gap + 2 * colonMargin + dot) * k
-        setMeasuredDimension(Math.ceil(w.toDouble()).toInt(), Math.ceil((tileH * k).toDouble()).toInt())
+        // etwas Rand links und rechts, damit beim Umklappen nichts abgeschnitten wird
+        setMeasuredDimension(Math.ceil((w + 2 * PAD * k).toDouble()).toInt(), Math.ceil((tileH * k).toDouble()).toInt())
     }
 
     private fun drawHalf(c: Canvas, x: Float, top: Boolean, ch: String, angle: Float) {
@@ -227,6 +229,13 @@ class FlipClock(
     }
 
     override fun onDraw(c: Canvas) {
+        c.save()
+        c.translate(PAD * k, 0f)
+        drawTiles(c)
+        c.restore()
+    }
+
+    private fun drawTiles(c: Canvas) {
         val now = SystemClock.uptimeMillis()
         val w = tileW * k
         val h = tileH * k

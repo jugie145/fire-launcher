@@ -177,6 +177,8 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
         addView(texts, LayoutParams(px(820), match).apply { leftMargin = px(72); bottomMargin = px(30) })
 
         dots.orientation = LinearLayout.HORIZONTAL
+        // keine Punkte mehr: es laufen immer 10 Titel, danach kommen 10 neue
+        dots.visibility = View.GONE
         addView(dots, LayoutParams(wrap, wrap, Gravity.START or Gravity.BOTTOM).apply { leftMargin = px(72); bottomMargin = px(38) })
         source = Ui.text(ctx, "", 18f, k, Ui.TEXT_DIM)
         addView(source, LayoutParams(wrap, wrap, Gravity.END or Gravity.BOTTOM).apply { rightMargin = px(44); bottomMargin = px(30) })
@@ -273,9 +275,30 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
 
     private fun advance() {
         if (items.size < 2) return
-        index = (index + 1) % items.size
+        if (index + 1 >= items.size) {
+            refill()
+            return
+        }
+        index += 1
         render()
         schedule()
+    }
+
+    /** Nach den 10 Titeln eine neue zufaellige Auswahl holen (ohne den Fokus zu stoeren). */
+    private fun refill() {
+        val a = app ?: return
+        val my = token
+        Content.load(a) { d ->
+            if (my != token) return@load
+            if (d != null && d.items.isNotEmpty()) {
+                items = d.items
+                dataLabel = d.label
+                sourceText = d.source
+            }
+            index = if (d != null && d.items.isNotEmpty()) 0 else (index + 1) % items.size
+            render()
+            schedule()
+        }
     }
 
     private fun render() {

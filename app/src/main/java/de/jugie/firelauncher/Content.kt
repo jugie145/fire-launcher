@@ -267,7 +267,18 @@ object Content {
     private fun youtube(): HeroData? {
         val fmt = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.US)
         val all = ArrayList<Video>()
-        for ((name, id) in CHANNELS) {
+        val channels = LinkedHashMap<String, String>()
+        for ((name, id) in CHANNELS) channels[id] = name
+        try {
+            val extra = remote()?.optJSONArray("youtube_channels")
+            if (extra != null) for (i in 0 until extra.length()) {
+                val o = extra.getJSONObject(i)
+                val id = o.optString("id", "")
+                if (id.startsWith("UC") && !channels.containsKey(id)) channels[id] = o.optString("query", o.optString("name", ""))
+            }
+        } catch (e: Exception) {
+        }
+        for ((id, name) in channels) {
             val xml = get("https://www.youtube.com/feeds/videos.xml?channel_id=$id") ?: continue
             try {
                 val p = Xml.newPullParser()
@@ -386,6 +397,24 @@ object Content {
         return remote
     }
 
+    /**
+     * Direktspruenge mit Ersatz-Varianten. Streaming-Apps bekommen eine Suche nach dem Titel;
+     * nimmt die App keine davon an, oeffnet sich einfach die App.
+     */
+    private fun links(key: String, title: String, link: String): String {
+        val q = android.net.Uri.encode(title)
+        return when (key) {
+            "twitch" -> {
+                val login = link.substringAfterLast("/", "")
+                if (login.isBlank()) link else "twitch://stream/$login|twitch://open?stream=$login|$link"
+            }
+            "netflix" -> "https://www.netflix.com/search?q=$q|nflx://www.netflix.com/search?q=$q"
+            "disney" -> "https://www.disneyplus.com/search?q=$q|disneyplus://search?q=$q"
+            "prime" -> "https://app.primevideo.com/search?phrase=$q|https://www.amazon.de/gp/video/search?phrase=$q"
+            else -> link
+        }
+    }
+
     private fun section(key: String): HeroData? {
         val o = remote()?.optJSONObject(key) ?: return null
         val arr = o.optJSONArray("items") ?: return null
@@ -400,7 +429,7 @@ object Content {
             items.add(
                 HeroItem(
                     title, r.optString("meta", ""), r.optString("desc", ""), imgs,
-                    r.optBoolean("square", false), r.optString("link", ""), r.optString("label", "")
+                    r.optBoolean("square", false), links(key, title, r.optString("link", "")), r.optString("label", "")
                 )
             )
         }
@@ -422,7 +451,8 @@ object Content {
                 items.add(
                     HeroItem(
                         r.optString("name"), r.optString("artistName"), "Platz " + (i + 1) + " in Deutschland", imgs, true,
-                        "spotify:search:" + android.net.Uri.encode(r.optString("name") + " " + r.optString("artistName")),
+                        "spotify:search:" + android.net.Uri.encode(r.optString("name") + " " + r.optString("artistName")) +
+                            "|https://open.spotify.com/search/" + android.net.Uri.encode(r.optString("name") + " " + r.optString("artistName")),
                         label
                     )
                 )
