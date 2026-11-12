@@ -98,6 +98,13 @@ class NowCard(ctx: Context, private val k: Float, private val saver: Boolean = f
     private val coverRing = GradientDrawable().apply { cornerRadius = 14f }
     val coverView: View get() = cover
     private var coverUrl = ""
+    private var lastTitle = ""
+    private var tone = 0
+    private val accentColor = if (Theme.gta) 0xFFFF4FB0.toInt() else 0xFF1ED760.toInt()
+    // Liedwechsel "Farbwelle": Licht in der Coverfarbe breitet sich in der Karte aus
+    private val waveClip = FrameLayout(ctx)
+    private val wave = ColorWave(ctx)
+    private val ring = RingPulse(ctx, k, 14f)
     private val tick = object : Runnable {
         override fun run() {
             progress()
@@ -118,6 +125,12 @@ class NowCard(ctx: Context, private val k: Float, private val saver: Boolean = f
             addView(iv, LayoutParams(px(740), px(204), Gravity.CENTER))
         }
         on.alpha = 0f
+        waveClip.outlineProvider = object : ViewOutlineProvider() {
+            override fun getOutline(v: View, o: Outline) = o.setRoundRect(0, 0, v.width, v.height, 24f * k)
+        }
+        waveClip.clipToOutline = true
+        waveClip.addView(wave, LayoutParams(-1, -1))
+        addView(waveClip, LayoutParams(px(640), px(104)).apply { leftMargin = px(50); topMargin = px(50) })
         comet = CometRing(ctx, k, if (Theme.gta) Theme.PINK else 0xFF1ED760.toInt(), 24f)
         comet.visibility = View.INVISIBLE
         addView(comet, LayoutParams(px(640 + 2 * CometRing.PAD), px(104 + 2 * CometRing.PAD), Gravity.CENTER))
@@ -131,6 +144,7 @@ class NowCard(ctx: Context, private val k: Float, private val saver: Boolean = f
         }
         cover.clipToOutline = true
         addView(cover, LayoutParams(px(72), px(72)).apply { leftMargin = px(50 + 16); topMargin = px(50 + 16) })
+        addView(ring, LayoutParams(px(72), px(72)).apply { leftMargin = px(50 + 16); topMargin = px(50 + 16) })
         // Cover anwaehlbar: OK oeffnet Spotify
         if (!saver) {
             cover.id = View.generateViewId()
@@ -245,12 +259,29 @@ class NowCard(ctx: Context, private val k: Float, private val saver: Boolean = f
         artist.text = if (t.playing) t.artist else "Pausiert · " + t.artist
         eq.playing = t.playing
         toggle.playing = t.playing
+        // neues Lied (nicht beim ersten Anzeigen)
+        val changed = lastTitle.isNotEmpty() && (t.title != lastTitle || t.cover != coverUrl)
+        lastTitle = t.title
+        if (changed) SongFx.texts(listOf(title, artist))
         if (t.cover != coverUrl) {
             coverUrl = t.cover
-            cover.setImageDrawable(null)
-            if (t.cover.isNotBlank()) Images.load(listOf(t.cover)) { b -> if (b != null && coverUrl == t.cover) cover.setImageBitmap(b) }
-        }
+            if (!changed) cover.setImageDrawable(null)
+            if (t.cover.isNotBlank()) Images.load(listOf(t.cover)) { b ->
+                if (b != null && coverUrl == t.cover) {
+                    cover.setImageBitmap(b)
+                    tone = Tone.of(b, accentColor)
+                    if (changed) songFx()
+                }
+            } else if (changed) songFx()
+        } else if (changed) songFx()
         progress()
+    }
+
+    private fun songFx() {
+        val c = if (tone != 0) tone else accentColor
+        wave.play(c, 52f * k, 52f * k, 700f * k)
+        ring.play(c)
+        SongFx.pop(cover, if (cover.isFocused) 1.08f else 1f)
     }
 
     private fun progress() {

@@ -159,6 +159,8 @@ object Prefs {
     /** Aendert sich, sobald eine Einstellung geaendert wurde, die den Startbildschirm betrifft. */
     fun hsvNote(c: Context): Boolean = sp(c).getBoolean("hsv_note", true)
     fun setHsvNote(c: Context, v: Boolean) { sp(c).edit().putBoolean("hsv_note", v).apply() }
+    fun launchFx(c: Context): Boolean = sp(c).getBoolean("launch_fx", true)
+    fun setLaunchFx(c: Context, v: Boolean) { sp(c).edit().putBoolean("launch_fx", v).apply() }
 
     /** 0 = Liquid Glass, 1 = GTA VI */
     fun design(c: Context): Int = sp(c).getInt("design", 0)

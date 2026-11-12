@@ -96,12 +96,14 @@ class AllAppsActivity : Activity() {
             cell.clipToPadding = false
             val tile = Ui.glassTile(this, app, size, size, k, false)
             tile.setOnClickListener { v ->
-                val opts = try {
-                    ActivityOptions.makeScaleUpAnimation(v, 0, 0, v.width, v.height).toBundle()
-                } catch (e: Exception) {
-                    null
+                LaunchFx.open(this, app, v) {
+                    val opts = if (Prefs.launchFx(this) && Ui.anims) null else try {
+                        ActivityOptions.makeScaleUpAnimation(v, 0, 0, v.width, v.height).toBundle()
+                    } catch (e: Exception) {
+                        null
+                    }
+                    Apps.launch(this, app, opts)
                 }
-                Apps.launch(this, app, opts)
             }
             tile.setOnLongClickListener { toggleFav(app); true }
             cell.addView(tile, LinearLayout.LayoutParams(size, size))

@@ -90,6 +90,7 @@ class SettingsActivity : Activity() {
         }
 
         row(col, "HSV-Nachrichten", { onOff(Prefs.hsvNote(this)) }) { Prefs.setHsvNote(this, !Prefs.hsvNote(this)) }
+        row(col, "Animation beim App-Start", { onOff(Prefs.launchFx(this)) }) { Prefs.setLaunchFx(this, !Prefs.launchFx(this)) }
 
         section(col, "Spotify")
         row(col, "Spotify", { if (Spotify.connected(this)) "Verbunden" else "Nicht verbunden" }) {

@@ -113,6 +113,10 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
     private val npBar = View(ctx)
     private var npOn = false
     private var npUrl = ""
+    private var npLastTitle = ""
+    private val npWaveClip = FrameLayout(ctx)
+    private val npWave = ColorWave(ctx)
+    private lateinit var npRing: RingPulse
     private val npTick = object : Runnable {
         override fun run() {
             npProgress()
@@ -513,6 +517,12 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
         }
         npGlow.alpha = 0f
         addView(npGlow, LayoutParams(px(1120), match, Gravity.END))
+        npWaveClip.outlineProvider = object : ViewOutlineProvider() {
+            override fun getOutline(v: View, o: Outline) = o.setRoundRect(0, 0, v.width, v.height, 46f * k)
+        }
+        npWaveClip.clipToOutline = true
+        npWaveClip.addView(npWave, LayoutParams(match, match))
+        addView(npWaveClip, LayoutParams(match, match))
         npCover.scaleType = ImageView.ScaleType.CENTER_CROP
         npCover.background = GradientDrawable(GradientDrawable.Orientation.TL_BR, intArrayOf((accent and 0x00FFFFFF) or 0x73000000, 0xE610141C.toInt()))
         npCover.outlineProvider = object : ViewOutlineProvider() {
@@ -521,6 +531,8 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
         npCover.clipToOutline = true
         npCover.alpha = 0f
         addView(npCover, LayoutParams(px(340), px(340), Gravity.END or Gravity.CENTER_VERTICAL).apply { rightMargin = px(110) })
+        npRing = RingPulse(ctx, k, 28f)
+        addView(npRing, LayoutParams(px(340), px(340), Gravity.END or Gravity.CENTER_VERTICAL).apply { rightMargin = px(110) })
 
         npBox.orientation = LinearLayout.VERTICAL
         npBox.gravity = Gravity.CENTER_VERTICAL
@@ -598,10 +610,19 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
             npEq.playing = t.playing
             npToggle.playing = t.playing
             npLen.text = mmss(t.duration)
+            // Liedwechsel: Farbwelle in der Farbe des neuen Covers
+            val changed = npOn && npLastTitle.isNotEmpty() && (t.title != npLastTitle || t.cover != npUrl)
+            npLastTitle = t.title
+            if (changed) SongFx.texts(listOf(npTitle, npArtist, npAlbum))
             if (t.cover != npUrl) {
                 npUrl = t.cover
-                if (t.cover.isNotBlank()) Images.load(listOf(t.cover)) { b -> if (b != null && npUrl == t.cover) npCover.setImageBitmap(b) }
-            }
+                if (t.cover.isNotBlank()) Images.load(listOf(t.cover)) { b ->
+                    if (b != null && npUrl == t.cover) {
+                        npCover.setImageBitmap(b)
+                        npTone(Tone.of(b, npAccent()), changed)
+                    }
+                } else if (changed) npTone(npAccent(), true)
+            } else if (changed) npTone(if (npToneNow != 0) npToneNow else npAccent(), true)
         }
         if (want == npOn) return
         npOn = want
@@ -624,6 +645,19 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
             render()
             schedule()
         }
+    }
+
+    private var npToneNow = 0
+    private fun npAccent(): Int = if (Theme.gta) 0xFFFF4FB0.toInt() else 0xFF1ED760.toInt()
+
+    /** Licht hinter dem Cover nimmt die Coverfarbe an; bei neuem Lied laeuft die Farbwelle. */
+    private fun npTone(c: Int, wave: Boolean) {
+        npToneNow = c
+        (npGlow.background as? GradientDrawable)?.colors = intArrayOf(Tone.alpha(c, 0.3f), Tone.alpha(c, 0.06f), Tone.alpha(c, 0f))
+        if (!wave) return
+        npWave.play(c, width - (110f + 170f) * k, height / 2f, 1900f * k)
+        npRing.play(c)
+        SongFx.pop(npCover)
     }
 
     /** Auswahl der Knoepfe nur sichtbar, wenn das grosse Fenster ausgewaehlt ist. */

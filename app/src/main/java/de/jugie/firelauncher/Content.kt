@@ -162,7 +162,18 @@ object Content {
     }
 
     /** Live-Stand eines HSV-Spiels: Tore HSV, Tore Gegner, letztes Tor fuer den HSV (null = keins). */
-    class Live(val hsv: Int, val opp: Int, val lastHsv: Boolean?)
+    class Live(
+        val hsv: Int, val opp: Int, val lastHsv: Boolean?,
+        val lastMin: Int = 0, val lastName: String = "", val finished: Boolean = false, val hsvScorers: List<String> = emptyList()
+    ) {
+        /** "67. Minute · Name" (was davon bekannt ist) */
+        fun scorerLine(): String {
+            val parts = ArrayList<String>()
+            if (lastMin > 0) parts.add("$lastMin. Minute")
+            if (lastName.isNotEmpty()) parts.add(lastName)
+            return parts.joinToString(" · ")
+        }
+    }
 
     fun loadLive(m: Hsv.Match, cb: (Live?) -> Unit) {
         if (m.id <= 0) {
@@ -177,6 +188,9 @@ object Content {
                 var g1 = 0
                 var g2 = 0
                 var lastHsv: Boolean? = null
+                var lastMin = 0
+                var lastName = ""
+                val hsvScorers = ArrayList<String>()
                 if (goals != null) for (i in 0 until goals.length()) {
                     val g = goals.getJSONObject(i)
                     val n1 = g.optInt("scoreTeam1", g1)
@@ -185,8 +199,14 @@ object Content {
                     g1 = n1
                     g2 = n2
                     lastHsv = team1 == m.home
+                    lastMin = if (g.isNull("matchMinute")) 0 else g.optInt("matchMinute", 0)
+                    lastName = if (g.isNull("goalGetterName")) "" else g.optString("goalGetterName", "").trim()
+                    if (g.optBoolean("isOwnGoal", false) && lastName.isNotEmpty()) lastName += " (Eigentor)"
+                    if (lastHsv == true && lastName.isNotEmpty()) hsvScorers.add(lastName)
                 }
-                r = if (m.home) Live(g1, g2, lastHsv) else Live(g2, g1, lastHsv)
+                val done = o.optBoolean("matchIsFinished", false)
+                r = if (m.home) Live(g1, g2, lastHsv, lastMin, lastName, done, hsvScorers)
+                else Live(g2, g1, lastHsv, lastMin, lastName, done, hsvScorers)
             } catch (e: Throwable) {
             }
             main.post { cb(r) }

@@ -94,6 +94,11 @@ class HsvNoteView(ctx: Context, private val k: Float) : FrameLayout(ctx) {
     private val goalFlash = View(ctx)
     private val goalText = LinearLayout(ctx)
     private val goalScore: TextView
+    private val goalWho: TextView
+    private val againstFlash = View(ctx)
+    private val againstText = LinearLayout(ctx)
+    private val againstScore: TextView
+    private val againstWho: TextView
     private val body = FrameLayout(ctx)
     private var anim: ValueAnimator? = null
     var showing = false
@@ -169,10 +174,41 @@ class HsvNoteView(ctx: Context, private val k: Float) : FrameLayout(ctx) {
         tor.letterSpacing = 0.06f
         tor.setShadowLayer(24f * k, 0f, 0f, 0xE64696FF.toInt())
         goalText.addView(tor)
-        goalScore = Ui.text(ctx, "", 34f, k, Color.WHITE, bold)
-        goalText.addView(goalScore, LinearLayout.LayoutParams(-2, -2).apply { leftMargin = px(22) })
+        val gCol = LinearLayout(ctx)
+        gCol.orientation = LinearLayout.VERTICAL
+        goalScore = Ui.text(ctx, "", 32f, k, Color.WHITE, bold)
+        gCol.addView(goalScore)
+        goalWho = Ui.text(ctx, "", 18f, k, 0xD9FFFFFF.toInt())
+        goalWho.maxLines = 1
+        gCol.addView(goalWho, LinearLayout.LayoutParams(-2, -2).apply { topMargin = px(2) })
+        goalText.addView(gCol, LinearLayout.LayoutParams(-2, -2).apply { leftMargin = px(22) })
         goalText.alpha = 0f
         body.addView(goalText, LayoutParams(px(640), px(104)).apply { leftMargin = px(50); topMargin = px(50) })
+
+        // Gegentor: ruhiger, rotes Aufleuchten, kein Wackeln
+        againstFlash.background = android.graphics.drawable.GradientDrawable().apply {
+            gradientType = android.graphics.drawable.GradientDrawable.RADIAL_GRADIENT
+            gradientRadius = 380f * k
+            colors = intArrayOf(0x73EB3C46, 0x14EB3C46, 0x00EB3C46)
+            cornerRadius = 24f * k
+        }
+        againstFlash.alpha = 0f
+        body.addView(againstFlash, LayoutParams(px(640), px(104)).apply { leftMargin = px(50); topMargin = px(50) })
+        againstText.orientation = LinearLayout.HORIZONTAL
+        againstText.gravity = Gravity.CENTER
+        val gt = Ui.text(ctx, "GEGENTOR", 34f, k, 0xE6FFFFFF.toInt(), bold)
+        gt.letterSpacing = 0.08f
+        againstText.addView(gt)
+        val aCol = LinearLayout(ctx)
+        aCol.orientation = LinearLayout.VERTICAL
+        againstScore = Ui.text(ctx, "", 28f, k, Color.WHITE, bold)
+        aCol.addView(againstScore)
+        againstWho = Ui.text(ctx, "", 18f, k, 0xBFFFFFFF.toInt())
+        againstWho.maxLines = 1
+        aCol.addView(againstWho, LinearLayout.LayoutParams(-2, -2).apply { topMargin = px(2) })
+        againstText.addView(aCol, LinearLayout.LayoutParams(-2, -2).apply { leftMargin = px(22) })
+        againstText.alpha = 0f
+        body.addView(againstText, LayoutParams(px(640), px(104)).apply { leftMargin = px(50); topMargin = px(50) })
 
         alpha = 0f
         visibility = View.INVISIBLE
@@ -208,17 +244,25 @@ class HsvNoteView(ctx: Context, private val k: Float) : FrameLayout(ctx) {
     }
 
     /** Live-Stand; lastHsv = letztes Tor fuer den HSV (null = noch keins). */
-    fun setLive(i: Hsv.Info, hsvGoals: Int, oppGoals: Int, lastHsv: Boolean?) {
+    fun setLive(i: Hsv.Info, hsvGoals: Int, oppGoals: Int, lastHsv: Boolean?, l: Content.Live? = null) {
         normal.visibility = View.GONE
         live.visibility = View.VISIBLE
         oppLive.text = i.opp
         score.text = "$hsvGoals : $oppGoals"
         goalScore.text = "HSV $hsvGoals : $oppGoals"
+        againstScore.text = "HSV $hsvGoals : $oppGoals"
+        val who = l?.scorerLine() ?: ""
+        goalWho.text = who
+        againstWho.text = who
+        goalWho.visibility = if (who.isEmpty()) View.GONE else View.VISIBLE
+        againstWho.visibility = goalWho.visibility
         val time = java.text.SimpleDateFormat("HH:mm", Locale.GERMANY).format(Date(i.match?.kick ?: 0L))
+        // "Zuletzt: 67. Name (HSV)"
+        val detail = listOfNotNull(if ((l?.lastMin ?: 0) > 0) "${l!!.lastMin}." else null, l?.lastName?.takeIf { it.isNotEmpty() }).joinToString(" ")
         last.text = when (lastHsv) {
             null -> "Anstoß war um $time Uhr"
-            true -> "Zuletzt: Tor für den HSV"
-            false -> "Zuletzt: Tor für " + i.opp
+            true -> if (detail.isEmpty()) "Zuletzt: Tor für den HSV" else "Zuletzt: $detail (HSV)"
+            false -> if (detail.isEmpty()) "Zuletzt: Tor für " + i.opp else "Zuletzt: $detail (" + i.opp + ")"
         }
         ring(Hsv.BLUE)
     }
@@ -243,6 +287,22 @@ class HsvNoteView(ctx: Context, private val k: Float) : FrameLayout(ctx) {
             goalText.animate().alpha(0f).setDuration(300).start()
             live.animate().alpha(1f).setDuration(300).start()
         }, 3800)
+    }
+
+    /** Tor fuer den Gegner: rotes Aufleuchten, "GEGENTOR" blendet ruhig ein. */
+    fun against() {
+        if (!Ui.anims) return
+        live.animate().alpha(0f).setDuration(200).start()
+        againstFlash.alpha = 0f
+        againstFlash.animate().alpha(1f).setDuration(380).withEndAction {
+            againstFlash.animate().alpha(0f).setDuration(2800).start()
+        }.start()
+        againstText.alpha = 0f
+        againstText.animate().alpha(1f).setDuration(400).start()
+        postDelayed({
+            againstText.animate().alpha(0f).setDuration(300).start()
+            live.animate().alpha(1f).setDuration(300).start()
+        }, 3200)
     }
 
     fun show() {

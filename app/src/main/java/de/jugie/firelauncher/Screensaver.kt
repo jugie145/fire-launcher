@@ -506,6 +506,8 @@ class ScreensaverView(ctx: Context) : FrameLayout(ctx) {
     private val wCond2 = Ui.text(ctx, "", 26f, k, 0xBFFFFFFF.toInt())
 
     private val npCard = NowCard(ctx, k, saver = true)
+    // HSV-Spiel beobachten: Fan-Choreo ueber den ganzen Schoner
+    private val hsvWatch = HsvSaverWatch(this)
     // Kopfzeile wie auf dem Startbildschirm (nur solange Spotify laeuft): Uhr | Datum, Spotify mittig, Ort | Wetter
     private val homeHead = FrameLayout(ctx)
     private val headClock = RollingClock(ctx, 86 * k, Ui.medium, Prefs.h24(ctx))
@@ -811,9 +813,11 @@ class ScreensaverView(ctx: Context) : FrameLayout(ctx) {
             handler.postDelayed({ if (running && mode == NONE) showWellen() }, 8000)
         }
         post(tick)
+        hsvWatch.start()
     }
 
     fun stop() {
+        hsvWatch.stop()
         if (running) {
             NowPlaying.unlisten(npListen)
             NowPlaying.stop()

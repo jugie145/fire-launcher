@@ -49,6 +49,7 @@ class MainActivity : Activity() {
     private var spotX = -1f
     private var spotY = -1f
     private var liveGoals = -1
+    private var liveOpp = -1
     private var liveOn = false
     private var favApps: List<AppEntry> = emptyList()
     private var lastFocus = 0
@@ -198,7 +199,9 @@ class MainActivity : Activity() {
         hero.id = View.generateViewId()
         hero.onNpAction = { a -> NowPlaying.control(this, a) }
         hero.onOpen = { a, item ->
-            if (item == null || !Apps.openLink(this, a, item.link)) Apps.launch(this, a)
+            LaunchFx.open(this, a, null) {
+                if (item == null || !Apps.openLink(this, a, item.link)) Apps.launch(this, a)
+            }
         }
         // Farben aus dem Inhalt: Farbfleck nimmt die Hauptfarbe des gezeigten Bildes
         hero.onColor = { c ->
@@ -713,12 +716,15 @@ class MainActivity : Activity() {
             tile.setOnClickListener { v ->
                 // Kachel drueckt sich ein, dann zoomt die App aus der Kachel heraus auf
                 tile.press {
-                    val opts = try {
-                        ActivityOptions.makeScaleUpAnimation(v, 0, 0, v.width, v.height).toBundle()
-                    } catch (e: Exception) {
-                        null
+                    // eigene Start-Animation (zufaellig Warp, Vorhang oder Liquid Glass); ohne Bedienungshilfe wie bisher
+                    LaunchFx.open(this, app, v) {
+                        val opts = if (Prefs.launchFx(this) && Ui.anims) null else try {
+                            ActivityOptions.makeScaleUpAnimation(v, 0, 0, v.width, v.height).toBundle()
+                        } catch (e: Exception) {
+                            null
+                        }
+                        Apps.launch(this, app, opts)
                     }
-                    Apps.launch(this, app, opts)
                 }
             }
             tile.id = View.generateViewId()
@@ -786,6 +792,7 @@ class MainActivity : Activity() {
                 greetAway(true)
                 liveOn = true
                 liveGoals = -1
+                liveOpp = -1
                 handler.removeCallbacks(liveTick)
                 handler.post(liveTick)
                 return@loadHsv
@@ -814,9 +821,11 @@ class MainActivity : Activity() {
             }
             Content.loadLive(m) { l ->
                 if (!liveOn || l == null) return@loadLive
-                note.setLive(info, l.hsv, l.opp, l.lastHsv)
+                note.setLive(info, l.hsv, l.opp, l.lastHsv, l)
                 if (liveGoals >= 0 && l.hsv > liveGoals) note.goal()
+                else if (liveOpp >= 0 && l.opp > liveOpp) note.against()
                 liveGoals = l.hsv
+                liveOpp = l.opp
             }
             handler.postDelayed(this, 60_000L)
         }
