@@ -121,6 +121,8 @@ object Content {
     )
 
     private val cache = HashMap<String, Pair<Long, HeroData>>()
+    /** fuer persoenliche Spotify-Vorschlaege */
+    @Volatile var appCtx: android.content.Context? = null
     private val pool = Executors.newSingleThreadExecutor()
     private val main = Handler(Looper.getMainLooper())
 
@@ -151,11 +153,43 @@ object Content {
                     val o = arr.getJSONObject(i)
                     val utc = o.optString("utc", "").take(19)
                     val t = try { fmt.parse(utc)?.time } catch (e: Exception) { null } ?: continue
-                    out.add(Hsv.Match(t, o.optString("opp", "")))
+                    out.add(Hsv.Match(t, o.optString("opp", ""), o.optLong("id", 0), o.optBoolean("home", true)))
                 }
             } catch (e: Throwable) {
             }
             main.post { cb(out) }
+        }
+    }
+
+    /** Live-Stand eines HSV-Spiels: Tore HSV, Tore Gegner, letztes Tor fuer den HSV (null = keins). */
+    class Live(val hsv: Int, val opp: Int, val lastHsv: Boolean?)
+
+    fun loadLive(m: Hsv.Match, cb: (Live?) -> Unit) {
+        if (m.id <= 0) {
+            cb(null)
+            return
+        }
+        pool.execute {
+            var r: Live? = null
+            try {
+                val o = JSONObject(get("https://api.openligadb.de/getmatchdata/" + m.id) ?: "")
+                val goals = o.optJSONArray("goals")
+                var g1 = 0
+                var g2 = 0
+                var lastHsv: Boolean? = null
+                if (goals != null) for (i in 0 until goals.length()) {
+                    val g = goals.getJSONObject(i)
+                    val n1 = g.optInt("scoreTeam1", g1)
+                    val n2 = g.optInt("scoreTeam2", g2)
+                    val team1 = n1 > g1
+                    g1 = n1
+                    g2 = n2
+                    lastHsv = team1 == m.home
+                }
+                r = if (m.home) Live(g1, g2, lastHsv) else Live(g2, g1, lastHsv)
+            } catch (e: Throwable) {
+            }
+            main.post { cb(r) }
         }
     }
 
@@ -205,7 +239,7 @@ object Content {
             val d = try {
                 when (k) {
                     "youtube" -> youtube()
-                    "spotify" -> charts()
+                    "spotify" -> spotify()
                     else -> section(k)
                 }
             } catch (e: Throwable) {
@@ -401,7 +435,7 @@ object Content {
      * Direktspruenge mit Ersatz-Varianten. Streaming-Apps bekommen eine Suche nach dem Titel;
      * nimmt die App keine davon an, oeffnet sich einfach die App.
      */
-    private fun links(key: String, title: String, link: String): String {
+    fun links(key: String, title: String, link: String): String {
         val q = android.net.Uri.encode(title)
         return when (key) {
             "twitch" -> {
@@ -435,6 +469,15 @@ object Content {
         }
         if (items.isEmpty()) return null
         return HeroData(o.optString("label", ""), o.optString("source", ""), items)
+    }
+
+    /** Persoenliche Vorschlaege (zuletzt gehoert, Top-Songs) plus Charts. */
+    private fun spotify(): HeroData? {
+        val mine = appCtx?.let { try { Spotify.suggestions(it) } catch (e: Throwable) { null } } ?: emptyList()
+        val ch = charts()
+        val all = mine + (ch?.items ?: emptyList())
+        if (all.isEmpty()) return null
+        return HeroData("Spotify", "", all)
     }
 
     // ---------- Musik: oeffentliche Charts fuer Deutschland ----------

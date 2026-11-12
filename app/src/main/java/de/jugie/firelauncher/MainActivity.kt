@@ -11,6 +11,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.TypedValue
 import android.view.Gravity
+import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -30,10 +31,25 @@ class MainActivity : Activity() {
     private lateinit var hero: Hero
     private lateinit var row: LinearLayout
     private lateinit var greet: TextView
+    private lateinit var greetBox: View
     private lateinit var wIcon: WeatherIcon
     private lateinit var wTemp: TextView
     private lateinit var wCond: TextView
-    private lateinit var wifiIcon: WifiIcon
+    private var gtaBg: GtaBackground? = null
+    private lateinit var countdown: TextView
+    private var flick: android.animation.ValueAnimator? = null
+    private lateinit var nowCard: NowCard
+    private lateinit var search: SearchOverlay
+    private lateinit var fSettings: View
+    private lateinit var fSleep: View
+    private lateinit var fSearch: View
+    private lateinit var fApps: View
+    private lateinit var sleepLabel: TextView
+    private var cardShown = false
+    private var spotX = -1f
+    private var spotY = -1f
+    private var liveGoals = -1
+    private var liveOn = false
     private var favApps: List<AppEntry> = emptyList()
     private var lastFocus = 0
     private var shown: String? = null
@@ -79,6 +95,7 @@ class MainActivity : Activity() {
     private fun build() {
         k = resources.displayMetrics.widthPixels / 1920f
         Ui.load(this)
+        Content.appCtx = applicationContext
         sig = Prefs.sig(this)
         favApps = emptyList()
         shown = null
@@ -88,6 +105,12 @@ class MainActivity : Activity() {
         root.setBackgroundColor(Ui.BG)
         wave = WaveBackground(this)
         root.addView(wave, FrameLayout.LayoutParams(match, match))
+        gtaBg = null
+        if (Theme.gta) {
+            val g = GtaBackground(this, k)
+            gtaBg = g
+            root.addView(g, FrameLayout.LayoutParams(match, match))
+        }
 
         content = LinearLayout(this)
         content.orientation = LinearLayout.VERTICAL
@@ -103,7 +126,8 @@ class MainActivity : Activity() {
         line.orientation = LinearLayout.HORIZONTAL
         line.gravity = Gravity.CENTER_VERTICAL
         // Uhr, deren Ziffern beim Minutenwechsel weiterrollen
-        clock = RollingClock(this, 86 * k, Ui.medium, Prefs.h24(this))
+        clock = RollingClock(this, 86 * k, if (Theme.gta) Theme.bold else Ui.medium, Prefs.h24(this))
+        if (Theme.gta) clock.shadow(0.01f, 4f * k, 4f * k, Theme.SHADOW)
         line.addView(clock)
         line.addView(divider(80, 38, 36))
         val dateCol = LinearLayout(this)
@@ -115,6 +139,13 @@ class MainActivity : Activity() {
             t.setTextSize(TypedValue.COMPLEX_UNIT_PX, 28 * k)
             t.setTextColor(Ui.TEXT_DIM)
             t.includeFontPadding = false
+            if (Theme.gta) {
+                t.setTextColor(0xFFFFD08A.toInt())
+                t.typeface = Theme.bold
+                t.isAllCaps = true
+                t.letterSpacing = 0.07f
+                Neon.shadow(t, k * 0.5f)
+            }
             dateCol.addView(t, lp(wrap, wrap, top = if (f == "EEEE,") 0 else 8))
         }
         line.addView(dateCol)
@@ -131,15 +162,34 @@ class MainActivity : Activity() {
         line.addView(divider(80, 38, 34))
         wIcon = WeatherIcon(this)
         line.addView(wIcon, LinearLayout.LayoutParams(px(76), px(76)))
-        wTemp = Ui.text(this, "–°", 86f, k, Color.WHITE, Ui.medium)
+        wTemp = Ui.text(this, "–°", 86f, k, if (Theme.gta) 0xFFFFD08A.toInt() else Color.WHITE, if (Theme.gta) Theme.bold else Ui.medium)
+        if (Theme.gta) wTemp.setShadowLayer(16f * k, 0f, 0f, 0xB3FF8C50.toInt())
         wTemp.maxLines = 1
         line.addView(wTemp, lp(wrap, wrap, left = 16))
         line.clipChildren = false
         line.clipToPadding = false
         header.clipChildren = false
         header.addView(line, FrameLayout.LayoutParams(match, wrap))
-        greet = Ui.text(this, "", 37f, k, Color.WHITE)
-        header.addView(greet, FrameLayout.LayoutParams(wrap, wrap, Gravity.CENTER))
+        // Begruessung exakt mittig; im GTA-Design als Leuchtreklame mit Countdown darunter
+        val greetBox = LinearLayout(this)
+        greetBox.orientation = LinearLayout.VERTICAL
+        greetBox.gravity = Gravity.CENTER_HORIZONTAL
+        greet = Ui.text(this, "", if (Theme.gta) 44f else 37f, k, Color.WHITE)
+        greetBox.addView(greet)
+        countdown = Ui.text(this, "", 26f, k, Color.WHITE, Theme.bold)
+        countdown.letterSpacing = 0.08f
+        countdown.setShadowLayer(12f * k, 0f, 0f, 0xCCFF3FA4.toInt())
+        countdown.visibility = if (Theme.gta) View.VISIBLE else View.GONE
+        greetBox.addView(countdown, LinearLayout.LayoutParams(wrap, wrap).apply { topMargin = px(2) })
+        flick?.cancel()
+        flick = null
+        if (Theme.gta) {
+            Neon.greet(greet, k)
+            flick = Neon.flicker(greet)
+        }
+        greetBox.clipChildren = false
+        this.greetBox = greetBox
+        header.addView(greetBox, FrameLayout.LayoutParams(wrap, wrap, Gravity.CENTER))
         content.addView(header)
 
         // Grosse Flaeche mit wechselnden Inhalten
@@ -147,6 +197,10 @@ class MainActivity : Activity() {
         hero.id = View.generateViewId()
         hero.onOpen = { a, item ->
             if (item == null || !Apps.openLink(this, a, item.link)) Apps.launch(this, a)
+        }
+        // Farben aus dem Inhalt: Farbfleck nimmt die Hauptfarbe des gezeigten Bildes
+        hero.onColor = { c ->
+            if (Prefs.contentColors(this) && spotX >= 0f && !nowCardFocused()) wave.setSpot(spotX, spotY, c, true)
         }
         content.addView(hero, lp(match, px(460), top = 44))
 
@@ -160,57 +214,91 @@ class MainActivity : Activity() {
 
         content.addView(View(this), LinearLayout.LayoutParams(1, 0, 1f))
 
-        // Fussleiste
-        val bar = LinearLayout(this)
+        // Fussleiste: Einstellungen, Sleeptimer | Laeuft gerade (mittig) | Suche, Alle Apps.
+        // Laeuft nichts, verteilen sich die vier Knoepfe gleichmaessig ueber die Breite.
+        val bar = FrameLayout(this)
         this.bar = bar
-        bar.orientation = LinearLayout.HORIZONTAL
-        bar.gravity = Gravity.CENTER_VERTICAL
         bar.clipChildren = false
-        settingsButton = footItem(GearIcon(this), "Einstellungen", 252, R.drawable.glass_pill_settings) {
+        bar.clipToPadding = false
+        fSettings = footItem(R.drawable.ic_gear, "Einstellungen") {
             startActivity(Intent(this, SettingsActivity::class.java))
         }
-        bar.addView(settingsButton)
-        bar.addView(footItem(null, "Alle Apps", 162, R.drawable.glass_pill_apps) {
+        settingsButton = fSettings
+        sleepLabel = Ui.text(this, "", 23f, k, Ui.TEXT_DIM)
+        fSleep = footItem(R.drawable.ic_moon, "", sleepLabel) { cycleSleep() }
+        fSearch = footItem(R.drawable.ic_search_dim, "Suche") {
+            // waehrend der Suche keine HSV-Nachricht
+            if (note.showing) {
+                handler.removeCallbacks(noteHide)
+                handler.removeCallbacks(noteTick)
+                handler.removeCallbacks(liveTick)
+                liveOn = false
+                note.hide()
+                greetAway(false)
+                noteHiddenAt = android.os.SystemClock.uptimeMillis()
+                handler.removeCallbacks(noteCheck)
+                handler.postDelayed(noteCheck, notePauseMs)
+            }
+            search.open()
+        }
+        fApps = footItem(R.drawable.ic_grid, "Alle Apps") {
             startActivity(Intent(this, AllAppsActivity::class.java))
-        }, LinearLayout.LayoutParams(px(162), px(64)).apply { leftMargin = px(14) })
-        bar.addView(View(this), LinearLayout.LayoutParams(0, 1, 1f))
-        wifiIcon = WifiIcon(this)
-        bar.addView(wifiIcon, LinearLayout.LayoutParams(px(26), px(26)))
-        bar.addView(divider(40, 26, 26))
-        bar.addView(Ui.text(this, "LIQUID TV · v" + versionName(), 21f, k, Ui.TEXT_DIM))
-        content.addView(bar)
+        }
+        for (v in listOf(fSettings, fSleep, fSearch, fApps)) {
+            v.id = View.generateViewId()
+            bar.addView(v, FrameLayout.LayoutParams(px(252), px(64)))
+        }
+        fApps.translationX = px(1508).toFloat()
+        nowCard = NowCard(this, k)
+        nowCard.id = View.generateViewId()
+        nowCard.visibility = View.GONE
+        nowCard.setOnClickListener { NowPlaying.control(this, "toggle") }
+        bar.addView(nowCard, FrameLayout.LayoutParams(px(740), px(204)).apply {
+            leftMargin = px(560 - 50)
+            topMargin = px(-20 - 50)
+        })
+        cardShown = false
+        layoutFooter(false)
+        updateSleepLabel()
+        content.addView(bar, LinearLayout.LayoutParams(match, px(64)))
 
         // HSV-Nachricht oben mittig, liegt ueber der Begruessung
         note = HsvNoteView(this, k)
-        root.addView(note, FrameLayout.LayoutParams(px(740), px(236), Gravity.TOP or Gravity.CENTER_HORIZONTAL).apply {
+        root.addView(note, FrameLayout.LayoutParams(px(740), px(204), Gravity.TOP or Gravity.CENTER_HORIZONTAL).apply {
             topMargin = px(30 - 50)
         })
+
+        search = SearchOverlay(this, k) { favApps }
+        search.onClose = { fSearch.requestFocus() }
+        root.addView(search, FrameLayout.LayoutParams(match, match))
 
         setContentView(root)
     }
 
-    /** Knopf der Fussleiste: bei Fokus blendet das fertige Glasbild ein. */
-    private fun footItem(icon: View?, label: String, w: Int, glassRes: Int, onClick: () -> Unit): View {
+    /** Knopf der Fussleiste (alle gleich gross): bei Fokus blendet das fertige Glasbild ein. */
+    private fun footItem(icon: Int, label: String, textView: TextView? = null, onClick: () -> Unit): View {
         val box = FrameLayout(this)
         box.clipChildren = false
-        box.layoutParams = LinearLayout.LayoutParams(px(w), px(64))
         val glass = ImageView(this)
-        glass.setImageResource(glassRes)
+        glass.setImageResource(R.drawable.glass_pill_settings)
         glass.scaleType = ImageView.ScaleType.FIT_XY
         glass.alpha = 0f
-        box.addView(glass, FrameLayout.LayoutParams(px(w + 8), px(72), Gravity.CENTER))
+        box.addView(glass, FrameLayout.LayoutParams(px(260), px(72), Gravity.CENTER))
         val line = LinearLayout(this)
         line.orientation = LinearLayout.HORIZONTAL
         line.gravity = Gravity.CENTER_VERTICAL
-        val t = Ui.text(this, label, 23f, k, Ui.TEXT_DIM)
-        if (icon != null) {
-            line.addView(icon, LinearLayout.LayoutParams(px(38), px(38)))
-            line.addView(t, lp(wrap, wrap, left = 18))
-            box.addView(line, FrameLayout.LayoutParams(wrap, wrap, Gravity.START or Gravity.CENTER_VERTICAL).apply { leftMargin = px(20) })
-        } else {
-            line.addView(t)
-            box.addView(line, FrameLayout.LayoutParams(wrap, wrap, Gravity.CENTER))
+        val ic = ImageView(this)
+        ic.setImageResource(icon)
+        line.addView(ic, LinearLayout.LayoutParams(px(34), px(34)))
+        val t = textView ?: Ui.text(this, label, 23f, k, Ui.TEXT_DIM)
+        if (Theme.gta) {
+            t.typeface = Theme.bold
+            t.isAllCaps = true
+            t.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, 25f * k)
         }
+        t.maxLines = 1
+        line.addView(t, lp(wrap, wrap, left = 16))
+        box.addView(line, FrameLayout.LayoutParams(wrap, wrap, Gravity.START or Gravity.CENTER_VERTICAL).apply { leftMargin = px(22) })
         box.isFocusable = true
         box.setOnFocusChangeListener { v, has ->
             glass.animate().alpha(if (has) 1f else 0f).setDuration(Ui.d(180)).start()
@@ -222,6 +310,131 @@ class MainActivity : Activity() {
         return box
     }
 
+    /** Positionen der Leiste; mit Karte: 0 | 266 | Karte 560-1200 | 1242 | 1508, sonst gleichmaessig. */
+    private fun layoutFooter(animate: Boolean) {
+        val with = cardShown
+        val sx = px(if (with) 266 else 503).toFloat()
+        val qx = px(if (with) 1242 else 1005).toFloat()
+        if (animate && Ui.anims) {
+            val delay = if (with) 0L else 180L
+            val dur = if (with) 560L else 700L
+            val curve = android.view.animation.PathInterpolator(0.2f, 1.15f, 0.35f, 1f)
+            fSleep.animate().translationX(sx).setStartDelay(delay).setDuration(dur).setInterpolator(curve).start()
+            fSearch.animate().translationX(qx).setStartDelay(delay).setDuration(dur).setInterpolator(curve).start()
+        } else {
+            fSleep.translationX = sx
+            fSearch.translationX = qx
+        }
+        fSettings.nextFocusRightId = fSleep.id
+        fSleep.nextFocusLeftId = fSettings.id
+        fSleep.nextFocusRightId = if (with) nowCard.id else fSearch.id
+        fSearch.nextFocusLeftId = if (with) nowCard.id else fSleep.id
+        fSearch.nextFocusRightId = fApps.id
+        fApps.nextFocusLeftId = fSearch.id
+        nowCard.nextFocusLeftId = fSleep.id
+        nowCard.nextFocusRightId = fSearch.id
+    }
+
+    private fun nowCardFocused() = ::nowCard.isInitialized && nowCard.isFocused
+
+    /** Karte "Laeuft gerade": nur wenn Musik laeuft und nicht schon gross oben (Spotify ausgewaehlt). */
+    private fun updateNow(t: Spotify.Track?) {
+        hero.nowPlaying(t)
+        nowCard.set(t)
+        val spotifySel = shown != null && favApps.firstOrNull { it.pkg == shown }?.let { Content.kind(it) == "spotify" } == true
+        val want = t != null && !spotifySel
+        if (want == cardShown) return
+        cardShown = want
+        if (want) {
+            nowCard.visibility = View.VISIBLE
+            if (Ui.anims) {
+                nowCard.alpha = 0f
+                nowCard.translationY = 200f * k
+                nowCard.animate().alpha(1f).translationY(0f).setStartDelay(220).setDuration(650)
+                    .setInterpolator(android.view.animation.PathInterpolator(0.2f, 1.25f, 0.35f, 1f)).start()
+            }
+        } else {
+            if (nowCard.isFocused) fSearch.requestFocus()
+            if (Ui.anims) {
+                nowCard.animate().alpha(0f).translationY(200f * k).setStartDelay(0).setDuration(620)
+                    .setInterpolator(android.view.animation.PathInterpolator(0.45f, 0f, 0.7f, 0.2f))
+                    .withEndAction { if (!cardShown) nowCard.visibility = View.GONE }.start()
+            } else nowCard.visibility = View.GONE
+        }
+        layoutFooter(true)
+    }
+
+    private val nowListener: (Spotify.Track?) -> Unit = { t -> updateNow(t) }
+
+    private val sleepSteps = intArrayOf(0, 30, 60, 90)
+
+    private fun cycleSleep() {
+        val left = HomeService.sleepRemainingSeconds()
+        val cur = if (left <= 0) 0 else sleepSteps.indexOfFirst { it * 60L >= left }.let { if (it < 0) 3 else it }
+        val nx = sleepSteps[(cur + 1) % sleepSteps.size]
+        if (nx == 0) HomeService.cancelSleepTimer()
+        else if (!HomeService.startSleepTimer(nx)) {
+            android.widget.Toast.makeText(this, "Für den Sleeptimer muss „Home-Taste umleiten“ in den Einstellungen an sein.", android.widget.Toast.LENGTH_LONG).show()
+        }
+        updateSleepLabel(nx)
+    }
+
+    private fun updateSleepLabel(force: Int = -1) {
+        val left = HomeService.sleepRemainingSeconds()
+        sleepLabel.text = when {
+            force == 0 -> "Sleeptimer"
+            force > 0 -> "Sleep · $force Min."
+            left > 0 -> "Sleep · " + ((left + 59) / 60) + " Min."
+            else -> "Sleeptimer"
+        }
+    }
+
+    private val ticker = object : Runnable {
+        override fun run() {
+            if (Theme.gta) {
+                val c = Theme.countdown()
+                val sp = android.text.SpannableString(if (c == null) "GTA VI  IST DA!" else "GTA VI IN  $c")
+                sp.setSpan(android.text.style.ForegroundColorSpan(0xFFFFB36B.toInt()), 0, if (c == null) 6 else 9, 0)
+                countdown.text = sp
+            }
+            updateSleepLabel()
+            handler.postDelayed(this, 1000)
+        }
+    }
+
+    /** Begruessung macht der HSV-Nachricht Platz und kommt danach wieder. */
+    private fun greetAway(away: Boolean) {
+        greetBox.animate().cancel()
+        if (!Ui.anims) {
+            greetBox.alpha = if (away) 0f else 1f
+            return
+        }
+        if (away) {
+            greetBox.animate().alpha(0f).translationY(22f * k).scaleX(0.92f).scaleY(0.92f).setStartDelay(0).setDuration(300)
+                .setInterpolator(android.view.animation.PathInterpolator(0.45f, 0f, 0.7f, 0.2f)).start()
+        } else {
+            greetBox.animate().alpha(1f).translationY(0f).scaleX(1f).scaleY(1f).setStartDelay(520).setDuration(620)
+                .setInterpolator(android.view.animation.PathInterpolator(0.2f, 1.25f, 0.35f, 1f)).start()
+        }
+    }
+
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        // Mediatasten steuern Spotify, solange die Karte ausgewaehlt ist
+        if (nowCardFocused() && event.action == KeyEvent.ACTION_DOWN) {
+            val a = when (event.keyCode) {
+                KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE, KeyEvent.KEYCODE_MEDIA_PLAY, KeyEvent.KEYCODE_MEDIA_PAUSE -> "toggle"
+                KeyEvent.KEYCODE_MEDIA_REWIND, KeyEvent.KEYCODE_MEDIA_PREVIOUS -> "prev"
+                KeyEvent.KEYCODE_MEDIA_FAST_FORWARD, KeyEvent.KEYCODE_MEDIA_NEXT -> "next"
+                else -> null
+            }
+            if (a != null) {
+                NowPlaying.control(this, a)
+                return true
+            }
+        }
+        return super.dispatchKeyEvent(event)
+    }
+
     private fun versionName(): String =
         try { packageManager.getPackageInfo(packageName, 0).versionName ?: "" } catch (e: Exception) { "" }
 
@@ -231,6 +444,12 @@ class MainActivity : Activity() {
         Saver.apply(this)
         if (sig != Prefs.sig(this)) build()
         wave.start()
+        gtaBg?.start()
+        NowPlaying.listen(nowListener)
+        NowPlaying.start(this)
+        updateNow(NowPlaying.track)
+        handler.removeCallbacks(ticker)
+        handler.post(ticker)
         hero.start()
         if (returnToFooter) {
             returnToFooter = false
@@ -248,13 +467,18 @@ class MainActivity : Activity() {
         handler.removeCallbacks(noteCheck)
         handler.postDelayed(noteCheck, 1200)
         updateGreeting()
-        updateWifi()
         loadFavs()
         loadWeather()
     }
 
     override fun onPause() {
         wave.stop()
+        gtaBg?.stop()
+        NowPlaying.unlisten(nowListener)
+        NowPlaying.stop()
+        handler.removeCallbacks(ticker)
+        handler.removeCallbacks(liveTick)
+        liveOn = false
         hero.stop()
         resumed = false
         clock.stop()
@@ -265,6 +489,7 @@ class MainActivity : Activity() {
         handler.removeCallbacks(noteTick)
         if (note.showing) {
             note.hide(false)
+            greetAway(false)
             noteHiddenAt = android.os.SystemClock.uptimeMillis()
         }
         super.onPause()
@@ -283,16 +508,6 @@ class MainActivity : Activity() {
             h in 14..17 -> "Hallo $name."
             else -> "Guten Abend, $name."
         }
-    }
-
-    private fun updateWifi() {
-        var on = false
-        try {
-            val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            on = cm.getNetworkCapabilities(cm.activeNetwork) != null
-        } catch (e: Exception) {
-        }
-        wifiIcon.connected = on
     }
 
     private fun loadFavs() {
@@ -332,6 +547,8 @@ class MainActivity : Activity() {
             v.getLocationInWindow(loc)
             val cx = loc[0] + v.width * v.scaleX / 2f
             val cy = loc[1] + v.height * v.scaleY / 2f
+            spotX = cx
+            spotY = cy
             wave.setSpot(cx, cy, accent, spotSet)
             spotSet = true
         }
@@ -345,6 +562,7 @@ class MainActivity : Activity() {
         if (shown != app.pkg) {
             shown = app.pkg
             hero.show(app)
+            updateNow(NowPlaying.track)
         }
     }
 
@@ -418,6 +636,11 @@ class MainActivity : Activity() {
     }
 
     private fun checkNote(self: Runnable) {
+        if (Theme.gta) return
+        if (::search.isInitialized && search.showing) {
+            handler.postDelayed(self, 30_000L)
+            return
+        }
         Content.loadHsv { games ->
             if (!resumed) return@loadHsv
             hsvGames = games
@@ -433,10 +656,46 @@ class MainActivity : Activity() {
                 handler.postDelayed(self, wait)
                 return@loadHsv
             }
+            if (info.live && info.match != null) {
+                // waehrend des Spiels bleibt die Karte stehen und zeigt den Spielstand
+                note.setLive(info, 0, 0, null)
+                note.show()
+                greetAway(true)
+                liveOn = true
+                liveGoals = -1
+                handler.removeCallbacks(liveTick)
+                handler.post(liveTick)
+                return@loadHsv
+            }
             note.set(info)
             note.show()
+            greetAway(true)
             handler.postDelayed(noteTick, 30_000L)
             handler.postDelayed(noteHide, noteShowMs)
+        }
+    }
+
+    /** Live-Stand jede Minute; bei einem HSV-Tor die Tor-Animation. */
+    private val liveTick: Runnable = object : Runnable {
+        override fun run() {
+            if (!liveOn) return
+            val info = Hsv.info(hsvGames, System.currentTimeMillis())
+            val m = info?.match
+            if (info == null || !info.live || m == null || search.showing) {
+                liveOn = false
+                note.hide()
+                greetAway(false)
+                noteHiddenAt = android.os.SystemClock.uptimeMillis()
+                handler.postDelayed(noteCheck, notePauseMs)
+                return
+            }
+            Content.loadLive(m) { l ->
+                if (!liveOn || l == null) return@loadLive
+                note.setLive(info, l.hsv, l.opp, l.lastHsv)
+                if (liveGoals >= 0 && l.hsv > liveGoals) note.goal()
+                liveGoals = l.hsv
+            }
+            handler.postDelayed(this, 60_000L)
         }
     }
 
@@ -454,6 +713,7 @@ class MainActivity : Activity() {
     private val noteHide: Runnable = Runnable {
         handler.removeCallbacks(noteTick)
         note.hide()
+        greetAway(false)
         noteHiddenAt = android.os.SystemClock.uptimeMillis()
         handler.postDelayed(noteCheck, notePauseMs)
     }

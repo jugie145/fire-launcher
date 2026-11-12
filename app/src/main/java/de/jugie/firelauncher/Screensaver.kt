@@ -131,12 +131,19 @@ class ScreensaverDream : DreamService() {
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        isInteractive = false
+        // interaktiv, damit die Spotify-Steuerung geht; jede andere Taste beendet den Schoner
+        isInteractive = true
         isFullscreen = true
         isScreenBright = true
         val v = ScreensaverView(this)
         view = v
         setContentView(v)
+    }
+
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if (view?.media(event) == true) return true
+        if (event.action == KeyEvent.ACTION_UP) finish()
+        return true
     }
 
     override fun onDreamingStarted() {
@@ -180,6 +187,7 @@ class ScreensaverActivity : Activity() {
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if (view?.media(event) == true) return true
         // erst beim Loslassen schliessen, damit die Taste nicht im Fenster dahinter ankommt
         if (event.action == KeyEvent.ACTION_UP) {
             finish()
@@ -467,6 +475,33 @@ class ScreensaverView(ctx: Context) : FrameLayout(ctx) {
     private val wTemp2 = Ui.text(ctx, "", 26f, k, Color.WHITE, Ui.medium)
     private val wCond2 = Ui.text(ctx, "", 26f, k, 0xBFFFFFFF.toInt())
 
+    private val npCard = NowCard(ctx, k, saver = true)
+    private val npListen: (Spotify.Track?) -> Unit = { t ->
+        npCard.set(t)
+        val want = t != null
+        if (want != (npCard.visibility == View.VISIBLE)) {
+            if (want) {
+                npCard.visibility = View.VISIBLE
+                npCard.alpha = 0f
+                npCard.animate().alpha(1f).setDuration(600).start()
+            } else npCard.visibility = View.GONE
+        }
+    }
+
+    /** ◀ voriger, OK Pause, ▶ naechster Titel (und die Mediatasten), solange Musik laeuft. */
+    fun media(e: KeyEvent): Boolean {
+        if (NowPlaying.track == null) return false
+        val a = when (e.keyCode) {
+            KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_MEDIA_REWIND, KeyEvent.KEYCODE_MEDIA_PREVIOUS -> "prev"
+            KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.KEYCODE_MEDIA_FAST_FORWARD, KeyEvent.KEYCODE_MEDIA_NEXT -> "next"
+            KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE,
+            KeyEvent.KEYCODE_MEDIA_PLAY, KeyEvent.KEYCODE_MEDIA_PAUSE -> "toggle"
+            else -> return false
+        }
+        if (e.action == KeyEvent.ACTION_DOWN && e.repeatCount == 0) NowPlaying.control(context, a)
+        return true
+    }
+
     // Filme & Serien
     private val kinoGroup = FrameLayout(ctx)
     private val kino = KinoLayer(ctx)
@@ -616,19 +651,20 @@ class ScreensaverView(ctx: Context) : FrameLayout(ctx) {
             bottomMargin = px(112f)
         })
 
-        val source = Ui.text(context, "Daten: TMDB · JustWatch", 20f, k, 0x73FFFFFF)
-        kinoGroup.addView(source, LayoutParams(wrap, wrap, Gravity.BOTTOM or Gravity.END).apply {
-            rightMargin = px(112f)
-            bottomMargin = px(112f)
-        })
-
         kinoGroup.visibility = View.GONE
         addView(kinoGroup, LayoutParams(match, match))
+
+        // Spotify oben wie die HSV-Nachricht, auf einer Hoehe mit der Uhr
+        npCard.visibility = View.GONE
+        addView(npCard, LayoutParams(px(740f), px(204f), Gravity.TOP or Gravity.CENTER_HORIZONTAL).apply { topMargin = px(36f) })
     }
 
     fun start() {
         if (running) return
         running = true
+        NowPlaying.listen(npListen)
+        NowPlaying.start(context)
+        npListen(NowPlaying.track)
         mode = NONE
         t0 = SystemClock.uptimeMillis()
         bigFlip.start()
@@ -665,6 +701,10 @@ class ScreensaverView(ctx: Context) : FrameLayout(ctx) {
     }
 
     fun stop() {
+        if (running) {
+            NowPlaying.unlisten(npListen)
+            NowPlaying.stop()
+        }
         running = false
         bigFlip.stop()
         smallFlip.stop()
@@ -715,6 +755,8 @@ class ScreensaverView(ctx: Context) : FrameLayout(ctx) {
 
     private fun showWellen() {
         mode = WELLEN
+        (npCard.layoutParams as LayoutParams).topMargin = px(-20f)
+        npCard.requestLayout()
         handler.removeCallbacksAndMessages(null)
         kinoGroup.visibility = View.GONE
         wellen.visibility = View.VISIBLE
@@ -724,6 +766,8 @@ class ScreensaverView(ctx: Context) : FrameLayout(ctx) {
 
     private fun showKino() {
         mode = KINO
+        (npCard.layoutParams as LayoutParams).topMargin = px(36f)
+        npCard.requestLayout()
         handler.removeCallbacksAndMessages(null)
         wellen.visibility = View.GONE
         kinoGroup.visibility = View.VISIBLE

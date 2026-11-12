@@ -47,7 +47,7 @@ class DockTile(ctx: Context, val app: AppEntry, private val k: Float) : FrameLay
     private val kind = Content.kind(app)
     private val normal = ImageView(ctx)
     private val lit = ImageView(ctx)
-    private val comet = CometRing(ctx, k, ring(kind))
+    private val comet = CometRing(ctx, k, if (Theme.gta) Theme.PINK else ring(kind))
     private val sheen = View(ctx)
     private val logoBox = FrameLayout(ctx)
     private var logoLit: ImageView? = null
@@ -65,7 +65,7 @@ class DockTile(ctx: Context, val app: AppEntry, private val k: Float) : FrameLay
         normal.scaleType = ImageView.ScaleType.FIT_XY
         addView(normal, LayoutParams(g, g, Gravity.CENTER))
         lit.setImageResource(
-            when (kind) {
+            if (Theme.gta) R.drawable.glass_tile2_gta else when (kind) {
                 "youtube" -> R.drawable.glass_tile2_youtube
                 "twitch" -> R.drawable.glass_tile2_twitch
                 "netflix" -> R.drawable.glass_tile2_netflix
@@ -120,6 +120,22 @@ class DockTile(ctx: Context, val app: AppEntry, private val k: Float) : FrameLay
             iv.scaleType = ImageView.ScaleType.FIT_CENTER
             logoBox.addView(iv, LayoutParams(px(w), px(h), Gravity.CENTER))
             return iv
+        }
+        // GTA-Design: Logos weiss, ausgewaehlt im Verlauf Pink-Orange
+        val gta = if (!Theme.gta) null else when (kind) {
+            "youtube" -> Triple(R.drawable.gta_logo_youtube_w, R.drawable.gta_logo_youtube_g, 142 to 33)
+            "twitch" -> Triple(R.drawable.gta_logo_twitch_w, R.drawable.gta_logo_twitch_g, 114 to 113)
+            "netflix" -> Triple(R.drawable.gta_logo_netflix_w, R.drawable.gta_logo_netflix_g, 134 to 37)
+            "prime" -> Triple(R.drawable.gta_logo_prime_w, R.drawable.gta_logo_prime_g, 98 to 94)
+            "wow" -> Triple(R.drawable.gta_logo_wow_w, R.drawable.gta_logo_wow_g, 137 to 39)
+            "disney" -> Triple(R.drawable.gta_logo_disney_w, R.drawable.gta_logo_disney_g, 139 to 78)
+            "spotify" -> Triple(R.drawable.gta_logo_spotify_w, R.drawable.gta_logo_spotify_g, 148 to 45)
+            else -> null
+        }
+        if (gta != null) {
+            logoPlain = img(gta.first, gta.third.first, gta.third.second)
+            logoLit = img(gta.second, gta.third.first, gta.third.second).also { it.alpha = 0f }
+            return
         }
         when (kind) {
             "youtube" -> img(R.drawable.tile_logo_youtube, 142, 33)
@@ -214,7 +230,7 @@ class DockTile(ctx: Context, val app: AppEntry, private val k: Float) : FrameLay
 }
 
 /** Lichtpunkt mit Schweif in der App-Farbe, der einmal in 10 s um den Rahmen laeuft. */
-class CometRing(ctx: Context, private val k: Float, color: Int) : View(ctx) {
+class CometRing(ctx: Context, private val k: Float, color: Int, private val radius: Float = 22f) : View(ctx) {
     companion object {
         const val PAD = 14
         const val LAP = 10000L
@@ -258,7 +274,7 @@ class CometRing(ctx: Context, private val k: Float, color: Int) : View(ctx) {
         val angle = if (Ui.anims) ((SystemClock.uptimeMillis() - t0) % LAP) * 360f / LAP else 0f
         m.setRotate(angle - 90f, width / 2f, height / 2f)
         s.setLocalMatrix(m)
-        val r = 22f * k
+        val r = radius * k
         // weicher Schein in drei Stufen, dann die scharfe Linie
         for ((w, a) in arrayOf(18f to 50, 11f to 90, 7f to 140)) {
             soft.strokeWidth = w * k

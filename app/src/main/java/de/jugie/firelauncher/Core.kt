@@ -155,7 +155,18 @@ object Prefs {
     fun name(c: Context): String = sp(c).getString("name", "Julien") ?: "Julien"
 
     /** Aendert sich, sobald eine Einstellung geaendert wurde, die den Startbildschirm betrifft. */
-    fun sig(c: Context): String = "" + bg(c) + bgAnim(c) + glass(c) + anims(c) + h24(c)
+    /** 0 = Liquid Glass, 1 = GTA VI */
+    fun design(c: Context): Int = sp(c).getInt("design", 0)
+    fun setDesign(c: Context, v: Int) { sp(c).edit().putInt("design", v).apply() }
+    /** Farbfleck im Hintergrund aus dem gezeigten Bild statt in der App-Farbe */
+    fun contentColors(c: Context): Boolean = sp(c).getBoolean("content_colors", false)
+    fun setContentColors(c: Context, v: Boolean) { sp(c).edit().putBoolean("content_colors", v).apply() }
+    fun str(c: Context, key: String): String? = sp(c).getString(key, null)
+    fun setStr(c: Context, key: String, v: String?) { sp(c).edit().putString(key, v).apply() }
+    fun num(c: Context, key: String): Long = sp(c).getLong(key, 0L)
+    fun setNum(c: Context, key: String, v: Long) { sp(c).edit().putLong(key, v).apply() }
+
+    fun sig(c: Context): String = "" + bg(c) + bgAnim(c) + glass(c) + anims(c) + h24(c) + design(c) + contentColors(c)
 }
 
 object Setup {
@@ -226,6 +237,7 @@ object Ui {
     val medium: Typeface by lazy { Typeface.create("sans-serif-medium", Typeface.NORMAL) }
 
     fun load(c: Context) {
+        Theme.load(c)
         intensity = when (Prefs.glass(c)) { 0 -> 0.6f; 2 -> 1.45f; else -> 1f }
         anims = Prefs.anims(c)
     }

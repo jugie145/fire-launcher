@@ -81,6 +81,24 @@ class SettingsActivity : Activity() {
         }
         row(col, "Animationen", { onOff(Prefs.anims(this)) }) { Prefs.setAnims(this, !Prefs.anims(this)) }
         row(col, "Uhrzeitformat", { if (Prefs.h24(this)) "24 Stunden" else "12 Stunden" }) { Prefs.setH24(this, !Prefs.h24(this)) }
+        row(col, "Design", { if (Prefs.design(this) == 1) "GTA VI" else "Liquid Glass" }) {
+            Prefs.setDesign(this, if (Prefs.design(this) == 1) 0 else 1)
+        }
+        row(col, "Farben im Hintergrund", { if (Prefs.contentColors(this)) "Aus dem Inhalt" else "App-Farbe" }) {
+            Prefs.setContentColors(this, !Prefs.contentColors(this))
+        }
+
+        section(col, "Spotify")
+        row(col, "Spotify", { if (Spotify.connected(this)) "Verbunden" else "Nicht verbunden" }) {
+            if (Spotify.connected(this)) Spotify.logout(this)
+        }
+        info(col, "Zum Verbinden am Handy (im selben WLAN) öffnen:\nhttp://" + LocalServer.address() + "/login\n" +
+            "Dort bei Spotify anmelden – danach ist alles fertig. Spotify Premium wird für die Steuerung benötigt.", false)
+
+        section(col, "GTA-Hintergründe")
+        row(col, "Bilder auf dem Fernseher", { "" + Theme.bgFiles(this).size }) { }
+        info(col, "Zum Hochladen am Handy (im selben WLAN) öffnen:\nhttp://" + LocalServer.address() + "/bilder\n" +
+            "Bilder auswählen – sie wechseln im GTA-Design zufällig. Die Bilder bleiben nur auf dem Fernseher.", false)
 
         section(col, "App-Reihenfolge")
         orderRow = LinearLayout(this)
@@ -154,6 +172,9 @@ class SettingsActivity : Activity() {
 
         section(col, "Systeminformationen")
         info(col, sysInfo(), false)
+        info(col, "Datenquellen: Filme und Serien von TMDB, Anbieter-Daten von JustWatch. Diese App nutzt die " +
+            "TMDB-Schnittstelle, ist aber nicht von TMDB empfohlen oder zertifiziert. Musik-Charts: Apple Music. " +
+            "Fußball: OpenLigaDB. Wetter: Open-Meteo.", false)
 
         scroll.addView(col)
         val frame = FrameLayout(this)
@@ -175,12 +196,17 @@ class SettingsActivity : Activity() {
     override fun onResume() {
         super.onResume()
         wave.start()
+        // kleiner Webserver fuer Spotify-Anmeldung und Bilder vom Handy, nur solange diese Seite offen ist
+        LocalServer.onChange = { for (r in refreshers) r() }
+        LocalServer.start(this)
         if (Prefs.redirect(this) && Setup.canWrite(this)) Setup.enable(this)
         handler.removeCallbacks(sleepRefresh)
         handler.post(sleepRefresh)
     }
 
     override fun onPause() {
+        LocalServer.onChange = null
+        LocalServer.stop()
         handler.removeCallbacks(sleepRefresh)
         wave.stop()
         super.onPause()

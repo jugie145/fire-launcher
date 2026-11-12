@@ -38,5 +38,6 @@ jobs:
           cd out
           git init -q -b data
           git add content.json
+          if [ -f search.json ]; then git add search.json; fi
           git -c user.name="github-actions" -c user.email="actions@github.com" commit -qm "Inhalte aktualisiert"
           git push -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" data

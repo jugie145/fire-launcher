@@ -22,6 +22,12 @@ class RollingClock(ctx: Context, size: Float, face: Typeface, private val h24: B
         textSize = size
         typeface = face
     }
+    /** Schatten/Leuchten hinter den Ziffern (GTA-Design). */
+    fun shadow(radius: Float, dx: Float, dy: Float, color: Int) {
+        paint.setShadowLayer(radius, dx, dy, color)
+        invalidate()
+    }
+
     private val fm = paint.fontMetrics
     private val lineH = fm.descent - fm.ascent
     private var cur = now()

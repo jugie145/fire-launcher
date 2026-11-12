@@ -19,8 +19,8 @@ import java.util.TimeZone
 
 /** Naechste HSV-Spiele (aus content.json, Quelle OpenLigaDB) und wann die Nachricht erscheint. */
 object Hsv {
-    class Match(val kick: Long, val opp: String)
-    class Info(val title: String, val opp: String, val line3: String, val glow: Int)
+    class Match(val kick: Long, val opp: String, val id: Long = 0, val home: Boolean = true)
+    class Info(val title: String, val opp: String, val line3: String, val glow: Int, val live: Boolean = false, val match: Match? = null)
 
     const val BLUE = 0
     const val VIOLET = 1
@@ -69,16 +69,32 @@ object Hsv {
             left < 120 -> "Anstoß in 1 Std. " + (left - 60) + " Min. · $time Uhr"
             else -> "Anstoß: $time Uhr"
         }
-        return Info(title, m.opp, line3, glow)
+        return Info(title, m.opp, line3, glow, now >= m.kick, m)
     }
 }
 
-/** Mitteilung wie beim iPhone: gleitet oben herein, wird zum Verschwinden kurz gestaucht. */
+/**
+ * HSV-Karte (640 x 104) wie im Entwurf: neutrales Glas, ein Lichtpunkt in der Farbe der Nachricht
+ * laeuft um den Rand. Gleitet oben herein, wird zum Verschwinden kurz gestaucht.
+ * Waehrend des Spiels: Live-Stand, bei jedem HSV-Tor eine Tor-Animation.
+ */
 class HsvNoteView(ctx: Context, private val k: Float) : FrameLayout(ctx) {
     private val glass = ImageView(ctx)
+    private var comet: CometRing? = null
+    private var cometColor = 0
+    private val normal = LinearLayout(ctx)
+    private val live = LinearLayout(ctx)
     private val title: TextView
     private val opp: TextView
     private val line3: TextView
+    private val phase: TextView
+    private val score: TextView
+    private val oppLive: TextView
+    private val last: TextView
+    private val goalFlash = View(ctx)
+    private val goalText = LinearLayout(ctx)
+    private val goalScore: TextView
+    private val body = FrameLayout(ctx)
     private var anim: ValueAnimator? = null
     var showing = false
         private set
@@ -91,54 +107,149 @@ class HsvNoteView(ctx: Context, private val k: Float) : FrameLayout(ctx) {
     init {
         clipChildren = false
         clipToPadding = false
+        body.clipChildren = false
+        addView(body, LayoutParams(px(740), px(204)))
         glass.scaleType = ImageView.ScaleType.FIT_XY
-        glass.setImageResource(R.drawable.note_blue)
-        addView(glass, LayoutParams(px(740), px(236), Gravity.CENTER))
+        glass.setImageResource(R.drawable.glass_note_neutral)
+        body.addView(glass, LayoutParams(px(740), px(204)))
         val logo = ImageView(ctx)
         logo.setImageResource(R.drawable.logo_hsv)
         logo.scaleType = ImageView.ScaleType.FIT_XY
-        addView(logo, LayoutParams(px(88), px(66)).apply {
-            leftMargin = px(50 + 32)
-            topMargin = px(50 + 35)
-        })
-        val col = LinearLayout(ctx)
-        col.orientation = LinearLayout.VERTICAL
-        col.gravity = Gravity.CENTER_VERTICAL
-        title = Ui.text(ctx, "", 31f, k, Color.WHITE, Typeface.create("sans-serif", Typeface.BOLD))
-        opp = Ui.text(ctx, "", 23f, k, 0xE0FFFFFF.toInt())
-        line3 = Ui.text(ctx, "", 23f, k, 0xE0FFFFFF.toInt())
+        body.addView(logo, LayoutParams(px(72), px(54)).apply { leftMargin = px(50 + 20); topMargin = px(50 + 25) })
+        val bold = Typeface.create("sans-serif", Typeface.BOLD)
+
+        normal.orientation = LinearLayout.VERTICAL
+        normal.gravity = Gravity.CENTER_VERTICAL
+        title = Ui.text(ctx, "", 26f, k, Color.WHITE, bold)
+        opp = Ui.text(ctx, "", 19f, k, 0xE0FFFFFF.toInt())
+        line3 = Ui.text(ctx, "", 19f, k, 0xE0FFFFFF.toInt())
         for (t in listOf(title, opp, line3)) {
             t.maxLines = 1
-            t.includeFontPadding = true
+            normal.addView(t, LinearLayout.LayoutParams(-2, -2).apply { topMargin = px(2) })
         }
-        col.addView(title)
-        col.addView(opp, LinearLayout.LayoutParams(-2, -2).apply { topMargin = px(2) })
-        col.addView(line3, LinearLayout.LayoutParams(-2, -2).apply { topMargin = px(2) })
-        addView(col, LayoutParams(px(640 - 148 - 20), px(136)).apply {
-            leftMargin = px(50 + 148)
-            topMargin = px(50)
-        })
+        body.addView(normal, LayoutParams(px(500), px(104)).apply { leftMargin = px(50 + 114); topMargin = px(50) })
+
+        live.orientation = LinearLayout.VERTICAL
+        live.gravity = Gravity.CENTER_VERTICAL
+        val ph = LinearLayout(ctx)
+        ph.orientation = LinearLayout.HORIZONTAL
+        ph.gravity = Gravity.CENTER_VERTICAL
+        ph.addView(LiveDot(ctx), LinearLayout.LayoutParams(px(22), px(22)).apply { rightMargin = px(6) })
+        phase = Ui.text(ctx, "LIVE", 15f, k, 0xFFFF5A50.toInt(), Ui.medium)
+        phase.letterSpacing = 0.13f
+        ph.addView(phase)
+        live.addView(ph)
+        val sc = LinearLayout(ctx)
+        sc.orientation = LinearLayout.HORIZONTAL
+        sc.gravity = Gravity.BOTTOM
+        sc.addView(Ui.text(ctx, "HSV", 26f, k, Color.WHITE, bold))
+        score = Ui.text(ctx, "0 : 0", 32f, k, Color.WHITE, bold)
+        score.letterSpacing = 0.06f
+        sc.addView(score, LinearLayout.LayoutParams(-2, -2).apply { leftMargin = px(14) })
+        oppLive = Ui.text(ctx, "", 24f, k, 0xE6FFFFFF.toInt(), Ui.medium)
+        oppLive.maxLines = 1
+        sc.addView(oppLive, LinearLayout.LayoutParams(-2, -2).apply { leftMargin = px(14) })
+        live.addView(sc, LinearLayout.LayoutParams(-2, -2).apply { topMargin = px(2) })
+        last = Ui.text(ctx, "", 17f, k, 0xBFFFFFFF.toInt())
+        live.addView(last, LinearLayout.LayoutParams(-2, -2).apply { topMargin = px(2) })
+        live.visibility = View.GONE
+        body.addView(live, LayoutParams(px(500), px(104)).apply { leftMargin = px(50 + 114); topMargin = px(50) })
+
+        goalFlash.background = android.graphics.drawable.GradientDrawable().apply {
+            gradientType = android.graphics.drawable.GradientDrawable.RADIAL_GRADIENT
+            gradientRadius = 380f * k
+            colors = intArrayOf(0xE64696FF.toInt(), 0x334696FF, 0x004696FF)
+            cornerRadius = 24f * k
+        }
+        goalFlash.alpha = 0f
+        body.addView(goalFlash, LayoutParams(px(640), px(104)).apply { leftMargin = px(50); topMargin = px(50) })
+        goalText.orientation = LinearLayout.HORIZONTAL
+        goalText.gravity = Gravity.CENTER
+        val tor = Ui.text(ctx, "TOR!", 52f, k, Color.WHITE, bold)
+        tor.letterSpacing = 0.06f
+        tor.setShadowLayer(24f * k, 0f, 0f, 0xE64696FF.toInt())
+        goalText.addView(tor)
+        goalScore = Ui.text(ctx, "", 34f, k, Color.WHITE, bold)
+        goalText.addView(goalScore, LinearLayout.LayoutParams(-2, -2).apply { leftMargin = px(22) })
+        goalText.alpha = 0f
+        body.addView(goalText, LayoutParams(px(640), px(104)).apply { leftMargin = px(50); topMargin = px(50) })
+
         alpha = 0f
         visibility = View.INVISIBLE
+    }
+
+    private fun color(glow: Int): Int = when (glow) {
+        Hsv.VIOLET -> Color.rgb(150, 110, 255)
+        Hsv.RED -> Color.rgb(235, 60, 70)
+        else -> Color.rgb(70, 150, 255)
+    }
+
+    private fun ring(glow: Int) {
+        val c = color(glow)
+        if (comet != null && c == cometColor) return
+        comet?.let { body.removeView(it) }
+        cometColor = c
+        val r = CometRing(context, k, c, 24f)
+        body.addView(r, 1, LayoutParams(px(640 + 2 * CometRing.PAD), px(104 + 2 * CometRing.PAD)).apply {
+            leftMargin = px(50 - CometRing.PAD)
+            topMargin = px(50 - CometRing.PAD)
+        })
+        comet = r
+        if (showing) r.start()
     }
 
     fun set(i: Hsv.Info) {
         title.text = i.title
         opp.text = "Gegner: " + i.opp
         line3.text = i.line3
-        glass.setImageResource(
-            when (i.glow) {
-                Hsv.VIOLET -> R.drawable.note_violet
-                Hsv.RED -> R.drawable.note_red
-                else -> R.drawable.note_blue
-            }
-        )
+        normal.visibility = View.VISIBLE
+        live.visibility = View.GONE
+        ring(i.glow)
+    }
+
+    /** Live-Stand; lastHsv = letztes Tor fuer den HSV (null = noch keins). */
+    fun setLive(i: Hsv.Info, hsvGoals: Int, oppGoals: Int, lastHsv: Boolean?) {
+        normal.visibility = View.GONE
+        live.visibility = View.VISIBLE
+        oppLive.text = i.opp
+        score.text = "$hsvGoals : $oppGoals"
+        goalScore.text = "HSV $hsvGoals : $oppGoals"
+        val time = java.text.SimpleDateFormat("HH:mm", Locale.GERMANY).format(Date(i.match?.kick ?: 0L))
+        last.text = when (lastHsv) {
+            null -> "Anstoß war um $time Uhr"
+            true -> "Zuletzt: Tor für den HSV"
+            false -> "Zuletzt: Tor für " + i.opp
+        }
+        ring(Hsv.BLUE)
+    }
+
+    /** Tor fuer den HSV: Aufblitzen, "TOR!" springt auf, die Karte wackelt. */
+    fun goal() {
+        if (!Ui.anims) return
+        live.animate().alpha(0f).setDuration(200).start()
+        goalFlash.alpha = 0f
+        goalFlash.animate().alpha(0.85f).setDuration(430).withEndAction {
+            goalFlash.animate().alpha(0f).setDuration(3100).start()
+        }.start()
+        goalText.alpha = 0f
+        goalText.scaleX = 0.6f
+        goalText.scaleY = 0.6f
+        goalText.animate().alpha(1f).scaleX(1f).scaleY(1f).setDuration(900).setInterpolator(PathInterpolator(0.2f, 1.6f, 0.3f, 1f)).start()
+        val shake = android.animation.ObjectAnimator.ofFloat(body, View.TRANSLATION_X, 0f, -6f * k, 6f * k, -4f * k, 3f * k, 0f)
+        shake.duration = 600
+        shake.startDelay = 120
+        shake.start()
+        postDelayed({
+            goalText.animate().alpha(0f).setDuration(300).start()
+            live.animate().alpha(1f).setDuration(300).start()
+        }, 3800)
     }
 
     fun show() {
         anim?.cancel()
         showing = true
         visibility = View.VISIBLE
+        comet?.start()
         pivotX = width / 2f
         pivotY = px(50).toFloat()
         scaleX = 1f
@@ -168,6 +279,7 @@ class HsvNoteView(ctx: Context, private val k: Float) : FrameLayout(ctx) {
         if (!animate || !Ui.anims) {
             alpha = 0f
             visibility = View.INVISIBLE
+            comet?.stop()
             return
         }
         pivotX = width / 2f
@@ -177,14 +289,12 @@ class HsvNoteView(ctx: Context, private val k: Float) : FrameLayout(ctx) {
         a.addUpdateListener {
             val f = it.animatedFraction
             if (f < 0.28f) {
-                // kurz stauchen
                 val e = easeOut.getInterpolation(f / 0.28f)
                 translationY = 5f * k * e
                 scaleX = 1f - 0.03f * e
                 scaleY = 1f - 0.10f * e
                 alpha = 1f
             } else {
-                // und nach oben weg
                 val e = easeIn.getInterpolation((f - 0.28f) / 0.72f)
                 translationY = 5f * k + (-205f * k) * e
                 scaleX = 0.97f - 0.05f * e
@@ -194,7 +304,10 @@ class HsvNoteView(ctx: Context, private val k: Float) : FrameLayout(ctx) {
         }
         a.addListener(object : android.animation.AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: android.animation.Animator) {
-                if (!showing) visibility = View.INVISIBLE
+                if (!showing) {
+                    visibility = View.INVISIBLE
+                    comet?.stop()
+                }
             }
         })
         a.start()

@@ -24,7 +24,7 @@ p{color:rgba(255,255,255,.75);margin:0}
   var t = document.getElementById('t'), m = document.getElementById('m');
   if (err) { t.textContent = 'Abgebrochen'; m.textContent = 'Spotify hat die Anmeldung nicht erlaubt (' + err + ').'; return; }
   var target = state.split('~')[0];
-  if (!code || !/^\d{1,3}(\.\d{1,3}){3}:\d{2,5}$/.test(target)) { t.textContent = 'Ungültiger Link'; m.textContent = 'Bitte den QR-Code auf dem Fernseher neu scannen.'; return; }
+  if (!code || !/^\d{1,3}(\.\d{1,3}){3}:\d{2,5}$/.test(target)) { t.textContent = 'Ungültiger Link'; m.textContent = 'Bitte am Fernseher in den Einstellungen die Anmeldung neu starten.'; return; }
   location.replace('http://' + target + '/spotify?code=' + encodeURIComponent(code) + '&state=' + encodeURIComponent(state));
 })();
 </script>

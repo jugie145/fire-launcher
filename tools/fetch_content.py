@@ -319,13 +319,117 @@ def hsv():
             if kick < now - datetime.timedelta(hours=3):
                 continue
             games.append({"utc": utc + "Z", "opp": t2 if home else t1, "home": home,
-                          "league": m.get("leagueName") or league})
+                          "league": m.get("leagueName") or league, "id": m.get("matchID") or 0})
     games.sort(key=lambda g: g["utc"])
     return games[:4]
 
 
+# ---------------- Live-Sport bei WOW (OpenLigaDB) ----------------
+# WOW zeigt das Sky-Programm: Bundesliga freitags und samstags, die ganze 2. Bundesliga, DFB-Pokal.
+
+WEEKDAYS = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]
+
+
+def wow_sport():
+    now = datetime.datetime.utcnow()
+    season = now.year if now.month >= 7 else now.year - 1
+    out = []
+    for league, name in (("bl1", "Bundesliga"), ("bl2", "2. Bundesliga"), ("dfb", "DFB-Pokal")):
+        try:
+            data = http("https://api.openligadb.de/getmatchdata/%s/%d" % (league, season))
+        except Exception:  # noqa: BLE001
+            continue
+        for m in data or []:
+            utc = (m.get("matchDateTimeUTC") or "")[:19]
+            try:
+                kick = datetime.datetime.strptime(utc, "%Y-%m-%dT%H:%M:%S")
+            except ValueError:
+                continue
+            if kick < now - datetime.timedelta(hours=2) or kick > now + datetime.timedelta(days=8):
+                continue
+            local = kick + datetime.timedelta(hours=1 if not (3 < kick.month < 11) else 2)
+            if league == "bl1" and local.weekday() not in (4, 5):
+                continue
+            t1 = ((m.get("team1") or {}).get("teamName") or "").strip()
+            t2 = ((m.get("team2") or {}).get("teamName") or "").strip()
+            if not t1 or not t2:
+                continue
+            out.append({
+                "title": "%s – %s" % (t1, t2),
+                "meta": "%s  ·  %s %s Uhr" % (name, WEEKDAYS[local.weekday()], local.strftime("%H:%M")),
+                "desc": "Live bei WOW.",
+                "label": "Live-Sport bei WOW",
+                "images": [],
+                "utc": utc + "Z",
+            })
+    out.sort(key=lambda x: x["utc"])
+    return out[:12]
+
+
+# ---------------- Suchindex: Filme und Serien bei Netflix, Prime Video, WOW, Disney+ ----------------
+
+SEARCH_URL = "https://raw.githubusercontent.com/jugie145/fire-launcher/data/search.json"
+
+
+def search_index():
+    """Einmal am Tag neu, sonst den vorhandenen Index weiterverwenden."""
+    try:
+        old = http(SEARCH_URL)
+        ts = datetime.datetime.strptime(old.get("updated", ""), "%Y-%m-%dT%H:%M:%SZ")
+        if datetime.datetime.utcnow() - ts < datetime.timedelta(hours=20) and len(old.get("items", [])) > 100:
+            return old, False
+    except Exception:  # noqa: BLE001
+        pass
+    names = {}
+    for p in tmdb("/watch/providers/tv", watch_region="DE", language="de-DE").get("results", []):
+        names[p.get("provider_name", "").strip().lower()] = p.get("provider_id")
+    wanted = [("Netflix", names.get("netflix", 8)), ("Prime Video", names.get("amazon prime video", 9)),
+              ("WOW", names.get("wow", 30)), ("Disney+", names.get("disney plus", 337))]
+    found = {}
+
+    def add(r, tv, prov):
+        title = ((r.get("name") if tv else r.get("title")) or "").strip()
+        if not title:
+            return
+        key = ("s" if tv else "f") + str(r.get("id"))
+        e = found.get(key)
+        if e is None:
+            date = (r.get("first_air_date") if tv else r.get("release_date")) or ""
+            e = {"t": title, "o": ((r.get("original_name") if tv else r.get("original_title")) or "").strip(),
+                 "y": date[:4], "k": "Serie" if tv else "Film", "p": [],
+                 "img": ("https://image.tmdb.org/t/p/w342" + r["poster_path"]) if r.get("poster_path") else "",
+                 "pop": r.get("popularity") or 0}
+            found[key] = e
+        if prov not in e["p"]:
+            e["p"].append(prov)
+
+    for prov, pid in wanted:
+        for kind in ("movie", "tv"):
+            for page in range(1, 11):
+                try:
+                    res = tmdb("/discover/" + kind, language="de-DE", watch_region="DE", with_watch_providers=pid,
+                               with_watch_monetization_types="flatrate", sort_by="popularity.desc", page=page)
+                except Exception:  # noqa: BLE001
+                    break
+                for r in res.get("results", []):
+                    add(r, kind == "tv", prov)
+                if page >= (res.get("total_pages") or 1):
+                    break
+    for page in (1, 2, 3):
+        try:
+            for r in tmdb("/movie/now_playing", language="de-DE", region="DE", page=page).get("results", []):
+                add(r, False, "Im Kino")
+        except Exception:  # noqa: BLE001
+            break
+    items = sorted(found.values(), key=lambda e: -e["pop"])
+    for e in items:
+        e.pop("pop", None)
+    return {"updated": datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"), "items": items}, True
+
+
 def main():
     target = sys.argv[1] if len(sys.argv) > 1 else "content.json"
+    os.makedirs(os.path.dirname(os.path.abspath(target)), exist_ok=True)
     with open(os.path.join(HERE, "config.json"), encoding="utf-8") as f:
         config = json.load(f)
     out = {"updated": datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"), "status": {}}
@@ -365,12 +469,29 @@ def main():
         out["status"]["kanaele"] = problem(e)
 
     try:
+        sport = wow_sport()
+        if sport:
+            wow = out.setdefault("wow", {"label": "WOW", "source": "", "items": []})
+            wow["items"] = sport + wow.get("items", [])
+        out["status"]["sport"] = "ok (%d Spiele)" % len(sport)
+    except Exception as e:  # noqa: BLE001
+        out["status"]["sport"] = problem(e)
+
+    if os.environ.get("TMDB_KEY", "").strip():
+        try:
+            idx, fresh = search_index()
+            with open(os.path.join(os.path.dirname(os.path.abspath(target)), "search.json"), "w", encoding="utf-8") as f:
+                json.dump(idx, f, ensure_ascii=False, separators=(",", ":"))
+            out["status"]["suche"] = "ok (%d Titel%s)" % (len(idx["items"]), ", neu" if fresh else "")
+        except Exception as e:  # noqa: BLE001
+            out["status"]["suche"] = problem(e)
+
+    try:
         out["hsv"] = hsv()
         out["status"]["hsv"] = "ok (%d Spiele)" % len(out["hsv"])
     except Exception as e:  # noqa: BLE001
         out["status"]["hsv"] = problem(e)
 
-    os.makedirs(os.path.dirname(os.path.abspath(target)), exist_ok=True)
     with open(target, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=1)
     print(json.dumps(out["status"], ensure_ascii=False))

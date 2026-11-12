@@ -99,6 +99,30 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
     private var dataLabel = ""
     private val lit = ImageView(ctx)
 
+    // "Laeuft gerade" in gross, wenn Spotify ausgewaehlt ist und Musik laeuft
+    private val npBox = LinearLayout(ctx)
+    private val npCover = ImageView(ctx)
+    private val npGlow = View(ctx)
+    private lateinit var npEq: EqBars
+    private lateinit var npTitle: TextView
+    private lateinit var npArtist: TextView
+    private lateinit var npAlbum: TextView
+    private lateinit var npPos: TextView
+    private lateinit var npLen: TextView
+    private val npBarBg = View(ctx)
+    private val npBar = View(ctx)
+    private var npOn = false
+    private var npUrl = ""
+    private val npTick = object : Runnable {
+        override fun run() {
+            npProgress()
+            if (npOn) handler.postDelayed(this, 1000)
+        }
+    }
+
+    /** Farbe des gezeigten Bildes (fuer "Farben aus dem Inhalt"). */
+    var onColor: ((Int) -> Unit)? = null
+
     /** Wird bei OK auf der Flaeche aufgerufen: App und der gerade gezeigte Eintrag. */
     var onOpen: ((AppEntry, HeroItem?) -> Unit)? = null
 
@@ -118,6 +142,15 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
         lit.alpha = 0f
         addView(lit, LayoutParams(px(1768), px(468), Gravity.CENTER))
 
+        if (Theme.gta) {
+            val tint = View(ctx)
+            tint.background = GradientDrawable(
+                GradientDrawable.Orientation.TL_BR,
+                intArrayOf(0x33FF3FA4, 0x9E1A082E.toInt(), 0x801A082E.toInt(), 0x1F50E1FF)
+            ).apply { cornerRadius = 46f * k }
+            addView(tint, LayoutParams(match, match))
+            addView(EdgeGlow(ctx, k, 46f), LayoutParams(px(1760 + 40), px(460 + 40), Gravity.CENTER))
+        }
         val clip = FrameLayout(ctx)
         clip.outlineProvider = object : ViewOutlineProvider() {
             override fun getOutline(v: View, o: Outline) {
@@ -181,7 +214,18 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
         dots.visibility = View.GONE
         addView(dots, LayoutParams(wrap, wrap, Gravity.START or Gravity.BOTTOM).apply { leftMargin = px(72); bottomMargin = px(38) })
         source = Ui.text(ctx, "", 18f, k, Ui.TEXT_DIM)
+        // keine Hinweise und keine Quellenangabe mehr (Quellen stehen in den Einstellungen)
+        source.visibility = View.GONE
         addView(source, LayoutParams(wrap, wrap, Gravity.END or Gravity.BOTTOM).apply { rightMargin = px(44); bottomMargin = px(30) })
+        if (Theme.gta) {
+            title.typeface = Theme.bold
+            title.isAllCaps = true
+            Theme.sunsetText(title)
+            label.setTextColor(Theme.CYAN)
+            label.typeface = Theme.bold
+            label.setShadowLayer(10f * k, 0f, 0f, 0xB346E1FF.toInt())
+        }
+        buildNowPlaying(ctx)
 
         // Mit "Hoch" anwaehlbar: links/rechts blaettert, OK oeffnet den gezeigten Eintrag
         isFocusable = true
@@ -192,10 +236,12 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
         }
         setOnClickListener {
             val a = app
-            if (a != null) onOpen?.invoke(a, items.getOrNull(index))
+            if (a != null) onOpen?.invoke(a, if (npOn) null else items.getOrNull(index))
         }
         setOnKeyListener { _, code, ev ->
-            if (code == KeyEvent.KEYCODE_DPAD_LEFT || code == KeyEvent.KEYCODE_DPAD_RIGHT) {
+            if (npOn) {
+                false
+            } else if (code == KeyEvent.KEYCODE_DPAD_LEFT || code == KeyEvent.KEYCODE_DPAD_RIGHT) {
                 if (ev.action == KeyEvent.ACTION_DOWN && items.size > 1) {
                     index = (index + (if (code == KeyEvent.KEYCODE_DPAD_LEFT) -1 else 1) + items.size) % items.size
                     render()
@@ -208,6 +254,7 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
     }
 
     private fun updateSource() {
+        if (source.visibility == View.GONE) return
         if (isFocused) {
             val link = items.getOrNull(index)?.link ?: ""
             val what = when {
@@ -228,6 +275,7 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
         token++
         val my = token
         this.app = app
+        nowPlaying(NowPlaying.track)
         accent = Ui.accentFor(app)
         val res = Ui.logoRes(app)
         if (res != 0) logo.setImageResource(res) else logo.setImageDrawable(app.icon ?: app.banner)
@@ -270,7 +318,7 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
 
     private fun schedule() {
         handler.removeCallbacks(next)
-        if (running && items.size > 1 && !isFocused) handler.postDelayed(next, 6000)
+        if (running && !npOn && items.size > 1 && !isFocused) handler.postDelayed(next, 6000)
     }
 
     private fun advance() {
@@ -344,11 +392,12 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
 
     private fun image(item: HeroItem, b: Bitmap?) {
         val d = Ui.d(700)
+        if (b != null && !npOn) onColor?.invoke(dominant(b))
         if (item.square) {
             swap(null, d)
             if (b != null) {
                 cover.setImageBitmap(b)
-                cover.animate().alpha(1f).setDuration(d).start()
+                if (!npOn) cover.animate().alpha(1f).setDuration(d).start()
             } else {
                 cover.animate().alpha(0f).setDuration(d).start()
             }
@@ -361,6 +410,12 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
     private fun swap(b: Bitmap?, d: Long) {
         val back = if (front === imgA) imgB else imgA
         back.set(b, accent)
+        if (npOn) {
+            back.alpha = 0f
+            front.alpha = 0f
+            front = back
+            return
+        }
         back.animate().alpha(1f).setDuration(d).start()
         front.animate().alpha(0f).setDuration(d).start()
         front = back
@@ -374,5 +429,181 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
     fun stop() {
         running = false
         handler.removeCallbacks(next)
+    }
+
+    private fun buildNowPlaying(ctx: Context) {
+        val accent = if (Theme.gta) 0xFFFF4FB0.toInt() else 0xFF1ED760.toInt()
+        npGlow.background = GradientDrawable().apply {
+            gradientType = GradientDrawable.RADIAL_GRADIENT
+            gradientRadius = 520f * k
+            colors = intArrayOf((accent and 0x00FFFFFF) or 0x4D000000, (accent and 0x00FFFFFF) or 0x0F000000, accent and 0x00FFFFFF)
+        }
+        npGlow.alpha = 0f
+        addView(npGlow, LayoutParams(px(1120), match, Gravity.END))
+        npCover.scaleType = ImageView.ScaleType.CENTER_CROP
+        npCover.background = GradientDrawable(GradientDrawable.Orientation.TL_BR, intArrayOf((accent and 0x00FFFFFF) or 0x73000000, 0xE610141C.toInt()))
+        npCover.outlineProvider = object : ViewOutlineProvider() {
+            override fun getOutline(v: View, o: Outline) = o.setRoundRect(0, 0, v.width, v.height, 28f * k)
+        }
+        npCover.clipToOutline = true
+        npCover.alpha = 0f
+        addView(npCover, LayoutParams(px(340), px(340), Gravity.END or Gravity.CENTER_VERTICAL).apply { rightMargin = px(110) })
+
+        npBox.orientation = LinearLayout.VERTICAL
+        npBox.gravity = Gravity.CENTER_VERTICAL
+        val head = LinearLayout(ctx)
+        head.orientation = LinearLayout.HORIZONTAL
+        head.gravity = Gravity.CENTER_VERTICAL
+        val logo = ImageView(ctx)
+        logo.setImageResource(R.drawable.logo_spotify)
+        logo.adjustViewBounds = true
+        head.addView(logo, LinearLayout.LayoutParams(wrap, px(40)))
+        npEq = EqBars(ctx, accent)
+        head.addView(npEq, LinearLayout.LayoutParams(px(35), px(22)).apply { leftMargin = px(20) })
+        val lab = Ui.text(ctx, "LÄUFT GERADE", 20f, k, accent, if (Theme.gta) Theme.bold else Ui.medium)
+        lab.letterSpacing = 0.15f
+        head.addView(lab, LinearLayout.LayoutParams(wrap, wrap).apply { leftMargin = px(20) })
+        npBox.addView(head)
+        npTitle = Ui.text(ctx, "", 66f, k, Color.WHITE, if (Theme.gta) Theme.bold else Ui.medium)
+        npTitle.maxLines = 2
+        npTitle.ellipsize = TextUtils.TruncateAt.END
+        if (Theme.gta) {
+            npTitle.isAllCaps = true
+            Theme.sunsetText(npTitle)
+        }
+        npBox.addView(npTitle, LinearLayout.LayoutParams(wrap, wrap).apply { topMargin = px(16) })
+        npArtist = Ui.text(ctx, "", 30f, k, 0xD9FFFFFF.toInt())
+        npArtist.maxLines = 1
+        npBox.addView(npArtist, LinearLayout.LayoutParams(wrap, wrap).apply { topMargin = px(16) })
+        npAlbum = Ui.text(ctx, "", 24f, k, 0x99FFFFFF.toInt())
+        npAlbum.maxLines = 1
+        npBox.addView(npAlbum, LinearLayout.LayoutParams(wrap, wrap).apply { topMargin = px(12) })
+        val prog = LinearLayout(ctx)
+        prog.orientation = LinearLayout.HORIZONTAL
+        prog.gravity = Gravity.CENTER_VERTICAL
+        npPos = Ui.text(ctx, "0:00", 20f, k, 0xA6FFFFFF.toInt())
+        prog.addView(npPos)
+        val track = FrameLayout(ctx)
+        npBarBg.background = GradientDrawable().apply { setColor(0x33FFFFFF); cornerRadius = 3f * k }
+        track.addView(npBarBg, LayoutParams(match, match))
+        npBar.background = if (Theme.gta) GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, intArrayOf(Theme.PINK, Theme.ORANGE)).apply { cornerRadius = 3f * k }
+        else GradientDrawable().apply { setColor(accent); cornerRadius = 3f * k }
+        track.addView(npBar, LayoutParams(0, match))
+        prog.addView(track, LinearLayout.LayoutParams(px(560), px(6)).apply { leftMargin = px(18); rightMargin = px(18) })
+        npLen = Ui.text(ctx, "0:00", 20f, k, 0xA6FFFFFF.toInt())
+        prog.addView(npLen)
+        npBox.addView(prog, LinearLayout.LayoutParams(wrap, wrap).apply { topMargin = px(26) })
+        npBox.alpha = 0f
+        npBox.visibility = View.GONE
+        addView(npBox, LayoutParams(px(960), match).apply { leftMargin = px(72) })
+    }
+
+    /** Wechselt zwischen normalen Vorschlaegen und "Laeuft gerade" (nur bei Spotify). */
+    fun nowPlaying(t: Spotify.Track?) {
+        val want = t != null && app != null && Content.kind(app!!) == "spotify"
+        if (t != null && want) {
+            npTitle.text = t.title
+            npArtist.text = t.artist
+            npAlbum.text = if (t.album.isBlank()) "" else "Album: " + t.album
+            npEq.playing = t.playing
+            npLen.text = mmss(t.duration)
+            if (t.cover != npUrl) {
+                npUrl = t.cover
+                if (t.cover.isNotBlank()) Images.load(listOf(t.cover)) { b -> if (b != null && npUrl == t.cover) npCover.setImageBitmap(b) }
+            }
+        }
+        if (want == npOn) return
+        npOn = want
+        val d = Ui.d(500)
+        if (want) {
+            handler.removeCallbacks(next)
+            npBox.visibility = View.VISIBLE
+            npBox.animate().alpha(1f).setDuration(d).start()
+            npCover.animate().alpha(1f).setDuration(d).start()
+            npGlow.animate().alpha(1f).setDuration(d).start()
+            for (v in listOf<View>(texts, cover, imgA, imgB)) v.animate().alpha(0f).setDuration(d).start()
+            handler.post(npTick)
+        } else {
+            npBox.animate().alpha(0f).setDuration(d).withEndAction { if (!npOn) npBox.visibility = View.GONE }.start()
+            npCover.animate().alpha(0f).setDuration(d).start()
+            npGlow.animate().alpha(0f).setDuration(d).start()
+            texts.animate().alpha(1f).setDuration(d).start()
+            front.animate().alpha(1f).setDuration(d).start()
+            handler.removeCallbacks(npTick)
+            render()
+            schedule()
+        }
+    }
+
+    private fun npProgress() {
+        val t = NowPlaying.track ?: return
+        val pos = NowPlaying.position()
+        npPos.text = mmss(pos)
+        val w = npBarBg.width
+        if (w > 0) {
+            val lp = npBar.layoutParams
+            lp.width = (w * pos.toFloat() / Math.max(1L, t.duration)).toInt()
+            npBar.layoutParams = lp
+        }
+    }
+
+    private fun mmss(ms: Long): String {
+        val s = ms / 1000
+        return "" + (s / 60) + ":" + String.format("%02d", s % 60)
+    }
+
+    /** Kraeftigste Farbe eines Bildes (grob abgetastet). */
+    private fun dominant(b: Bitmap): Int {
+        val hsv = FloatArray(3)
+        var best = Ui.lastAccent
+        var score = -1f
+        val sx = Math.max(1, b.width / 24)
+        val sy = Math.max(1, b.height / 14)
+        var y = 0
+        while (y < b.height) {
+            var x = 0
+            while (x < b.width) {
+                val c = b.getPixel(x, y)
+                Color.colorToHSV(c, hsv)
+                val sc = hsv[1] * hsv[2] * (if (hsv[2] > 0.25f) 1f else 0.2f)
+                if (sc > score) {
+                    score = sc
+                    best = c
+                }
+                x += sx
+            }
+            y += sy
+        }
+        Color.colorToHSV(best, hsv)
+        hsv[2] = Math.max(hsv[2], 0.8f)
+        return Color.HSVToColor(hsv)
+    }
+}
+
+/** Leuchtender Rand mit Verlauf Pink - Orange - Cyan (GTA-Design). */
+class EdgeGlow(ctx: Context, private val k: Float, private val radius: Float) : View(ctx) {
+    private val glow = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE }
+    private val line = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE }
+    private val r = android.graphics.RectF()
+
+    init {
+        setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, ow: Int, oh: Int) {
+        val g = LinearGradient(0f, 0f, w.toFloat(), 0f, intArrayOf(Theme.PINK, 0xFFFF9A5B.toInt(), 0xFF5BE6FF.toInt()), null, Shader.TileMode.CLAMP)
+        line.shader = g
+        glow.shader = g
+        glow.strokeWidth = 8f * k
+        glow.maskFilter = android.graphics.BlurMaskFilter(10f * k, android.graphics.BlurMaskFilter.Blur.NORMAL)
+        glow.alpha = 200
+        line.strokeWidth = 2f * k
+        val inset = 20f * k
+        r.set(inset, inset, w - inset, h - inset)
+    }
+
+    override fun onDraw(c: Canvas) {
+        c.drawRoundRect(r, radius * k, radius * k, glow)
+        c.drawRoundRect(r, radius * k, radius * k, line)
     }
 }
