@@ -58,6 +58,7 @@ class SettingsActivity : Activity() {
         super.onCreate(savedInstanceState)
         k = resources.displayMetrics.widthPixels / 1920f
         Ui.load(this)
+        LocalServer.start(this)
         bgSig = "" + Prefs.bgAnim(this) + Prefs.anims(this)
         glassSig = Prefs.glass(this)
 
@@ -206,7 +207,7 @@ class SettingsActivity : Activity() {
 
     override fun onPause() {
         LocalServer.onChange = null
-        LocalServer.stop()
+        LocalServer.stopLater()
         handler.removeCallbacks(sleepRefresh)
         wave.stop()
         super.onPause()

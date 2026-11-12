@@ -292,25 +292,44 @@ object LocalServer {
     private val main = Handler(Looper.getMainLooper())
     var onChange: (() -> Unit)? = null
 
-    fun ip(): String? {
+    /** IP-Adresse im WLAN. Wichtig: nicht die von Wi-Fi Direct (p2p0, oft 192.168.49.1). */
+    fun ip(c: Context? = appCtx): String? {
         try {
-            for (ni in Collections.list(NetworkInterface.getNetworkInterfaces())) {
-                if (!ni.isUp || ni.isLoopback) continue
-                for (a in Collections.list(ni.inetAddresses)) {
-                    if (a is Inet4Address && !a.isLoopbackAddress) return a.hostAddress
-                }
+            val cm = c?.getSystemService(Context.CONNECTIVITY_SERVICE) as? android.net.ConnectivityManager
+            val lp = cm?.getLinkProperties(cm.activeNetwork)
+            val a = lp?.linkAddresses?.map { it.address }?.firstOrNull { it is Inet4Address && !it.isLoopbackAddress }
+            if (a != null) return a.hostAddress
+        } catch (e: Exception) {
+        }
+        try {
+            val list = Collections.list(NetworkInterface.getNetworkInterfaces())
+                .filter { it.isUp && !it.isLoopback && !it.name.startsWith("p2p") }
+                .sortedBy { if (it.name.startsWith("wlan") || it.name.startsWith("eth")) 0 else 1 }
+            for (ni in list) for (a in Collections.list(ni.inetAddresses)) {
+                if (a is Inet4Address && !a.isLoopbackAddress) return a.hostAddress
             }
         } catch (e: Exception) {
         }
         return null
     }
 
+    @Volatile private var appCtx: Context? = null
+
     fun address(): String = (ip() ?: "?") + ":" + PORT
 
     fun start(c: Context) {
+        appCtx = c.applicationContext
+        main.removeCallbacks(stopper)
         if (sock != null) return
         val app = c.applicationContext
-        val s = try { ServerSocket(PORT) } catch (e: Exception) { return }
+        val s = try {
+            ServerSocket().apply {
+                reuseAddress = true
+                bind(java.net.InetSocketAddress(PORT))
+            }
+        } catch (e: Exception) {
+            return
+        }
         sock = s
         Thread {
             while (!s.isClosed) {
@@ -321,8 +340,17 @@ object LocalServer {
     }
 
     fun stop() {
+        main.removeCallbacks(stopper)
         try { sock?.close() } catch (e: Exception) { }
         sock = null
+    }
+
+    private val stopper = Runnable { stop() }
+
+    /** Erst nach 15 Minuten abschalten, damit Anmeldung/Hochladen in Ruhe klappt (auch wenn der Schoner kommt). */
+    fun stopLater() {
+        main.removeCallbacks(stopper)
+        main.postDelayed(stopper, 15 * 60_000L)
     }
 
     private fun handle(c: Context, cl: Socket) {
