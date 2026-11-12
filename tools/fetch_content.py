@@ -348,11 +348,19 @@ def netflix_ids(tmdb_keys):
         try:
             if i:
                 time.sleep(1.5)
-            data = http("https://query.wikidata.org/sparql",
+            data = None
+            for attempt in range(3):
+                try:
+                    data = http("https://query.wikidata.org/sparql",
                         {"User-Agent": "LiquidTV/1.0 (github.com/jugie145/fire-launcher)",
                          "Accept": "application/sparql-results+json",
                          "Content-Type": "application/x-www-form-urlencoded"},
                         urllib.parse.urlencode({"query": q, "format": "json"}).encode())
+                    break
+                except Exception:  # noqa: BLE001
+                    if attempt == 2:
+                        raise
+                    time.sleep(3)
             for b in data.get("results", {}).get("bindings", []):
                 out[b["kind"]["value"] + "/" + b["tid"]["value"]] = b["nf"]["value"]
         except Exception as e:  # noqa: BLE001
@@ -413,7 +421,7 @@ def search_index():
     try:
         old = http(SEARCH_URL)
         ts = datetime.datetime.strptime(old.get("updated", ""), "%Y-%m-%dT%H:%M:%SZ")
-        if old.get("v") == 4 and datetime.datetime.utcnow() - ts < datetime.timedelta(hours=20) and len(old.get("items", [])) > 100:
+        if old.get("v") == 5 and datetime.datetime.utcnow() - ts < datetime.timedelta(hours=20) and len(old.get("items", [])) > 100:
             return old, False
     except Exception:  # noqa: BLE001
         pass
@@ -467,7 +475,7 @@ def search_index():
         tid = e.pop("id", "")
         if tid in nf and "Netflix" in e["p"]:
             e["nf"] = nf[tid]
-    return {"v": 4, "updated": datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"), "items": items}, True
+    return {"v": 5, "updated": datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"), "items": items}, True
 
 
 def main():
