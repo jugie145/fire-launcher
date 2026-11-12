@@ -248,12 +248,13 @@ class WeatherIcon(ctx: Context) : View(ctx) {
         // weiches Leuchten: Verlauf von warmem Gelb nach durchsichtig, atmet langsam
         val g = if (anim) swing(t, 3200, 0f, 1f) else 0.5f
         val gr = r * (2.3f + 0.35f * g)
+        val edge = r / gr
         glowPaint.shader = android.graphics.RadialGradient(
             cx, cy, gr,
-            intArrayOf(0x8CFFC94D.toInt(), 0x40FFB347, 0x14FFA040, 0x00FFA040),
-            floatArrayOf(0.35f, 0.55f, 0.78f, 1f), android.graphics.Shader.TileMode.CLAMP
+            intArrayOf(0x40FFC94D, 0x40FFC94D, 0x1AFFB347, 0x00FFA040),
+            floatArrayOf(0f, edge, edge + (1f - edge) * 0.45f, 1f), android.graphics.Shader.TileMode.CLAMP
         )
-        glowPaint.alpha = (255 * (0.75f + 0.25f * g)).toInt()
+        glowPaint.alpha = (255 * (0.6f + 0.4f * g)).toInt()
         c.drawCircle(cx, cy, gr, glowPaint)
         // Strahlen mit runden Enden
         line.color = SUN_C
@@ -268,10 +269,9 @@ class WeatherIcon(ctx: Context) : View(ctx) {
             c.drawLine(cx + cs * r * 1.4f, cy + sn * r * 1.4f, cx + cs * r * 1.85f, cy + sn * r * 1.85f, line)
         }
         // Sonne mit hellem Kern
-        discPaint.shader = android.graphics.RadialGradient(
-            cx - r * 0.3f, cy - r * 0.3f, r * 1.3f,
-            intArrayOf(0xFFFFF1B8.toInt(), SUN_C, 0xFFFFA93A.toInt()), floatArrayOf(0f, 0.55f, 1f),
-            android.graphics.Shader.TileMode.CLAMP
+        discPaint.shader = android.graphics.LinearGradient(
+            cx - r, cy - r, cx + r, cy + r,
+            intArrayOf(0xFFFFD567.toInt(), 0xFFFFB43C.toInt()), null, android.graphics.Shader.TileMode.CLAMP
         )
         c.drawCircle(cx, cy, r, discPaint)
     }
@@ -317,14 +317,6 @@ class WeatherIcon(ctx: Context) : View(ctx) {
 
     /** Mond: Sichel mit sanftem Schimmer, wiegt sich leicht (ohne Sterne) */
     private fun moon(c: Canvas, t: Long, anim: Boolean, cx: Float, cy: Float, s: Float) {
-        val g = if (anim) swing(t, 4200, 0f, 1f) else 0.5f
-        val gr = 9.5f * s * (1f + 0.08f * g)
-        glowPaint.shader = android.graphics.RadialGradient(
-            cx - 1.2f * s, cy, gr, intArrayOf(0x4DCDDCFF, 0x1FBECDFF, 0x00BECDFF), floatArrayOf(0f, 0.55f, 1f),
-            android.graphics.Shader.TileMode.CLAMP
-        )
-        glowPaint.alpha = (255 * (0.7f + 0.3f * g)).toInt()
-        c.drawCircle(cx - 1.2f * s, cy, gr, glowPaint)
         c.save()
         c.translate(cx, cy)
         if (anim) c.rotate(Math.toDegrees(swing(t, 6000, -0.07f, 0.07f).toDouble()).toFloat())

@@ -120,6 +120,13 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
         }
     }
 
+    // Steuerung im grossen Fenster: voriger, Pause/Weiter, naechster (◀ ▶ waehlen, OK drueckt)
+    private val npBtns = ArrayList<FrameLayout>()
+    private val npBtnBg = ArrayList<GradientDrawable>()
+    private lateinit var npToggle: MediaIcon
+    private var npSel = 1
+    var onNpAction: ((String) -> Unit)? = null
+
     /** Farbe des gezeigten Bildes (fuer "Farben aus dem Inhalt"). */
     var onColor: ((Int) -> Unit)? = null
 
@@ -231,6 +238,8 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
         isFocusable = true
         setOnFocusChangeListener { _, has ->
             lit.animate().alpha(if (has) 1f else 0f).setDuration(Ui.d(220)).start()
+            if (has) npSel = 1
+            npHighlight()
             updateSource()
             if (has) handler.removeCallbacks(next) else schedule()
         }
@@ -240,7 +249,33 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
         }
         setOnKeyListener { _, code, ev ->
             if (npOn) {
-                false
+                val acts = arrayOf("prev", "toggle", "next")
+                when (code) {
+                    KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT -> {
+                        if (ev.action == KeyEvent.ACTION_DOWN) {
+                            npSel = Math.max(0, Math.min(2, npSel + (if (code == KeyEvent.KEYCODE_DPAD_LEFT) -1 else 1)))
+                            npHighlight()
+                        }
+                        true
+                    }
+                    KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> {
+                        if (ev.action == KeyEvent.ACTION_UP) onNpAction?.invoke(acts[npSel])
+                        true
+                    }
+                    KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE, KeyEvent.KEYCODE_MEDIA_PLAY, KeyEvent.KEYCODE_MEDIA_PAUSE -> {
+                        if (ev.action == KeyEvent.ACTION_DOWN) onNpAction?.invoke("toggle")
+                        true
+                    }
+                    KeyEvent.KEYCODE_MEDIA_REWIND, KeyEvent.KEYCODE_MEDIA_PREVIOUS -> {
+                        if (ev.action == KeyEvent.ACTION_DOWN) onNpAction?.invoke("prev")
+                        true
+                    }
+                    KeyEvent.KEYCODE_MEDIA_FAST_FORWARD, KeyEvent.KEYCODE_MEDIA_NEXT -> {
+                        if (ev.action == KeyEvent.ACTION_DOWN) onNpAction?.invoke("next")
+                        true
+                    }
+                    else -> false
+                }
             } else if (code == KeyEvent.KEYCODE_DPAD_LEFT || code == KeyEvent.KEYCODE_DPAD_RIGHT) {
                 if (ev.action == KeyEvent.ACTION_DOWN && items.size > 1) {
                     index = (index + (if (code == KeyEvent.KEYCODE_DPAD_LEFT) -1 else 1) + items.size) % items.size
@@ -531,6 +566,23 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
         npLen = Ui.text(ctx, "0:00", 20f, k, 0xA6FFFFFF.toInt())
         prog.addView(npLen)
         npBox.addView(prog, LinearLayout.LayoutParams(wrap, wrap).apply { topMargin = px(26) })
+        val ctl = LinearLayout(ctx)
+        ctl.orientation = LinearLayout.HORIZONTAL
+        ctl.gravity = Gravity.CENTER_VERTICAL
+        ctl.clipChildren = false
+        npToggle = MediaIcon(ctx, "toggle")
+        for ((i, icon) in listOf(MediaIcon(ctx, "prev"), npToggle, MediaIcon(ctx, "next")).withIndex()) {
+            val sz = if (i == 1) 68 else 56
+            val b = FrameLayout(ctx)
+            val bg = GradientDrawable().apply { shape = GradientDrawable.OVAL; setColor(if (i == 1) 0x2EFFFFFF else 0x1AFFFFFF) }
+            b.background = bg
+            b.addView(icon, LayoutParams(px(if (i == 1) 40 else 34), px(if (i == 1) 40 else 34), Gravity.CENTER))
+            ctl.addView(b, LinearLayout.LayoutParams(px(sz), px(sz)).apply { if (i > 0) leftMargin = px(16) })
+            npBtns.add(b)
+            npBtnBg.add(bg)
+        }
+        npBox.clipChildren = false
+        npBox.addView(ctl, LinearLayout.LayoutParams(wrap, wrap).apply { topMargin = px(28) })
         npBox.alpha = 0f
         npBox.visibility = View.GONE
         addView(npBox, LayoutParams(px(960), match).apply { leftMargin = px(72) })
@@ -544,6 +596,7 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
             npArtist.text = t.artist
             npAlbum.text = if (t.album.isBlank()) "" else "Album: " + t.album
             npEq.playing = t.playing
+            npToggle.playing = t.playing
             npLen.text = mmss(t.duration)
             if (t.cover != npUrl) {
                 npUrl = t.cover
@@ -570,6 +623,17 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
             handler.removeCallbacks(npTick)
             render()
             schedule()
+        }
+    }
+
+    /** Auswahl der Knoepfe nur sichtbar, wenn das grosse Fenster ausgewaehlt ist. */
+    private fun npHighlight() {
+        for (i in npBtns.indices) {
+            val on = isFocused && i == npSel
+            npBtnBg[i].setColor(if (on) 0x59FFFFFF else if (i == 1) 0x2EFFFFFF else 0x1AFFFFFF)
+            npBtnBg[i].setStroke(if (on) Math.max(1, (3 * k).toInt()) else 0, Color.WHITE)
+            val s = if (on) 1.15f else 1f
+            npBtns[i].animate().scaleX(s).scaleY(s).setDuration(Ui.d(160)).setInterpolator(Ui.smooth).start()
         }
     }
 

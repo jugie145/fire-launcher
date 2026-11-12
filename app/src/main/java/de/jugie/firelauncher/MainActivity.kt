@@ -195,6 +195,7 @@ class MainActivity : Activity() {
         // Grosse Flaeche mit wechselnden Inhalten
         hero = Hero(this, k)
         hero.id = View.generateViewId()
+        hero.onNpAction = { a -> NowPlaying.control(this, a) }
         hero.onOpen = { a, item ->
             if (item == null || !Apps.openLink(this, a, item.link)) Apps.launch(this, a)
         }
