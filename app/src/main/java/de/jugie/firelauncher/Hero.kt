@@ -165,7 +165,8 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
         metaRow.gravity = Gravity.CENTER_VERTICAL
         metaRow.clipChildren = false
         liveDot.visibility = View.GONE
-        metaRow.addView(liveDot, LinearLayout.LayoutParams(px(38), px(38)).apply { leftMargin = px(-12); rightMargin = px(2) })
+        // Punkt samt Ring komplett innerhalb der Flaeche, nichts ragt nach links hinaus
+        metaRow.addView(liveDot, LinearLayout.LayoutParams(px(38), px(38)).apply { rightMargin = px(4) })
         metaRow.addView(meta)
         texts.addView(metaRow, LinearLayout.LayoutParams(wrap, wrap).apply { topMargin = px(18) })
         desc = Ui.text(ctx, "", 25f, k, Ui.TEXT_DIM)

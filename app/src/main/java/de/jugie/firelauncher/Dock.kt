@@ -213,11 +213,11 @@ class DockTile(ctx: Context, val app: AppEntry, private val k: Float) : FrameLay
     }
 }
 
-/** Lichtpunkt mit Schweif in der App-Farbe, der einmal in 6 s um den Rahmen laeuft. */
+/** Lichtpunkt mit Schweif in der App-Farbe, der einmal in 10 s um den Rahmen laeuft. */
 class CometRing(ctx: Context, private val k: Float, color: Int) : View(ctx) {
     companion object {
         const val PAD = 14
-        const val LAP = 6000L
+        const val LAP = 10000L
     }
 
     private val sharp = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE }

@@ -139,7 +139,12 @@ class MainActivity : Activity() {
         wCond.maxLines = 1
         wCol.addView(wRow)
         wCol.addView(wCond, lp(wrap, wrap, top = 8))
+        // Wetter mit festem Mindestplatz, damit nichts abgeschnitten wird
+        wCol.minimumWidth = px(200)
         line.addView(wCol)
+        line.clipChildren = false
+        line.clipToPadding = false
+        header.clipChildren = false
         header.addView(line, FrameLayout.LayoutParams(match, wrap))
         greet = Ui.text(this, "", 37f, k, Color.WHITE)
         header.addView(greet, FrameLayout.LayoutParams(wrap, wrap, Gravity.CENTER))
