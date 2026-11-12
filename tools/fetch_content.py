@@ -345,7 +345,7 @@ def wow_sport():
                 kick = datetime.datetime.strptime(utc, "%Y-%m-%dT%H:%M:%S")
             except ValueError:
                 continue
-            if kick < now - datetime.timedelta(hours=2) or kick > now + datetime.timedelta(days=8):
+            if kick < now - datetime.timedelta(hours=2) or kick > now + datetime.timedelta(days=14):
                 continue
             local = kick + datetime.timedelta(hours=1 if not (3 < kick.month < 11) else 2)
             if league == "bl1" and local.weekday() not in (4, 5):
