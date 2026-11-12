@@ -494,7 +494,10 @@ class ScreensaverView(ctx: Context) : FrameLayout(ctx) {
     private val wTemp = Ui.text(ctx, "", 32f, k, Color.WHITE, Ui.medium)
     private val wCond = Ui.text(ctx, "", 32f, k, 0xBFFFFFFF.toInt())
     private val bigFlip = FlipClock(ctx, k, 170f, 240f, 180f, 14f, 22f, 16f, R.drawable.flip_big, Prefs.h24(ctx))
-    private val smallFlip = FlipClock(ctx, k, 78f, 108f, 80f, 8f, 10f, 8f, R.drawable.flip_small, Prefs.h24(ctx))
+    private val smallFlip = FlipClock(ctx, k, 78f, 108f, 80f, 8f, 10f, 8f, R.drawable.flip_small, Prefs.h24(ctx), alignEnd = true)
+    // abdunkeln hinter Uhr/Datum/Wetter, je nachdem wie hell das Bild dort ist
+    private val cornerShade = View(ctx)
+    private val topShade = View(ctx)
     private val weatherRow2 = LinearLayout(ctx)
     private val wIcon2 = WeatherIcon(ctx)
     private val wTemp2 = Ui.text(ctx, "", 26f, k, Color.WHITE, Ui.medium)
@@ -535,6 +538,7 @@ class ScreensaverView(ctx: Context) : FrameLayout(ctx) {
 
     /** Waehrend Spotify laeuft, ersetzt die Kopfzeile die Uhr des Schoners. */
     private fun applyHead() {
+        lastBmp?.let { shadeFor(it) }
         topRight?.visibility = if (playing) View.INVISIBLE else View.VISIBLE
         block.visibility = if (playing) View.INVISIBLE else View.VISIBLE
     }
@@ -677,6 +681,20 @@ class ScreensaverView(ctx: Context) : FrameLayout(ctx) {
     private fun buildKino() {
         kinoGroup.addView(kino, LayoutParams(match, match))
         kinoGroup.addView(shade, LayoutParams(match, match))
+        cornerShade.background = android.graphics.drawable.GradientDrawable().apply {
+            gradientType = android.graphics.drawable.GradientDrawable.RADIAL_GRADIENT
+            gradientRadius = 900f * k
+            setGradientCenter(1f, 0f)
+            colors = intArrayOf(0xE6000000.toInt(), 0x99000000.toInt(), 0x00000000)
+        }
+        cornerShade.alpha = 0f
+        kinoGroup.addView(cornerShade, LayoutParams(px(1300f), px(760f), Gravity.TOP or Gravity.END))
+        topShade.background = android.graphics.drawable.GradientDrawable(
+            android.graphics.drawable.GradientDrawable.Orientation.TOP_BOTTOM,
+            intArrayOf(0xD9000000.toInt(), 0x80000000.toInt(), 0x00000000)
+        )
+        topShade.alpha = 0f
+        kinoGroup.addView(topShade, LayoutParams(match, px(360f), Gravity.TOP))
 
         val topRight = LinearLayout(context)
         this.topRight = topRight
@@ -901,12 +919,41 @@ class ScreensaverView(ctx: Context) : FrameLayout(ctx) {
         }
     }
 
+    /**
+     * Wie hell ist das Bild dort, wo Uhr/Datum/Wetter (bzw. die Spotify-Kopfzeile) stehen?
+     * Je heller, desto staerker abdunkeln; bei dunklen Bildern bleibt es fast wie es ist.
+     */
+    private fun shadeFor(b: Bitmap) {
+        fun lum(x0: Float, x1: Float, y0: Float, y1: Float): Float {
+            var sum = 0f
+            var n = 0
+            for (iy in 0 until 10) for (ix in 0 until 14) {
+                val x = ((x0 + (x1 - x0) * (ix + 0.5f) / 14f) * (b.width - 1)).toInt()
+                val y = ((y0 + (y1 - y0) * (iy + 0.5f) / 10f) * (b.height - 1)).toInt()
+                val c = b.getPixel(x, y)
+                sum += (0.2126f * Color.red(c) + 0.7152f * Color.green(c) + 0.0722f * Color.blue(c)) / 255f
+                n++
+            }
+            return sum / n
+        }
+        val corner = try { lum(0.55f, 1f, 0f, 0.42f) } catch (e: Throwable) { 0.5f }
+        val top = try { lum(0f, 1f, 0f, 0.28f) } catch (e: Throwable) { 0.5f }
+        fun level(l: Float) = Math.max(0.15f, Math.min(1f, (l - 0.25f) / 0.4f))
+        val d = if (Ui.anims) 1600L else 0L
+        cornerShade.animate().alpha(if (playing) 0f else level(corner)).setDuration(d).start()
+        topShade.animate().alpha(if (playing) level(top) else 0f).setDuration(d).start()
+        lastBmp = b
+    }
+
+    private var lastBmp: Bitmap? = null
+
     private fun show(i: Int, b: Bitmap) {
         step++
         curIdx = i
         slideAt = SystemClock.uptimeMillis()
         kino.now = slideAt
         kino.push(b, slideAt, if (step % 2 == 0) 0.3f else 0.7f)
+        shadeFor(b)
         val s = items[i]
         val kino = s.kind == "kino"
         logo.visibility = if (kino) View.GONE else View.VISIBLE

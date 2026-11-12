@@ -139,7 +139,9 @@ class FlipClock(
     private val colonMargin: Float,
     private val dot: Float,
     glassRes: Int,
-    private val h24: Boolean
+    private val h24: Boolean,
+    /** rechtsbuendig: der Rand liegt nur links, die Ziffern enden genau am rechten Rand */
+    private val alignEnd: Boolean = false
 ) : View(ctx) {
     private val glass: android.graphics.Bitmap? = try {
         android.graphics.BitmapFactory.decodeResource(resources, glassRes, android.graphics.BitmapFactory.Options().apply { inScaled = false })
@@ -236,7 +238,7 @@ class FlipClock(
 
     override fun onDraw(c: Canvas) {
         c.save()
-        c.translate(PAD * k, 0f)
+        c.translate((if (alignEnd) 2 * PAD else PAD) * k, 0f)
         drawTiles(c)
         c.restore()
     }
