@@ -93,6 +93,7 @@ class NowCard(ctx: Context, private val k: Float, private val saver: Boolean = f
     val toggleBtn = FrameLayout(ctx)
     val nextBtn = FrameLayout(ctx)
     var onAction: ((String) -> Unit)? = null
+    var onSel: ((Boolean) -> Unit)? = null
     private var sel = false
     private val coverRing = GradientDrawable().apply { cornerRadius = 14f }
     val coverView: View get() = cover
@@ -168,7 +169,7 @@ class NowCard(ctx: Context, private val k: Float, private val saver: Boolean = f
         else GradientDrawable().apply { setColor(Color.WHITE) }
         track.addView(bar, LayoutParams(0, -1))
         textBox.addView(track, LinearLayout.LayoutParams(-1, px(3)).apply { topMargin = px(10) })
-        addView(textBox, LayoutParams(px(500), px(104)).apply { leftMargin = px(50 + 108); topMargin = px(50) })
+        addView(textBox, LayoutParams(px(if (saver) 330 else 500), px(104)).apply { leftMargin = px(50 + 108); topMargin = px(50) })
 
         controls.orientation = LinearLayout.HORIZONTAL
         controls.gravity = Gravity.CENTER_VERTICAL
@@ -219,6 +220,7 @@ class NowCard(ctx: Context, private val k: Float, private val saver: Boolean = f
     private fun focus(has: Boolean) {
         if (has == sel) return
         sel = has
+        onSel?.invoke(has)
         val d = Ui.d(300)
         on.animate().alpha(if (has) 1f else 0f).setDuration(d).start()
         off.animate().alpha(if (has) 0f else 1f).setDuration(d).start()

@@ -251,10 +251,11 @@ class MainActivity : Activity() {
             v.id = View.generateViewId()
             bar.addView(v, FrameLayout.LayoutParams(px(252), px(64)))
         }
-        fApps.translationX = px(1508).toFloat()
+        (fApps.layoutParams as FrameLayout.LayoutParams).leftMargin = px(1508)
         nowCard = NowCard(this, k)
         nowCard.id = View.generateViewId()
         nowCard.visibility = View.GONE
+        nowCard.onSel = { on -> cardSelected(on) }
         nowCard.onAction = { a ->
             if (a == "open") {
                 val sp = favApps.firstOrNull { Content.kind(it) == "spotify" } ?: Apps.loadAll(this).firstOrNull { Content.kind(it) == "spotify" }
@@ -321,17 +322,21 @@ class MainActivity : Activity() {
     /** Positionen der Leiste; mit Karte: 0 | 266 | Karte 560-1200 | 1242 | 1508, sonst gleichmaessig. */
     private fun layoutFooter(animate: Boolean) {
         val with = cardShown
-        val sx = px(if (with) 266 else 503).toFloat()
-        val qx = px(if (with) 1242 else 1005).toFloat()
-        if (animate && Ui.anims) {
-            val delay = if (with) 0L else 180L
-            val dur = if (with) 560L else 700L
-            val curve = android.view.animation.PathInterpolator(0.2f, 1.15f, 0.35f, 1f)
-            fSleep.animate().translationX(sx).setStartDelay(delay).setDuration(dur).setInterpolator(curve).start()
-            fSearch.animate().translationX(qx).setStartDelay(delay).setDuration(dur).setInterpolator(curve).start()
-        } else {
-            fSleep.translationX = sx
-            fSearch.translationX = qx
+        val sx = px(if (with) 266 else 503)
+        val qx = px(if (with) 1242 else 1005)
+        val delay = if (with) 0L else 180L
+        val dur = if (with) 560L else 700L
+        val curve = android.view.animation.PathInterpolator(0.2f, 1.15f, 0.35f, 1f)
+        for ((v, x) in listOf(fSleep to sx, fSearch to qx)) {
+            val lp = v.layoutParams as FrameLayout.LayoutParams
+            val from = lp.leftMargin + v.translationX
+            lp.leftMargin = x
+            v.layoutParams = lp
+            v.animate().cancel()
+            if (animate && Ui.anims) {
+                v.translationX = from - x
+                v.animate().translationX(0f).setStartDelay(delay).setDuration(dur).setInterpolator(curve).start()
+            } else v.translationX = 0f
         }
         fSettings.nextFocusRightId = fSleep.id
         fSleep.nextFocusLeftId = fSettings.id
@@ -345,6 +350,43 @@ class MainActivity : Activity() {
     }
 
     private fun nowCardFocused() = ::nowCard.isInitialized && nowCard.hasFocus()
+
+    /** Steht man auf "Laeuft gerade": Spotify-Gruen im Hintergrund und oben gross, was laeuft. */
+    private fun cardSelected(on: Boolean) {
+        val all = favApps
+        if (on) {
+            val sp = all.firstOrNull { Content.kind(it) == "spotify" }
+            nowCard.post {
+                val loc = IntArray(2)
+                nowCard.getLocationInWindow(loc)
+                val cx = loc[0] + nowCard.width / 2f
+                val cy = loc[1] + nowCard.height / 2f
+                wave.setSpot(cx, cy, if (Theme.gta) Theme.PINK else 0xFF1ED860.toInt(), true, 1f)
+            }
+            if (sp != null) hero.show(sp)
+        } else {
+            // zurueck zur zuletzt gewaehlten App
+            val app = all.firstOrNull { it.pkg == shown }
+            val tile = tiles.getOrNull(lastFocus)
+            if (app != null) {
+                hero.show(app)
+                if (tile != null) {
+                    tile.post {
+                        val loc = IntArray(2)
+                        tile.getLocationInWindow(loc)
+                        val cx = loc[0] + tile.width * tile.scaleX / 2f
+                        val cy = loc[1] + tile.height * tile.scaleY / 2f
+                        val boost = when (Content.kind(app)) {
+                            "prime" -> 1.7f
+                            "wow", "disney" -> 2.4f
+                            else -> 1f
+                        }
+                        wave.setSpot(cx, cy, Ui.accentFor(app), true, boost)
+                    }
+                }
+            }
+        }
+    }
 
     /** Karte "Laeuft gerade": nur wenn Musik laeuft und nicht schon gross oben (Spotify ausgewaehlt). */
     private fun updateNow(t: Spotify.Track?) {
@@ -455,7 +497,16 @@ class MainActivity : Activity() {
         }
     }
 
+    /** Schoner selbst starten, wenn eine Weile nichts gedrueckt wurde. */
+    private val idleCheck = object : Runnable {
+        override fun run() {
+            if (resumed && !search.showing && Idle.due(this@MainActivity)) Idle.start(this@MainActivity)
+            handler.postDelayed(this, 20_000L)
+        }
+    }
+
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        Idle.touch()
         // Sleeptimer einstellen: ◀ ▶ im Minutentakt, gedrueckt halten wird schneller
         if (sleepEdit && fSleep.hasFocus()) {
             val dir = when (event.keyCode) {
@@ -512,6 +563,9 @@ class MainActivity : Activity() {
         updateNow(NowPlaying.track)
         handler.removeCallbacks(ticker)
         handler.post(ticker)
+        Idle.touch()
+        handler.removeCallbacks(idleCheck)
+        handler.postDelayed(idleCheck, 20_000L)
         hero.start()
         if (returnToFooter) {
             returnToFooter = false
@@ -539,6 +593,7 @@ class MainActivity : Activity() {
         NowPlaying.unlisten(nowListener)
         NowPlaying.stop()
         handler.removeCallbacks(ticker)
+        handler.removeCallbacks(idleCheck)
         handler.removeCallbacks(liveTick)
         liveOn = false
         hero.stop()

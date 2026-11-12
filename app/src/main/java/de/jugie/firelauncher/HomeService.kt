@@ -64,6 +64,28 @@ class HomeService : AccessibilityService() {
     override fun onServiceConnected() {
         super.onServiceConnected()
         activeService = this
+        handler.removeCallbacks(idleCheck)
+        handler.postDelayed(idleCheck, 30_000L)
+    }
+
+    /** Jede Taste zaehlt als Bedienung; die Taste geht ganz normal weiter. */
+    override fun onKeyEvent(event: android.view.KeyEvent): Boolean {
+        Idle.touch()
+        return false
+    }
+
+    @Volatile private var fgPkg = ""
+
+    /** In anderen Apps: Schoner nur, wenn nichts abgespielt wird (kein Film, keine Musik). */
+    private val idleCheck = object : Runnable {
+        override fun run() {
+            try {
+                val am = getSystemService(AUDIO_SERVICE) as android.media.AudioManager
+                if (fgPkg != packageName && Idle.due(this@HomeService) && !am.isMusicActive) Idle.start(this@HomeService)
+            } catch (e: Exception) {
+            }
+            handler.postDelayed(this, 30_000L)
+        }
     }
 
     private fun scheduleSleepTimer(minutes: Int): Boolean {
@@ -80,6 +102,7 @@ class HomeService : AccessibilityService() {
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
+        if (event != null && event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) event.packageName?.let { fgPkg = it.toString() }
         if (event == null || event.eventType != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) return
         val p = event.packageName?.toString() ?: return
         val c = event.className?.toString() ?: ""

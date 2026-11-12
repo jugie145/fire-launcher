@@ -4,6 +4,7 @@ import android.animation.ValueAnimator
 import android.app.Activity
 import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.BitmapShader
@@ -125,6 +126,29 @@ object Saver {
     }
 }
 
+/**
+ * Leerlauf: letzte Tastenbetaetigung (Startbildschirm und, ueber den Dienst, in allen Apps).
+ * Startet Fire OS den Bildschirmschoner nicht selbst, starten wir ihn nach der eingestellten Zeit.
+ */
+object Idle {
+    @Volatile var last = android.os.SystemClock.uptimeMillis()
+    fun touch() {
+        last = android.os.SystemClock.uptimeMillis()
+    }
+
+    /** true, wenn der Schoner jetzt starten soll */
+    fun due(c: Context): Boolean =
+        Prefs.saver(c) != Saver.SYSTEM && android.os.SystemClock.uptimeMillis() - last >= Prefs.saverMinutes(c) * 60_000L
+
+    fun start(c: Context) {
+        touch()
+        try {
+            c.startActivity(Intent(c, ScreensaverActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_ANIMATION))
+        } catch (e: Exception) {
+        }
+    }
+}
+
 /** Der eigentliche Bildschirmschoner, den Fire OS nach der eingestellten Zeit startet. Jede Taste beendet ihn. */
 class ScreensaverDream : DreamService() {
     private var view: ScreensaverView? = null
@@ -187,6 +211,7 @@ class ScreensaverActivity : Activity() {
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        Idle.touch()
         if (view?.media(event) == true) return true
         // erst beim Loslassen schliessen, damit die Taste nicht im Fenster dahinter ankommt
         if (event.action == KeyEvent.ACTION_UP) {
@@ -585,6 +610,11 @@ class ScreensaverView(ctx: Context) : FrameLayout(ctx) {
 
     init {
         setBackgroundColor(Color.BLACK)
+        // Uhr und Karte duerfen ueber ihre Grenzen zeichnen (Umklappen, Leuchten)
+        clipChildren = false
+        wellen.clipChildren = false
+        block.clipChildren = false
+        kinoGroup.clipChildren = false
         buildWellen()
         buildKino()
     }
@@ -650,6 +680,8 @@ class ScreensaverView(ctx: Context) : FrameLayout(ctx) {
 
         val topRight = LinearLayout(context)
         this.topRight = topRight
+        topRight.clipChildren = false
+        topRight.clipToPadding = false
         topRight.orientation = LinearLayout.VERTICAL
         topRight.gravity = Gravity.END
         topRight.addView(smallFlip)

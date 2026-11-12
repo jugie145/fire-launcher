@@ -3,4 +3,6 @@
     android:accessibilityEventTypes="typeWindowStateChanged"
     android:accessibilityFeedbackType="feedbackGeneric"
     android:description="@string/svc_desc"
-    android:notificationTimeout="0" />
+    android:notificationTimeout="0"
+    android:canRequestFilterKeyEvents="true"
+    android:accessibilityFlags="flagRequestFilterKeyEvents" />
