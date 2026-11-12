@@ -28,7 +28,16 @@ def http(url, headers=None, data=None):
 def problem(e):
     """Fehlertext ohne Adresse, damit nie ein Schluessel in der Datei landet."""
     if isinstance(e, urllib.error.HTTPError):
-        return "Fehler: HTTP %s" % e.code
+        reason = ""
+        try:
+            body = json.loads(e.read().decode("utf-8", "replace"))
+            err = body.get("error") or {}
+            if isinstance(err, dict):
+                errs = err.get("errors") or [{}]
+                reason = errs[0].get("reason") or err.get("status") or ""
+        except Exception:  # noqa: BLE001
+            pass
+        return "Fehler: HTTP %s %s" % (e.code, reason)
     return "Fehler: %s" % type(e).__name__
 
 
