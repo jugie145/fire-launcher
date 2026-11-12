@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 import java.util.concurrent.Executors
 
 class HeroItem(
@@ -135,6 +136,26 @@ object Content {
             l == "wow" || l.startsWith("wow ") -> "wow"
             l.contains("disney") || p.contains("disney") -> "disney"
             else -> ""
+        }
+    }
+
+    /** Naechste HSV-Spiele aus content.json. */
+    fun loadHsv(cb: (List<Hsv.Match>) -> Unit) {
+        pool.execute {
+            val out = ArrayList<Hsv.Match>()
+            try {
+                val arr = remote()?.optJSONArray("hsv")
+                val fmt = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US)
+                fmt.timeZone = TimeZone.getTimeZone("UTC")
+                if (arr != null) for (i in 0 until arr.length()) {
+                    val o = arr.getJSONObject(i)
+                    val utc = o.optString("utc", "").take(19)
+                    val t = try { fmt.parse(utc)?.time } catch (e: Exception) { null } ?: continue
+                    out.add(Hsv.Match(t, o.optString("opp", "")))
+                }
+            } catch (e: Throwable) {
+            }
+            main.post { cb(out) }
         }
     }
 

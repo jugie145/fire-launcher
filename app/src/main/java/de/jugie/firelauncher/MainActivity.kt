@@ -41,6 +41,15 @@ class MainActivity : Activity() {
     private var sig = ""
     private var returnToFooter = false
     private var settingsButton: View? = null
+    private lateinit var header: View
+    private lateinit var bar: View
+    private lateinit var clock: RollingClock
+    private lateinit var note: HsvNoteView
+    private var tiles: List<DockTile> = emptyList()
+    private var hsvGames: List<Hsv.Match> = emptyList()
+    /** Zeitpunkt (uptime), an dem die HSV-Nachricht zuletzt verschwunden ist; 0 = noch nie */
+    private var noteHiddenAt = 0L
+    private var resumed = false
 
     private fun px(v: Int): Int = (v * k).toInt()
     private val wrap = ViewGroup.LayoutParams.WRAP_CONTENT
@@ -89,17 +98,12 @@ class MainActivity : Activity() {
 
         // Kopfzeile: Uhr | Datum links, Begruessung exakt mittig, Ort | Wetter rechts
         val header = FrameLayout(this)
+        this.header = header
         val line = LinearLayout(this)
         line.orientation = LinearLayout.HORIZONTAL
         line.gravity = Gravity.CENTER_VERTICAL
-        val fmt = if (Prefs.h24(this)) "HH:mm" else "h:mm"
-        val clock = TextClock(this)
-        clock.format24Hour = fmt
-        clock.format12Hour = fmt
-        clock.setTextSize(TypedValue.COMPLEX_UNIT_PX, 86 * k)
-        clock.setTextColor(Color.WHITE)
-        clock.typeface = Ui.medium
-        clock.includeFontPadding = false
+        // Uhr, deren Ziffern beim Minutenwechsel weiterrollen
+        clock = RollingClock(this, 86 * k, Ui.medium, Prefs.h24(this))
         line.addView(clock)
         line.addView(divider(80, 38, 36))
         val dateCol = LinearLayout(this)
@@ -126,8 +130,13 @@ class MainActivity : Activity() {
         wIcon = WeatherIcon(this)
         wRow.addView(wIcon, LinearLayout.LayoutParams(px(48), px(48)))
         wTemp = Ui.text(this, "–°C", 42f, k, Color.WHITE)
+        // mit Schriftpolster, damit Ziffern und Gradzeichen nicht oben oder unten abgeschnitten werden
+        wTemp.includeFontPadding = true
+        wTemp.maxLines = 1
         wRow.addView(wTemp, lp(wrap, wrap, left = 12))
         wCond = Ui.text(this, "", 22f, k, Ui.TEXT_DIM)
+        wCond.includeFontPadding = true
+        wCond.maxLines = 1
         wCol.addView(wRow)
         wCol.addView(wCond, lp(wrap, wrap, top = 8))
         line.addView(wCol)
@@ -150,12 +159,13 @@ class MainActivity : Activity() {
         row.gravity = Gravity.CENTER
         row.clipChildren = false
         row.clipToPadding = false
-        content.addView(row, lp(match, px(184), top = 62))
+        content.addView(row, lp(match, px(DockTile.SIZE), top = 62))
 
         content.addView(View(this), LinearLayout.LayoutParams(1, 0, 1f))
 
         // Fussleiste
         val bar = LinearLayout(this)
+        this.bar = bar
         bar.orientation = LinearLayout.HORIZONTAL
         bar.gravity = Gravity.CENTER_VERTICAL
         bar.clipChildren = false
@@ -172,6 +182,12 @@ class MainActivity : Activity() {
         bar.addView(divider(40, 26, 26))
         bar.addView(Ui.text(this, "LIQUID TV · v" + versionName(), 21f, k, Ui.TEXT_DIM))
         content.addView(bar)
+
+        // HSV-Nachricht oben mittig, liegt ueber der Begruessung
+        note = HsvNoteView(this, k)
+        root.addView(note, FrameLayout.LayoutParams(px(740), px(236), Gravity.TOP or Gravity.CENTER_HORIZONTAL).apply {
+            topMargin = px(30 - 50)
+        })
 
         setContentView(root)
     }
@@ -223,12 +239,17 @@ class MainActivity : Activity() {
             returnToFooter = false
             settingsButton?.post { settingsButton?.requestFocus() }
         }
-        if (Ui.anims) {
-            content.alpha = 0f
-            content.scaleX = 0.98f
-            content.scaleY = 0.98f
-            content.animate().alpha(1f).scaleX(1f).scaleY(1f).setDuration(320).setInterpolator(Ui.smooth).start()
-        }
+        // Einflug: Kopfzeile, grosse Flaeche, Kacheln und Fussleiste nacheinander von unten
+        rise(header, 0)
+        rise(hero, 110)
+        for (i in 0 until row.childCount) rise(row.getChildAt(i), 260L + i * 50L)
+        rise(bar, 640)
+        clock.start()
+        wIcon.live = true
+        for (t in tiles) t.resumeEffects()
+        resumed = true
+        handler.removeCallbacks(noteCheck)
+        handler.postDelayed(noteCheck, 1200)
         updateGreeting()
         updateWifi()
         loadFavs()
@@ -238,6 +259,17 @@ class MainActivity : Activity() {
     override fun onPause() {
         wave.stop()
         hero.stop()
+        resumed = false
+        clock.stop()
+        wIcon.live = false
+        for (t in tiles) t.stopEffects()
+        handler.removeCallbacks(noteCheck)
+        handler.removeCallbacks(noteHide)
+        handler.removeCallbacks(noteTick)
+        if (note.showing) {
+            note.hide(false)
+            noteHiddenAt = android.os.SystemClock.uptimeMillis()
+        }
         super.onPause()
     }
 
@@ -306,6 +338,11 @@ class MainActivity : Activity() {
             wave.setSpot(cx, cy, accent, spotSet)
             spotSet = true
         }
+        // Spiegelungen neigen sich zur ausgewaehlten Kachel
+        val sel = tiles.indexOfFirst { it === v }
+        if (sel >= 0) tiles.forEachIndexed { i, t ->
+            t.setSheen(if (i == sel) 34f else Math.max(-70f, Math.min(70f, (sel - i) * 22f)), i == sel)
+        }
         // von der grossen Flaeche mit "Runter" zurueck zu dieser Kachel
         hero.nextFocusDownId = v.id
         if (shown != app.pkg) {
@@ -324,22 +361,27 @@ class MainActivity : Activity() {
             return
         }
         val n = list.size
-        val w = px(205)
-        val h = px(184)
+        val w = px(DockTile.SIZE)
+        val h = px(DockTile.SIZE)
         val avail = resources.displayMetrics.widthPixels - px(160)
         val gap = if (n > 1) Math.max(0, Math.min(px(64), (avail - w * n) / (n - 1))) else 0
+        val built = ArrayList<DockTile>()
         list.forEachIndexed { i, app ->
-            val tile = Ui.imageTile(this, app, w, h, k) { v ->
+            val tile = DockTile(this, app, k)
+            tile.onSelect = { v ->
                 lastFocus = i
                 select(app, v)
             }
             tile.setOnClickListener { v ->
-                val opts = try {
-                    ActivityOptions.makeScaleUpAnimation(v, 0, 0, v.width, v.height).toBundle()
-                } catch (e: Exception) {
-                    null
+                // Kachel drueckt sich ein, dann zoomt die App aus der Kachel heraus auf
+                tile.press {
+                    val opts = try {
+                        ActivityOptions.makeScaleUpAnimation(v, 0, 0, v.width, v.height).toBundle()
+                    } catch (e: Exception) {
+                        null
+                    }
+                    Apps.launch(this, app, opts)
                 }
-                Apps.launch(this, app, opts)
             }
             tile.id = View.generateViewId()
             tile.nextFocusUpId = hero.id
@@ -356,10 +398,75 @@ class MainActivity : Activity() {
             cell.clipToPadding = false
             cell.addView(tile, FrameLayout.LayoutParams(w, h))
             row.addView(cell, LinearLayout.LayoutParams(w, h).apply { if (i > 0) leftMargin = gap })
-            Ui.fadeIn(cell, 60L * i)
+            rise(cell, 260L + i * 50L)
+            built.add(tile)
         }
+        tiles = built
         val idx = if (lastFocus < list.size) lastFocus else 0
         (row.getChildAt(idx) as? FrameLayout)?.getChildAt(0)?.requestFocus()
+    }
+
+    /** Weich von unten einschweben (wie beim iPhone nach dem Entsperren). */
+    private fun rise(v: View, delay: Long) {
+        v.animate().cancel()
+        if (!Ui.anims) {
+            v.alpha = 1f
+            v.translationY = 0f
+            return
+        }
+        v.alpha = 0f
+        v.translationY = 44f * k
+        v.animate().alpha(1f).translationY(0f).setStartDelay(delay).setDuration(700).setInterpolator(Ui.smooth).start()
+    }
+
+    // ---------- HSV-Nachricht: 20 s sichtbar, dann 5 min Pause, nur auf dem Startbildschirm ----------
+
+    private val noteShowMs = 20_000L
+    private val notePauseMs = 5 * 60_000L
+
+    private val noteCheck: Runnable = object : Runnable {
+        override fun run() = checkNote(this)
+    }
+
+    private fun checkNote(self: Runnable) {
+        Content.loadHsv { games ->
+            if (!resumed) return@loadHsv
+            hsvGames = games
+            val info = Hsv.info(games, System.currentTimeMillis())
+            val now = android.os.SystemClock.uptimeMillis()
+            if (info == null) {
+                // kein Spiel in Sicht: in einer Viertelstunde wieder nachsehen
+                handler.postDelayed(self, 15 * 60_000L)
+                return@loadHsv
+            }
+            val wait = if (noteHiddenAt == 0L) 0L else notePauseMs - (now - noteHiddenAt)
+            if (wait > 0) {
+                handler.postDelayed(self, wait)
+                return@loadHsv
+            }
+            note.set(info)
+            note.show()
+            handler.postDelayed(noteTick, 30_000L)
+            handler.postDelayed(noteHide, noteShowMs)
+        }
+    }
+
+    /** Countdown aktuell halten, solange die Nachricht steht. */
+    private val noteTick: Runnable = object : Runnable {
+        override fun run() {
+            val info = Hsv.info(hsvGames, System.currentTimeMillis())
+            if (info != null && note.showing) {
+                note.set(info)
+                handler.postDelayed(this, 30_000L)
+            }
+        }
+    }
+
+    private val noteHide: Runnable = Runnable {
+        handler.removeCallbacks(noteTick)
+        note.hide()
+        noteHiddenAt = android.os.SystemClock.uptimeMillis()
+        handler.postDelayed(noteCheck, notePauseMs)
     }
 
     private fun loadWeather() {

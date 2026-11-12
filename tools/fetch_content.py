@@ -183,7 +183,7 @@ def twitch(logins):
     for s in streams[:6]:
         thumb = (s.get("thumbnail_url") or "").replace("{width}", "1280").replace("{height}", "720")
         viewers = "{:,}".format(s.get("viewer_count", 0)).replace(",", ".")
-        meta = ["Live"]
+        meta = ["LIVE"]
         if s.get("game_name"):
             meta.append(s["game_name"])
         meta.append(viewers + " Zuschauer")
@@ -195,6 +195,36 @@ def twitch(logins):
             "link": "https://www.twitch.tv/" + (s.get("user_login") or ""),
         })
     return {"label": "Jetzt live", "source": "Quelle: Twitch", "items": out}
+
+
+# ---------------- HSV (OpenLigaDB, ohne Schluessel) ----------------
+
+def hsv():
+    now = datetime.datetime.utcnow()
+    season = now.year if now.month >= 7 else now.year - 1
+    games = []
+    for league in ("bl1", "bl2", "dfb"):
+        try:
+            data = http("https://api.openligadb.de/getmatchdata/%s/%d" % (league, season))
+        except Exception:  # noqa: BLE001
+            continue
+        for m in data or []:
+            t1 = ((m.get("team1") or {}).get("teamName") or "")
+            t2 = ((m.get("team2") or {}).get("teamName") or "")
+            home = "hamburger sv" in t1.lower()
+            if not home and "hamburger sv" not in t2.lower():
+                continue
+            utc = (m.get("matchDateTimeUTC") or "")[:19]
+            try:
+                kick = datetime.datetime.strptime(utc, "%Y-%m-%dT%H:%M:%S")
+            except ValueError:
+                continue
+            if kick < now - datetime.timedelta(hours=3):
+                continue
+            games.append({"utc": utc + "Z", "opp": t2 if home else t1, "home": home,
+                          "league": m.get("leagueName") or league})
+    games.sort(key=lambda g: g["utc"])
+    return games[:4]
 
 
 def main():
@@ -230,6 +260,12 @@ def main():
             out["status"]["twitch"] = problem(e)
     else:
         out["status"]["twitch"] = "kein Schluessel"
+
+    try:
+        out["hsv"] = hsv()
+        out["status"]["hsv"] = "ok (%d Spiele)" % len(out["hsv"])
+    except Exception as e:  # noqa: BLE001
+        out["status"]["hsv"] = problem(e)
 
     os.makedirs(os.path.dirname(os.path.abspath(target)), exist_ok=True)
     with open(target, "w", encoding="utf-8") as f:

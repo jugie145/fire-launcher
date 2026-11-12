@@ -174,6 +174,16 @@ class WeatherIcon(ctx: Context) : View(ctx) {
             invalidate()
         }
 
+    /** Lebendiges Symbol: Sonnenstrahlen drehen sich, Wolken ziehen, Regen faellt. */
+    var live = false
+        set(v) {
+            field = v
+            invalidate()
+        }
+    private val t0 = android.os.SystemClock.uptimeMillis()
+    private var spin = 0f
+    private var drift = 0f
+
     private val fill = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE }
     private val line = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.WHITE
@@ -183,7 +193,8 @@ class WeatherIcon(ctx: Context) : View(ctx) {
     private val path = Path()
     private val cut = Path()
 
-    private fun cloud(c: Canvas, cx: Float, cy: Float, w: Float) {
+    private fun cloud(c: Canvas, cx0: Float, cy: Float, w: Float) {
+        val cx = cx0 + drift
         c.drawCircle(cx - w * 0.22f, cy + w * 0.05f, w * 0.19f, fill)
         c.drawCircle(cx + w * 0.02f, cy - w * 0.08f, w * 0.26f, fill)
         c.drawCircle(cx + w * 0.27f, cy + w * 0.07f, w * 0.17f, fill)
@@ -193,7 +204,7 @@ class WeatherIcon(ctx: Context) : View(ctx) {
     private fun sun(c: Canvas, cx: Float, cy: Float, r: Float) {
         c.drawCircle(cx, cy, r, line)
         for (i in 0 until 8) {
-            val a = Math.PI * 2 * i / 8
+            val a = Math.PI * 2 * i / 8 + Math.toRadians(spin.toDouble())
             val cs = Math.cos(a).toFloat()
             val sn = Math.sin(a).toFloat()
             c.drawLine(cx + cs * r * 1.5f, cy + sn * r * 1.5f, cx + cs * r * 2.0f, cy + sn * r * 2.0f, line)
@@ -204,6 +215,18 @@ class WeatherIcon(ctx: Context) : View(ctx) {
         val s = Math.min(width, height).toFloat()
         if (s <= 0f) return
         line.strokeWidth = s * 0.055f
+        val animate = live && Ui.anims
+        val t = android.os.SystemClock.uptimeMillis() - t0
+        if (animate) {
+            spin = (t % 24000L) * 360f / 24000f
+            // Wolke zieht in 7 s sanft hin und her (wie in der Vorschau: -0,8 bis +1,2 von 24)
+            val e = ((1 - Math.cos(2 * Math.PI * (t % 7000L) / 7000.0)) / 2).toFloat()
+            drift = s * (-0.8f + 2f * e) / 24f
+        } else {
+            spin = 0f
+            drift = 0f
+        }
+        line.alpha = 255
         when (kind) {
             SUN -> sun(c, s * 0.5f, s * 0.5f, s * 0.2f)
             MOON -> {
@@ -221,7 +244,20 @@ class WeatherIcon(ctx: Context) : View(ctx) {
             CLOUD -> cloud(c, s * 0.5f, s * 0.5f, s * 0.82f)
             RAIN -> {
                 cloud(c, s * 0.5f, s * 0.4f, s * 0.78f)
-                for (x in floatArrayOf(0.34f, 0.5f, 0.66f)) c.drawLine(s * x, s * 0.72f, s * (x - 0.05f), s * 0.88f, line)
+                val xs = floatArrayOf(0.34f, 0.5f, 0.66f)
+                for (i in xs.indices) {
+                    val x = xs[i]
+                    if (animate) {
+                        // Tropfen fallen nacheinander (1,1 s, versetzt) und verblassen
+                        val f = ((t + i * 367L) % 1100L) / 1100f
+                        val dy = s * (-1.5f + 5f * f) / 24f
+                        line.alpha = (255 * (if (f < 0.25f) f / 0.25f else 1f - (f - 0.25f) / 0.75f)).toInt()
+                        c.drawLine(s * x, s * 0.72f + dy, s * (x - 0.05f), s * 0.88f + dy, line)
+                    } else {
+                        c.drawLine(s * x, s * 0.72f, s * (x - 0.05f), s * 0.88f, line)
+                    }
+                }
+                line.alpha = 255
             }
             SNOW -> {
                 cloud(c, s * 0.5f, s * 0.4f, s * 0.78f)
@@ -241,6 +277,7 @@ class WeatherIcon(ctx: Context) : View(ctx) {
                 c.drawPath(path, fill)
             }
         }
+        if (animate && kind != MOON && kind != FOG) postInvalidateDelayed(33)
     }
 }
 

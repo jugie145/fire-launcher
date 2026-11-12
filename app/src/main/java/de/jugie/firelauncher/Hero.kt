@@ -84,6 +84,7 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
     private val label: TextView
     private val title: TextView
     private val meta: TextView
+    private val liveDot = LiveDot(ctx)
     private val desc: TextView
     private val dots = LinearLayout(ctx)
     private val source: TextView
@@ -159,7 +160,14 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
         meta = Ui.text(ctx, "", 26f, k, Ui.TEXT_DIM)
         meta.maxLines = 1
         meta.ellipsize = TextUtils.TruncateAt.END
-        texts.addView(meta, LinearLayout.LayoutParams(wrap, wrap).apply { topMargin = px(18) })
+        val metaRow = LinearLayout(ctx)
+        metaRow.orientation = LinearLayout.HORIZONTAL
+        metaRow.gravity = Gravity.CENTER_VERTICAL
+        metaRow.clipChildren = false
+        liveDot.visibility = View.GONE
+        metaRow.addView(liveDot, LinearLayout.LayoutParams(px(38), px(38)).apply { leftMargin = px(-12); rightMargin = px(2) })
+        metaRow.addView(meta)
+        texts.addView(metaRow, LinearLayout.LayoutParams(wrap, wrap).apply { topMargin = px(18) })
         desc = Ui.text(ctx, "", 25f, k, Ui.TEXT_DIM)
         desc.maxLines = 2
         desc.ellipsize = TextUtils.TruncateAt.END
@@ -277,6 +285,7 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
         title.text = it.title
         meta.text = it.meta
         meta.visibility = if (it.meta.isBlank()) View.GONE else View.VISIBLE
+        liveDot.visibility = if (it.meta.uppercase().startsWith("LIVE")) View.VISIBLE else View.GONE
         desc.text = it.desc
         desc.visibility = if (it.desc.isBlank()) View.GONE else View.VISIBLE
         texts.animate().cancel()
