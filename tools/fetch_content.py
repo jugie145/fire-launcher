@@ -407,7 +407,7 @@ def search_index():
     try:
         old = http(SEARCH_URL)
         ts = datetime.datetime.strptime(old.get("updated", ""), "%Y-%m-%dT%H:%M:%SZ")
-        if old.get("v") == 2 and datetime.datetime.utcnow() - ts < datetime.timedelta(hours=20) and len(old.get("items", [])) > 100:
+        if old.get("v") == 3 and datetime.datetime.utcnow() - ts < datetime.timedelta(hours=20) and len(old.get("items", [])) > 100:
             return old, False
     except Exception:  # noqa: BLE001
         pass
@@ -461,7 +461,7 @@ def search_index():
         tid = e.pop("id", "")
         if tid in nf and "Netflix" in e["p"]:
             e["nf"] = nf[tid]
-    return {"v": 2, "updated": datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"), "items": items}, True
+    return {"v": 3, "updated": datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"), "items": items}, True
 
 
 def main():
