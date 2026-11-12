@@ -96,6 +96,7 @@ class MainActivity : Activity() {
         k = resources.displayMetrics.widthPixels / 1920f
         Ui.load(this)
         Content.appCtx = applicationContext
+        Playback.enable(this)
         sig = Prefs.sig(this)
         favApps = emptyList()
         shown = null

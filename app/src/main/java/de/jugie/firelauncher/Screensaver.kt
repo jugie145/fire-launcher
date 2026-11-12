@@ -132,6 +132,8 @@ object Saver {
  */
 object Idle {
     @Volatile var last = android.os.SystemClock.uptimeMillis()
+    /** letzte Pruefung in anderen Apps (fuer die Einstellungen) */
+    @Volatile var status = "Noch keine Prüfung (dafür muss „Home-Taste umleiten“ an sein)"
     fun touch() {
         last = android.os.SystemClock.uptimeMillis()
     }

@@ -128,6 +128,7 @@ class SettingsActivity : Activity() {
         row(col, "Bildschirmschoner ansehen", { "Starten" }) {
             startActivity(Intent(this, ScreensaverActivity::class.java))
         }
+        info(col, "In Apps startet der Schoner nur, wenn dort kein Video läuft. Letzte Prüfung: " + Idle.status, false)
 
         section(col, "System")
         row(col, "Home-Taste umleiten", {

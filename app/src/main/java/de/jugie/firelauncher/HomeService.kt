@@ -80,9 +80,15 @@ class HomeService : AccessibilityService() {
     private val idleCheck = object : Runnable {
         override fun run() {
             try {
-                val am = getSystemService(AUDIO_SERVICE) as android.media.AudioManager
-                if (fgPkg != packageName && Idle.due(this@HomeService) && !am.isMusicActive) Idle.start(this@HomeService)
+                val (busy, why) = Playback.videoPlaying(this@HomeService)
+                val idleMin = (android.os.SystemClock.uptimeMillis() - Idle.last) / 60000
+                Idle.status = "Vordergrund: " + (if (fgPkg.isBlank()) "?" else fgPkg) + " · ohne Eingabe: $idleMin Min. · $why"
+                if (fgPkg != packageName && Idle.due(this@HomeService) && !busy) {
+                    Idle.start(this@HomeService)
+                    Idle.status += " · gestartet"
+                }
             } catch (e: Exception) {
+                Idle.status = "Fehler: " + e.javaClass.simpleName
             }
             handler.postDelayed(this, 30_000L)
         }
