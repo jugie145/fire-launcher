@@ -124,6 +124,16 @@ object Prefs {
 
     fun flag(c: Context, key: String): Boolean = sp(c).getBoolean(key, false)
     fun setFlag(c: Context, key: String) { sp(c).edit().putBoolean(key, true).apply() }
+    fun clearFlag(c: Context, key: String) { sp(c).edit().putBoolean(key, false).apply() }
+
+    /** Bildschirmschoner: 0 Filme & Serien, 1 Wellen & Uhr, 2 Fire TV Standard */
+    fun saver(c: Context): Int = sp(c).getInt("saver", 0)
+    fun setSaver(c: Context, v: Int) { sp(c).edit().putInt("saver", v).apply() }
+    fun saverMinutes(c: Context): Int = sp(c).getInt("saver_min", 5)
+    fun setSaverMinutes(c: Context, v: Int) { sp(c).edit().putInt("saver_min", v).apply() }
+    /** Systemwerte vor dem Umstellen, damit sie sich wiederherstellen lassen. */
+    fun orig(c: Context, key: String): String? = sp(c).getString("orig_" + key, null)
+    fun setOrig(c: Context, key: String, v: String?) { sp(c).edit().putString("orig_" + key, v).commit() }
 
     fun redirect(c: Context): Boolean = sp(c).getBoolean("redirect", true)
     fun setRedirect(c: Context, v: Boolean) { sp(c).edit().putBoolean("redirect", v).apply() }

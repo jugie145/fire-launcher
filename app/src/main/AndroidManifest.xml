@@ -41,6 +41,18 @@
         <activity android:name=".AllAppsActivity" android:screenOrientation="landscape" />
         <activity android:name=".SettingsActivity" android:screenOrientation="landscape" />
         <activity android:name=".CinemaActivity" android:screenOrientation="landscape" />
+        <activity android:name=".ScreensaverActivity" android:screenOrientation="landscape" android:exported="false" />
+
+        <service
+            android:name=".ScreensaverDream"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_DREAM_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.dreams.DreamService" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </service>
 
         <service
             android:name=".HomeService"

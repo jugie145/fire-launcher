@@ -92,6 +92,22 @@ class SettingsActivity : Activity() {
         orderHint = Ui.text(this, "", 22f, k, Ui.TEXT_DIM)
         col.addView(orderHint, LinearLayout.LayoutParams(wrap, wrap).apply { topMargin = px(16) })
 
+        section(col, "Bildschirmschoner")
+        row(col, "Bildschirmschoner", {
+            if (!Setup.canWrite(this)) "Berechtigung fehlt" else Saver.NAMES[Prefs.saver(this) % 3]
+        }) {
+            Prefs.setSaver(this, (Prefs.saver(this) + 1) % 3)
+            Saver.apply(this)
+        }
+        row(col, "Startet nach", { "" + Prefs.saverMinutes(this) + " Minuten" }) {
+            val i = Saver.MINUTES.indexOf(Prefs.saverMinutes(this))
+            Prefs.setSaverMinutes(this, Saver.MINUTES[(i + 1) % Saver.MINUTES.size])
+            Saver.apply(this)
+        }
+        row(col, "Bildschirmschoner ansehen", { "Starten" }) {
+            startActivity(Intent(this, ScreensaverActivity::class.java))
+        }
+
         section(col, "System")
         row(col, "Home-Taste umleiten", {
             when {

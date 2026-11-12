@@ -29,3 +29,10 @@ Danach den Launcher einmal öffnen.
 Einstellungen → Anwendungen → Installierte Anwendungen verwalten → Fire Launcher → Deinstallieren.
 
 Jeder Push auf `main` baut automatisch eine neue APK (GitHub Actions).
+
+## Bildschirmschoner
+
+Liquid TV bringt einen eigenen Bildschirmschoner mit (Einstellungen → Bildschirmschoner):
+„Filme & Serien“ zeigt Szenenbilder neuer Titel, „Wellen & Uhr“ das Wellenbild mit wandernden
+App-Farben. Er startet nach 5, 10 oder 15 Minuten, jede Taste beendet ihn. „Fire TV Standard“
+stellt den Bildschirmschoner von Amazon wieder her. Nach dem ersten Umstellen einmal neu starten.

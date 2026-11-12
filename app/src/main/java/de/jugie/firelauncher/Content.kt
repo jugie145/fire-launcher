@@ -41,6 +41,23 @@ object Images {
 
     fun cached(urls: List<String>): Bitmap? = if (urls.isEmpty()) null else cache.get(urls[0])
 
+    /** Grosses Bild fuer den Bildschirmschoner, mindestens [minW] breit, ohne Zwischenspeicher. */
+    fun loadBig(urls: List<String>, minW: Int, cb: (Bitmap?) -> Unit) {
+        if (urls.isEmpty()) {
+            cb(null)
+            return
+        }
+        pool.execute {
+            var b: Bitmap? = null
+            for (u in urls) {
+                b = fetch(u, minW)
+                if (b != null) break
+            }
+            val res = b
+            main.post { cb(res) }
+        }
+    }
+
     /** Probiert die Adressen der Reihe nach; das Ergebnis kommt im Hauptthread zurueck. */
     fun load(urls: List<String>, cb: (Bitmap?) -> Unit) {
         if (urls.isEmpty()) {
@@ -64,7 +81,7 @@ object Images {
         }
     }
 
-    private fun fetch(u: String): Bitmap? {
+    private fun fetch(u: String, minW: Int = 1280): Bitmap? {
         return try {
             val c = URL(u).openConnection() as HttpURLConnection
             c.connectTimeout = 8000
@@ -80,7 +97,7 @@ object Images {
             BitmapFactory.decodeByteArray(bytes, 0, bytes.size, o)
             if (o.outWidth < 200) return null
             var sample = 1
-            while (o.outWidth / (sample * 2) >= 1280) sample *= 2
+            while (o.outWidth / (sample * 2) >= minW) sample *= 2
             val o2 = BitmapFactory.Options()
             o2.inSampleSize = sample
             BitmapFactory.decodeByteArray(bytes, 0, bytes.size, o2)
@@ -118,6 +135,34 @@ object Content {
             l == "wow" || l.startsWith("wow ") -> "wow"
             l.contains("disney") || p.contains("disney") -> "disney"
             else -> ""
+        }
+    }
+
+    class SaverItem(val kind: String, val item: HeroItem)
+
+    /** Filme und Serien aller Anbieter fuer den Bildschirmschoner, abwechselnd und ohne doppelte Titel. */
+    fun loadSaver(cb: (List<SaverItem>) -> Unit) {
+        pool.execute {
+            val lists = ArrayList<List<SaverItem>>()
+            for (k in listOf("netflix", "prime", "wow", "disney")) {
+                val d = try { section(k) } catch (e: Throwable) { null } ?: continue
+                lists.add(d.items.filter { it.images.isNotEmpty() }.map { SaverItem(k, it) })
+            }
+            val out = ArrayList<SaverItem>()
+            val seen = HashSet<String>()
+            var i = 0
+            while (true) {
+                var any = false
+                for (l in lists) {
+                    if (i < l.size) {
+                        any = true
+                        if (seen.add(l[i].item.title.lowercase())) out.add(l[i])
+                    }
+                }
+                if (!any) break
+                i++
+            }
+            main.post { cb(out) }
         }
     }
 
