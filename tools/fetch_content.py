@@ -11,6 +11,7 @@ Fehlt ein Schluessel, wird der Abschnitt einfach weggelassen.
 import datetime
 import json
 import os
+import re
 import sys
 import urllib.error
 import urllib.parse
@@ -198,13 +199,21 @@ def tmdb_sections():
 
 def youtube_trends():
     key = os.environ.get("YT_KEY", "").strip()
-    q = urllib.parse.urlencode(dict(part="snippet", chart="mostPopular", regionCode="DE", maxResults=12, key=key))
+    q = urllib.parse.urlencode(dict(part="snippet,contentDetails", chart="mostPopular", regionCode="DE", maxResults=30, key=key))
     data = http("https://www.googleapis.com/youtube/v3/videos?" + q)
     out = []
     for v in data.get("items", []):
         sn = v.get("snippet", {})
         vid = v.get("id")
-        if not vid or not sn.get("title"):
+        if not vid or not sn.get("title") or len(out) >= 12:
+            continue
+        # keine Shorts: nur Videos ueber drei Minuten (Shorts duerfen bis zu drei Minuten lang sein)
+        dur = (v.get("contentDetails") or {}).get("duration", "")
+        h = re.search(r"(\d+)H", dur)
+        m = re.search(r"(\d+)M", dur)
+        sec = re.search(r"(\d+)S", dur)
+        total = (int(h.group(1)) * 3600 if h else 0) + (int(m.group(1)) * 60 if m else 0) + (int(sec.group(1)) if sec else 0)
+        if total <= 180 or "#shorts" in sn["title"].lower():
             continue
         out.append({
             "title": sn["title"],

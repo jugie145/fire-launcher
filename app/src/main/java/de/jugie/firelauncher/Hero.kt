@@ -361,7 +361,9 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
         desc.text = it.desc
         desc.visibility = if (it.desc.isBlank()) View.GONE else View.VISIBLE
         texts.animate().cancel()
-        if (Ui.anims) {
+        if (npOn) {
+            texts.alpha = 0f
+        } else if (Ui.anims) {
             texts.alpha = 0f
             texts.translationX = 26f * k
             texts.animate().alpha(1f).translationX(0f).setDuration(420).setInterpolator(Ui.smooth).start()

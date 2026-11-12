@@ -550,7 +550,7 @@ class MainActivity : Activity() {
             val cy = loc[1] + v.height * v.scaleY / 2f
             spotX = cx
             spotY = cy
-            wave.setSpot(cx, cy, accent, spotSet)
+            wave.setSpot(cx, cy, accent, spotSet, if (Content.kind(app) in setOf("prime", "wow", "disney")) 1.7f else 1f)
             spotSet = true
         }
         // Spiegelungen neigen sich zur ausgewaehlten Kachel
@@ -637,7 +637,7 @@ class MainActivity : Activity() {
     }
 
     private fun checkNote(self: Runnable) {
-        if (Theme.gta) return
+        if (Theme.gta || !Prefs.hsvNote(this)) return
         if (::search.isInitialized && search.showing) {
             handler.postDelayed(self, 30_000L)
             return

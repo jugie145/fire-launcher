@@ -75,7 +75,7 @@ class WaveBackground(ctx: Context) : View(ctx) {
         gm.postTranslate(cx, cy)
         rg.setLocalMatrix(gm)
         tint.shader = ComposeShader(s, rg, PorterDuff.Mode.DST_IN)
-        val g = 2.6f
+        val g = 2.6f * gain
         cm.set(
             floatArrayOf(
                 Color.red(color) / 255f * g, 0f, 0f, 0f, 0f,
@@ -89,18 +89,22 @@ class WaveBackground(ctx: Context) : View(ctx) {
     }
 
     /** Farbbereich auf einen Punkt (in Pixeln) und eine Farbe setzen. */
-    fun setSpot(x: Float, y: Float, c: Int, animate: Boolean) {
+    private var gain = 1f
+
+    fun setSpot(x: Float, y: Float, c: Int, animate: Boolean, boost: Float = gain) {
         move?.cancel()
         if (!animate || !Ui.anims || cx < 0f || bmpShader == null) {
             cx = x
             cy = y
             color = c
+            gain = boost
             rebuild()
             return
         }
         val fx = cx
         val fy = cy
         val fc = color
+        val fg = gain
         val a = ValueAnimator.ofFloat(0f, 1f)
         a.duration = 600
         a.interpolator = Ui.smooth
@@ -109,6 +113,7 @@ class WaveBackground(ctx: Context) : View(ctx) {
             cx = fx + (x - fx) * t
             cy = fy + (y - fy) * t
             color = argb.evaluate(t, fc, c) as Int
+            gain = fg + (boost - fg) * t
             rebuild()
         }
         a.start()

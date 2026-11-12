@@ -313,7 +313,8 @@ object Content {
         } catch (e: Exception) {
         }
         for ((id, name) in channels) {
-            val xml = get("https://www.youtube.com/feeds/videos.xml?channel_id=$id") ?: continue
+            val xml = get("https://www.youtube.com/feeds/videos.xml?playlist_id=UULF" + id.substring(2))
+                ?: get("https://www.youtube.com/feeds/videos.xml?channel_id=$id") ?: continue
             try {
                 val p = Xml.newPullParser()
                 p.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false)

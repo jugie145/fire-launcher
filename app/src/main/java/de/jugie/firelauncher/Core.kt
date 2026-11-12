@@ -157,6 +157,9 @@ object Prefs {
     fun name(c: Context): String = sp(c).getString("name", "Julien") ?: "Julien"
 
     /** Aendert sich, sobald eine Einstellung geaendert wurde, die den Startbildschirm betrifft. */
+    fun hsvNote(c: Context): Boolean = sp(c).getBoolean("hsv_note", true)
+    fun setHsvNote(c: Context, v: Boolean) { sp(c).edit().putBoolean("hsv_note", v).apply() }
+
     /** 0 = Liquid Glass, 1 = GTA VI */
     fun design(c: Context): Int = sp(c).getInt("design", 0)
     fun setDesign(c: Context, v: Int) { sp(c).edit().putInt("design", v).apply() }

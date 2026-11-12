@@ -89,6 +89,8 @@ class SettingsActivity : Activity() {
             Prefs.setContentColors(this, !Prefs.contentColors(this))
         }
 
+        row(col, "HSV-Nachrichten", { onOff(Prefs.hsvNote(this)) }) { Prefs.setHsvNote(this, !Prefs.hsvNote(this)) }
+
         section(col, "Spotify")
         row(col, "Spotify", { if (Spotify.connected(this)) "Verbunden" else "Nicht verbunden" }) {
             if (Spotify.connected(this)) Spotify.logout(this)
