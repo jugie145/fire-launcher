@@ -34,7 +34,7 @@ def problem(e):
             err = body.get("error") or {}
             if isinstance(err, dict):
                 errs = err.get("errors") or [{}]
-                reason = errs[0].get("reason") or err.get("status") or ""
+                reason = (errs[0].get("reason") or err.get("status") or "") + ": " + (err.get("message") or "")[:80]
         except Exception:  # noqa: BLE001
             pass
         return "Fehler: HTTP %s %s" % (e.code, reason)
