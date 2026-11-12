@@ -1,3 +1,22 @@
 {
- "twitch": ["trymacs", "eligella", "zarbex", "montanablack88"]
+ "twitch": [
+  "trymacs",
+  "eligella",
+  "zarbex",
+  "montanablack88"
+ ],
+ "youtube": [
+  "Beam in Serie",
+  "Die Crew",
+  "Einsatz Amerika",
+  "Aaron Troschke",
+  "HandOfBlood",
+  "Mattin",
+  "MontanaBlack",
+  "Zarbex",
+  "MrGeil",
+  "Richtiger Kevin",
+  "SurvivalMattin",
+  "ZarbexLive"
+ ]
 }

@@ -248,6 +248,29 @@ def twitch(logins):
     return {"label": "Jetzt live", "source": "Quelle: Twitch", "items": out}
 
 
+# ---------------- YouTube-Kanaele: Namen in Kanal-IDs aufloesen (ohne Schluessel) ----------------
+
+def youtube_channels(names):
+    """Sucht jeden Namen auf YouTube (Filter: Kanaele) und nimmt den ersten Treffer."""
+    import re
+    out = []
+    for name in names:
+        try:
+            url = "https://www.youtube.com/results?" + urllib.parse.urlencode({"search_query": name, "sp": "EgIQAg==", "hl": "de", "gl": "DE"})
+            req = urllib.request.Request(url, headers={
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36",
+                "Accept-Language": "de-DE,de;q=0.9",
+                "Cookie": "CONSENT=YES+1; SOCS=CAI"})
+            with urllib.request.urlopen(req, timeout=25) as r:
+                html = r.read().decode("utf-8", "replace")
+            m = re.search(r'"channelRenderer":\{"channelId":"(UC[\w-]{22})","title":\{"simpleText":"([^"]*)"', html)
+            if m:
+                out.append({"query": name, "id": m.group(1), "name": m.group(2)})
+        except Exception:  # noqa: BLE001
+            continue
+    return out
+
+
 # ---------------- HSV (OpenLigaDB, ohne Schluessel) ----------------
 
 def hsv():
@@ -311,6 +334,12 @@ def main():
             out["status"]["twitch"] = problem(e)
     else:
         out["status"]["twitch"] = "kein Schluessel"
+
+    try:
+        out["youtube_channels"] = youtube_channels(config.get("youtube", []))
+        out["status"]["kanaele"] = "ok (%d von %d)" % (len(out["youtube_channels"]), len(config.get("youtube", [])))
+    except Exception as e:  # noqa: BLE001
+        out["status"]["kanaele"] = problem(e)
 
     try:
         out["hsv"] = hsv()
