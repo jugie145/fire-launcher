@@ -355,7 +355,6 @@ class MainActivity : Activity() {
     private fun cardSelected(on: Boolean) {
         val all = favApps
         if (on) {
-            val sp = all.firstOrNull { Content.kind(it) == "spotify" }
             nowCard.post {
                 val loc = IntArray(2)
                 nowCard.getLocationInWindow(loc)
@@ -363,7 +362,7 @@ class MainActivity : Activity() {
                 val cy = loc[1] + nowCard.height / 2f
                 wave.setSpot(cx, cy, if (Theme.gta) Theme.PINK else 0xFF1ED860.toInt(), true, 1f)
             }
-            if (sp != null) hero.show(sp)
+            hero.showMix()
         } else {
             // zurueck zur zuletzt gewaehlten App
             val app = all.firstOrNull { it.pkg == shown }

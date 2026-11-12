@@ -270,11 +270,39 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
         }
     }
 
+    private var mixKinds: List<String> = emptyList()
+
+    /** Filme und Serien aller Dienste wie im Bildschirmschoner (wenn "Laeuft gerade" ausgewaehlt ist). */
+    fun showMix() {
+        token++
+        val my = token
+        app = null
+        nowPlaying(null)
+        Content.loadSaver { list ->
+            if (my != token || list.isEmpty()) return@loadSaver
+            val pick = list.take(10)
+            mixKinds = pick.map { it.kind }
+            apply(HeroData("", "", pick.map { it.item }))
+        }
+    }
+
+    private fun mixLogo(kind: String) {
+        val res = when (kind) {
+            "netflix" -> R.drawable.logo_netflix
+            "prime" -> R.drawable.logo_prime
+            "wow" -> R.drawable.logo_wow
+            "disney" -> R.drawable.logo_disney
+            else -> 0
+        }
+        if (res != 0) logo.setImageResource(res) else logo.setImageDrawable(null)
+    }
+
     /** Auf eine App umstellen: erst die App-Karte, dann (falls vorhanden) echte Inhalte. */
     fun show(app: AppEntry) {
         token++
         val my = token
         this.app = app
+        mixKinds = emptyList()
         nowPlaying(NowPlaying.track)
         accent = Ui.accentFor(app)
         val res = Ui.logoRes(app)
@@ -334,7 +362,14 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
 
     /** Nach den 10 Titeln eine neue zufaellige Auswahl holen (ohne den Fokus zu stoeren). */
     private fun refill() {
-        val a = app ?: return
+        val a = app
+        if (a == null) {
+            // Mischung: einfach von vorn
+            index = 0
+            render()
+            schedule()
+            return
+        }
         val my = token
         Content.load(a) { d ->
             if (my != token) return@load
@@ -352,6 +387,7 @@ class Hero(ctx: Context, private val k: Float) : FrameLayout(ctx) {
     private fun render() {
         if (items.isEmpty()) return
         val it = items[index]
+        if (app == null && index < mixKinds.size) mixLogo(mixKinds[index])
         updateSource()
         label.text = (if (it.label.isNotBlank()) it.label else dataLabel).uppercase()
         title.text = it.title
