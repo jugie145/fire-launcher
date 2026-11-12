@@ -1004,11 +1004,11 @@ class ScreensaverView(ctx: Context) : FrameLayout(ctx) {
         wIcon2.kind = kind
         wTemp.text = "$t°"
         wTemp2.text = "$t°"
-        wCond.text = Weather.text(Weather.code)
-        wCond2.text = Weather.text(Weather.code)
+        wCond.text = Weather.label()
+        wCond2.text = Weather.label()
         headIcon.kind = kind
         headTemp.text = "$t°"
-        headCond.text = Weather.text(Weather.code)
+        headCond.text = Weather.label()
         weatherRow.visibility = View.VISIBLE
         weatherRow2.visibility = View.VISIBLE
     }

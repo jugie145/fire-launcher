@@ -159,16 +159,28 @@ class WeatherIcon(ctx: Context) : View(ctx) {
         const val SNOW = 5
         const val FOG = 6
         const val STORM = 7
+        const val PARTLY_NIGHT = 8
+        const val DRIZZLE = 9
+        const val SHOWERS = 10
+        const val SLEET = 11
+        const val WIND = 12
 
-        fun kindFor(code: Int, day: Boolean): Int = when (code) {
-            0, 1 -> if (day) SUN else MOON
-            2 -> if (day) PARTLY else CLOUD
-            3 -> CLOUD
-            45, 48 -> FOG
-            51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82 -> RAIN
-            71, 73, 75, 77, 85, 86 -> SNOW
-            95, 96, 99 -> STORM
-            else -> CLOUD
+        fun kindFor(code: Int, day: Boolean, gust: Double = Weather.gust): Int {
+            val k = when (code) {
+                0, 1 -> if (day) SUN else MOON
+                2 -> if (day) PARTLY else PARTLY_NIGHT
+                3 -> CLOUD
+                45, 48 -> FOG
+                51, 53, 55 -> DRIZZLE
+                56, 57, 66, 67 -> SLEET
+                61, 63, 65 -> RAIN
+                80, 81, 82 -> if (day) SHOWERS else RAIN
+                71, 73, 75, 77, 85, 86 -> SNOW
+                95, 96, 99 -> STORM
+                else -> CLOUD
+            }
+            // Sturmboeen ab 75 km/h (Gewitter bleibt Gewitter)
+            return if (gust >= 75 && k != STORM) WIND else k
         }
 
         private const val SUN_C = 0xFFFFC94D.toInt()
@@ -279,6 +291,49 @@ class WeatherIcon(ctx: Context) : View(ctx) {
         c.restore()
     }
 
+    private val shadePaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val pathTmp = Path()
+
+    /** Tropfen fallen: Positionen, Laenge, Dauer, Versatz */
+    private fun fall(c: Canvas, t: Long, anim: Boolean, xs: FloatArray, y0: Float, len: Float, slant: Float,
+                     period: Long, step: Long, travel: Float, width: Float, color: Int, maxA: Float = 1f) {
+        line.color = color
+        line.strokeWidth = width
+        for (i in xs.indices) {
+            var dy = 0f
+            var a = 1f
+            if (anim) {
+                val f = ((t - i * step) % period + period) % period / period.toFloat()
+                dy = -1.5f + travel * f
+                a = if (f < 0.25f) f / 0.25f else 1f - (f - 0.25f) / 0.75f
+            }
+            line.alpha = (255 * a * maxA).toInt()
+            c.drawLine(xs[i], y0 + dy, xs[i] - slant, y0 + len + dy, line)
+        }
+        line.alpha = 255
+    }
+
+    /** Mond: Sichel mit sanftem Schimmer, wiegt sich leicht (ohne Sterne) */
+    private fun moon(c: Canvas, t: Long, anim: Boolean, cx: Float, cy: Float, s: Float) {
+        val g = if (anim) swing(t, 4200, 0f, 1f) else 0.5f
+        val gr = 9.5f * s * (1f + 0.08f * g)
+        glowPaint.shader = android.graphics.RadialGradient(
+            cx - 1.2f * s, cy, gr, intArrayOf(0x4DCDDCFF, 0x1FBECDFF, 0x00BECDFF), floatArrayOf(0f, 0.55f, 1f),
+            android.graphics.Shader.TileMode.CLAMP
+        )
+        glowPaint.alpha = (255 * (0.7f + 0.3f * g)).toInt()
+        c.drawCircle(cx - 1.2f * s, cy, gr, glowPaint)
+        c.save()
+        c.translate(cx, cy)
+        if (anim) c.rotate(Math.toDegrees(swing(t, 6000, -0.07f, 0.07f).toDouble()).toFloat())
+        c.scale(s, s)
+        c.translate(-15.155f, -11.99f)
+        shadePaint.shader = android.graphics.LinearGradient(8f, 5f, 18f, 19f, intArrayOf(Color.WHITE, MOON_C, 0xFFC3CEE2.toInt()),
+            floatArrayOf(0f, 0.6f, 1f), android.graphics.Shader.TileMode.CLAMP)
+        c.drawPath(MOON_PATH, shadePaint)
+        c.restore()
+    }
+
     override fun onDraw(c: Canvas) {
         val s = Math.min(width, height).toFloat()
         if (s <= 0f) return
@@ -294,22 +349,93 @@ class WeatherIcon(ctx: Context) : View(ctx) {
                 sun(c, 15.5f, 8f, 2.7f, t, anim)
                 clouds(c, t, anim, 1f, false)
             }
-            CLOUD, FOG -> clouds(c, t, anim, 0f, true)
-            RAIN, STORM -> {
+            CLOUD -> clouds(c, t, anim, 0f, true)
+            PARTLY_NIGHT -> {
+                moon(c, t, anim, 15.6f, 7.6f, 0.5f)
+                clouds(c, t, anim, 1f, false)
+            }
+            FOG -> {
+                clouds(c, t, anim, -2.5f, true)
+                line.color = 0xE6DCE4F0.toInt()
+                line.strokeWidth = 1.3f
+                val rows = arrayOf(floatArrayOf(6f, 18f, 18.6f), floatArrayOf(4.5f, 15.5f, 20.9f), floatArrayOf(9f, 19.5f, 23f))
+                for (i in rows.indices) {
+                    val o = if (anim) swing(t, 4200L + i * 900L, -1.4f, 1.4f, i * 700L) * (if (i % 2 == 1) -1f else 1f) else 0f
+                    line.alpha = (255 * (0.9f - i * 0.2f)).toInt()
+                    c.drawLine(rows[i][0] + o, rows[i][2], rows[i][1] + o, rows[i][2], line)
+                }
+                line.alpha = 255
+            }
+            RAIN -> {
                 clouds(c, t, anim, -3.5f, true)
-                line.color = RAIN_C
-                line.strokeWidth = 1.4f
+                fall(c, t, anim, floatArrayOf(9.3f, 12.8f, 16.3f), 18.6f, 2.2f, 0.6f, 1100L, 370L, 5f, 1.4f, RAIN_C)
+            }
+            DRIZZLE -> {
+                clouds(c, t, anim, -3.5f, true)
+                fall(c, t, anim, floatArrayOf(8.6f, 11.4f, 14.2f, 17f), 19.9f, 0.9f, 0.2f, 1700L, 420L, 3.6f, 1f, RAIN_C, 0.85f)
+            }
+            SHOWERS -> {
+                sun(c, 15.8f, 6.4f, 2.5f, t, anim)
+                clouds(c, t, anim, -2.2f, false)
+                fall(c, t, anim, floatArrayOf(10.3f, 13.8f), 19.6f, 2.2f, 0.6f, 1100L, 550L, 5f, 1.4f, RAIN_C)
+            }
+            SLEET -> {
+                clouds(c, t, anim, -3.5f, true)
                 val xs = floatArrayOf(9.3f, 12.8f, 16.3f)
                 for (i in xs.indices) {
                     var dy = 0f
                     var a = 1f
                     if (anim) {
-                        val f = ((t - i * 370L) % 1100L + 1100L) % 1100L / 1100f
-                        dy = -1.5f + 5f * f
+                        val f = ((t - i * 500L) % 1500L + 1500L) % 1500L / 1500f
+                        dy = -1.5f + 4.5f * f
                         a = if (f < 0.25f) f / 0.25f else 1f - (f - 0.25f) / 0.75f
                     }
-                    line.alpha = (255 * a).toInt()
-                    c.drawLine(xs[i], 18.6f + dy, xs[i] - 0.6f, 20.8f + dy, line)
+                    if (i % 2 == 0) {
+                        line.color = RAIN_C
+                        line.strokeWidth = 1.4f
+                        line.alpha = (255 * a).toInt()
+                        c.drawLine(xs[i], 18.6f + dy, xs[i] - 0.6f, 20.8f + dy, line)
+                    } else {
+                        fill.color = Color.WHITE
+                        fill.alpha = (255 * a).toInt()
+                        c.drawCircle(xs[i], 19.6f + dy, 0.95f, fill)
+                    }
+                }
+                line.alpha = 255
+                fill.alpha = 255
+            }
+            STORM -> {
+                clouds(c, t, anim, -3.5f, true)
+                fall(c, t, anim, floatArrayOf(9.3f, 12.8f, 16.3f), 18.6f, 2.2f, 0.6f, 1100L, 370L, 5f, 1.4f, RAIN_C)
+                // Blitz zuckt ab und zu doppelt auf
+                val f = (t % 3000L) / 3000f
+                val on = !anim || f < 0.05f || (f > 0.1f && f < 0.14f)
+                fill.color = 0xFFFFD84D.toInt()
+                fill.alpha = if (on) 255 else 90
+                pathTmp.reset()
+                pathTmp.moveTo(13.4f, 15.2f); pathTmp.lineTo(10.6f, 19.6f); pathTmp.lineTo(12.6f, 19.6f); pathTmp.lineTo(11.4f, 23f)
+                pathTmp.lineTo(15f, 18.2f); pathTmp.lineTo(12.9f, 18.2f); pathTmp.lineTo(14.4f, 15.2f); pathTmp.close()
+                c.drawPath(pathTmp, fill)
+                fill.alpha = 255
+            }
+            WIND -> {
+                // drei Windboegen ziehen durch, die Enden rollen sich ein
+                val lines = arrayOf(floatArrayOf(3f, 8.2f, 15.5f, -1f, 1500f), floatArrayOf(2f, 12.5f, 19f, 1f, 1900f), floatArrayOf(4.5f, 16.8f, 13.5f, 1f, 1300f))
+                for (i in lines.indices) {
+                    val L = lines[i]
+                    val o = if (anim) swing(t, (L[4] * 2).toLong(), -0.9f, 1.1f, i * 400L) else 0f
+                    val r = 2.1f
+                    line.color = if (i == 1) Color.WHITE else 0xFFD6E4F5.toInt()
+                    line.strokeWidth = if (i == 1) 1.6f else 1.3f
+                    line.pathEffect = android.graphics.DashPathEffect(floatArrayOf(9f, 3.5f), if (anim) ((t / 60f) % 25f) * -1f else 0f)
+                    pathTmp.reset()
+                    pathTmp.moveTo(L[0] + o, L[1])
+                    pathTmp.lineTo(L[2] + o, L[1])
+                    if (L[3] < 0) pathTmp.arcTo(android.graphics.RectF(L[2] + o - r, L[1] - 2 * r, L[2] + o + r, L[1]), 90f, 225f)
+                    else pathTmp.arcTo(android.graphics.RectF(L[2] + o - r, L[1], L[2] + o + r, L[1] + 2 * r), -90f, -225f)
+                    line.style = Paint.Style.STROKE
+                    c.drawPath(pathTmp, line)
+                    line.pathEffect = null
                 }
             }
             SNOW -> {
@@ -337,18 +463,7 @@ class WeatherIcon(ctx: Context) : View(ctx) {
                 }
                 fill.alpha = 255
             }
-            MOON -> {
-                fill.color = Color.WHITE
-                val stars = arrayOf(floatArrayOf(5f, 5f, 0.7f), floatArrayOf(8.5f, 2.5f, 0.5f), floatArrayOf(3f, 10f, 0.5f))
-                for (i in stars.indices) {
-                    val a = if (anim) swing(t, 2000L + i * 700L, 0.25f, 1f, i * 600L) else 0.8f
-                    fill.alpha = (255 * a).toInt()
-                    c.drawCircle(stars[i][0], stars[i][1], stars[i][2], fill)
-                }
-                fill.alpha = 255
-                fill.color = MOON_C
-                c.drawPath(MOON_PATH, fill)
-            }
+            MOON -> moon(c, t, anim, 13.2f, 12f, 1f)
         }
         c.restore()
         if (anim) postInvalidateDelayed(33)

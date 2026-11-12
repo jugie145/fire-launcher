@@ -844,7 +844,7 @@ class MainActivity : Activity() {
             val t = Weather.temp ?: return@load
             wIcon.kind = WeatherIcon.kindFor(Weather.code, Weather.day)
             wTemp.text = "$t°"
-            wCond.text = Weather.text(Weather.code)
+            wCond.text = Weather.label()
         }
     }
 

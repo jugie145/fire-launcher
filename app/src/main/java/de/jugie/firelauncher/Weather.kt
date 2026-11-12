@@ -12,6 +12,8 @@ object Weather {
     @Volatile var temp: Int? = null
     @Volatile var code = -1
     @Volatile var day = true
+    /** Windboeen in km/h (Sturm ab 75) */
+    @Volatile var gust = 0.0
     @Volatile private var at = 0L
     private val main = Handler(Looper.getMainLooper())
 
@@ -25,7 +27,7 @@ object Weather {
             try {
                 val url = URL(
                     "https://api.open-meteo.com/v1/forecast?latitude=53.28&longitude=11.57" +
-                        "&current=temperature_2m,weather_code,is_day&timezone=auto"
+                        "&current=temperature_2m,weather_code,is_day,wind_gusts_10m&timezone=auto"
                 )
                 val c = url.openConnection() as HttpURLConnection
                 c.connectTimeout = 8000
@@ -34,6 +36,7 @@ object Weather {
                 val cur = JSONObject(txt).getJSONObject("current")
                 code = cur.getInt("weather_code")
                 day = cur.optInt("is_day", 1) == 1
+                gust = cur.optDouble("wind_gusts_10m", 0.0)
                 temp = Math.round(cur.getDouble("temperature_2m")).toInt()
                 at = System.currentTimeMillis()
             } catch (e: Exception) {
@@ -42,16 +45,20 @@ object Weather {
         }
     }
 
+    /** Wetterlage als Text; bei Sturmboeen "Sturm" (ausser bei Gewitter). */
+    fun label(): String = if (gust >= 75 && code !in setOf(95, 96, 99)) "Sturm" else text(code)
+
     fun text(code: Int): String = when (code) {
         0 -> "Klar"
         1 -> "Überwiegend klar"
         2 -> "Leicht bewölkt"
         3 -> "Bewölkt"
         45, 48 -> "Nebel"
-        51, 53, 55, 56, 57 -> "Nieselregen"
-        61, 63, 65, 66, 67 -> "Regen"
+        51, 53, 55 -> "Nieselregen"
+        56, 57, 66, 67 -> "Eisregen"
+        61, 63, 65 -> "Regen"
         71, 73, 75, 77 -> "Schnee"
-        80, 81, 82 -> "Schauer"
+        80, 81, 82 -> "Regenschauer"
         85, 86 -> "Schneeschauer"
         95, 96, 99 -> "Gewitter"
         else -> ""
