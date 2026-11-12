@@ -458,8 +458,14 @@ class ScreensaverView(ctx: Context) : FrameLayout(ctx) {
     private val block = LinearLayout(ctx)
     private val weatherRow = LinearLayout(ctx)
     private val wIcon = WeatherIcon(ctx)
-    private val wTemp = Ui.text(ctx, "", 30f, k, Color.WHITE)
-    private val wCond = Ui.text(ctx, "", 30f, k, Ui.TEXT_DIM)
+    private val wTemp = Ui.text(ctx, "", 32f, k, Color.WHITE, Ui.medium)
+    private val wCond = Ui.text(ctx, "", 32f, k, 0xBFFFFFFF.toInt())
+    private val bigFlip = FlipClock(ctx, k, 170f, 240f, 180f, 14f, 22f, 16f, R.drawable.flip_big, Prefs.h24(ctx))
+    private val smallFlip = FlipClock(ctx, k, 78f, 108f, 80f, 8f, 10f, 8f, R.drawable.flip_small, Prefs.h24(ctx))
+    private val weatherRow2 = LinearLayout(ctx)
+    private val wIcon2 = WeatherIcon(ctx)
+    private val wTemp2 = Ui.text(ctx, "", 26f, k, Color.WHITE, Ui.medium)
+    private val wCond2 = Ui.text(ctx, "", 26f, k, 0xBFFFFFFF.toInt())
 
     // Filme & Serien
     private val kinoGroup = FrameLayout(ctx)
@@ -519,18 +525,18 @@ class ScreensaverView(ctx: Context) : FrameLayout(ctx) {
 
         block.orientation = LinearLayout.VERTICAL
         block.gravity = Gravity.CENTER_HORIZONTAL
-        val time = clock(timeFmt(), 230f, Color.WHITE, Ui.light)
-        time.letterSpacing = -4f / 230f
-        block.addView(time)
+        // Klapp-Uhr aus Glaskacheln
+        block.addView(bigFlip)
         block.addView(clock("EEEE, d. MMMM", 40f, 0xCCFFFFFF.toInt(), null), lp(top = 22f))
 
         weatherRow.orientation = LinearLayout.HORIZONTAL
         weatherRow.gravity = Gravity.CENTER_VERTICAL
-        weatherRow.addView(wIcon, LinearLayout.LayoutParams(px(40f), px(40f)))
-        val parts = listOf(wTemp, Ui.text(context, "·", 30f, k, Ui.TEXT_DIM), wCond, Ui.text(context, "·", 30f, k, Ui.TEXT_DIM), Ui.text(context, "Grabow", 30f, k, Ui.TEXT_DIM))
+        weatherRow.addView(wIcon, LinearLayout.LayoutParams(px(56f), px(56f)))
+        val dim = 0xBFFFFFFF.toInt()
+        val parts = listOf(wTemp, Ui.text(context, "·", 32f, k, dim), wCond, Ui.text(context, "·", 32f, k, dim), Ui.text(context, "Grabow", 32f, k, dim))
         for (p in parts) {
             p.setShadowLayer(24f * k, 0f, 2f * k, shadow)
-            weatherRow.addView(p, lp(left = 14f))
+            weatherRow.addView(p, lp(left = 16f))
         }
         weatherRow.visibility = View.INVISIBLE
         block.addView(weatherRow, lp(top = 26f))
@@ -551,10 +557,16 @@ class ScreensaverView(ctx: Context) : FrameLayout(ctx) {
         val topRight = LinearLayout(context)
         topRight.orientation = LinearLayout.VERTICAL
         topRight.gravity = Gravity.END
-        val time = clock(timeFmt(), 104f, Color.WHITE, Ui.light)
-        time.letterSpacing = -2f / 104f
-        topRight.addView(time)
+        topRight.addView(smallFlip)
         topRight.addView(clock("EEEE, d. MMMM", 30f, 0xCCFFFFFF.toInt(), null), lp(top = 12f))
+        weatherRow2.orientation = LinearLayout.HORIZONTAL
+        weatherRow2.gravity = Gravity.CENTER_VERTICAL
+        weatherRow2.addView(wIcon2, LinearLayout.LayoutParams(px(42f), px(42f)))
+        weatherRow2.addView(wTemp2, lp(left = 12f))
+        weatherRow2.addView(wCond2, lp(left = 12f))
+        for (t in listOf(wTemp2, wCond2)) t.setShadowLayer(24f * k, 0f, 2f * k, shadow)
+        weatherRow2.visibility = View.INVISIBLE
+        topRight.addView(weatherRow2, lp(top = 12f))
         kinoGroup.addView(topRight, LayoutParams(wrap, wrap, Gravity.TOP or Gravity.END).apply {
             topMargin = px(84f)
             rightMargin = px(112f)
@@ -619,6 +631,10 @@ class ScreensaverView(ctx: Context) : FrameLayout(ctx) {
         running = true
         mode = NONE
         t0 = SystemClock.uptimeMillis()
+        bigFlip.start()
+        smallFlip.start()
+        wIcon.live = true
+        wIcon2.live = true
         Weather.load { updateWeather() }
         if (Prefs.saver(context) == Saver.WELLEN) {
             showWellen()
@@ -650,6 +666,10 @@ class ScreensaverView(ctx: Context) : FrameLayout(ctx) {
 
     fun stop() {
         running = false
+        bigFlip.stop()
+        smallFlip.stop()
+        wIcon.live = false
+        wIcon2.live = false
         removeCallbacks(tick)
         handler.removeCallbacksAndMessages(null)
         kino.clear()
@@ -795,9 +815,14 @@ class ScreensaverView(ctx: Context) : FrameLayout(ctx) {
 
     private fun updateWeather() {
         val t = Weather.temp ?: return
-        wIcon.kind = WeatherIcon.kindFor(Weather.code, Weather.day)
-        wTemp.text = "$t°C"
+        val kind = WeatherIcon.kindFor(Weather.code, Weather.day)
+        wIcon.kind = kind
+        wIcon2.kind = kind
+        wTemp.text = "$t°"
+        wTemp2.text = "$t°"
         wCond.text = Weather.text(Weather.code)
+        wCond2.text = Weather.text(Weather.code)
         weatherRow.visibility = View.VISIBLE
+        weatherRow2.visibility = View.VISIBLE
     }
 }

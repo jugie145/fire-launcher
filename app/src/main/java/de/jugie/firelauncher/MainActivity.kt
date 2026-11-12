@@ -119,29 +119,21 @@ class MainActivity : Activity() {
         }
         line.addView(dateCol)
         line.addView(View(this), LinearLayout.LayoutParams(0, 1, 1f))
-        line.addView(Ui.text(this, "Grabow", 29f, k, Ui.TEXT_DIM))
-        line.addView(divider(72, 36, 34))
-        val wCol = LinearLayout(this)
-        wCol.orientation = LinearLayout.VERTICAL
-        wCol.gravity = Gravity.END
-        val wRow = LinearLayout(this)
-        wRow.orientation = LinearLayout.HORIZONTAL
-        wRow.gravity = Gravity.CENTER_VERTICAL
-        wIcon = WeatherIcon(this)
-        wRow.addView(wIcon, LinearLayout.LayoutParams(px(48), px(48)))
-        wTemp = Ui.text(this, "–°C", 42f, k, Color.WHITE)
-        // mit Schriftpolster, damit Ziffern und Gradzeichen nicht oben oder unten abgeschnitten werden
-        wTemp.includeFontPadding = true
-        wTemp.maxLines = 1
-        wRow.addView(wTemp, lp(wrap, wrap, left = 12))
-        wCond = Ui.text(this, "", 22f, k, Ui.TEXT_DIM)
-        wCond.includeFontPadding = true
+        // Wetter spiegelbildlich zur Uhr: Ort und Wetterlage zweizeilig | Symbol und grosse Temperatur
+        val placeCol = LinearLayout(this)
+        placeCol.orientation = LinearLayout.VERTICAL
+        placeCol.gravity = Gravity.END
+        placeCol.addView(Ui.text(this, "Grabow", 28f, k, Ui.TEXT_DIM))
+        wCond = Ui.text(this, "", 28f, k, Ui.TEXT_DIM)
         wCond.maxLines = 1
-        wCol.addView(wRow)
-        wCol.addView(wCond, lp(wrap, wrap, top = 8))
-        // Wetter mit festem Mindestplatz, damit nichts abgeschnitten wird
-        wCol.minimumWidth = px(200)
-        line.addView(wCol)
+        placeCol.addView(wCond, lp(wrap, wrap, top = 8))
+        line.addView(placeCol)
+        line.addView(divider(80, 38, 34))
+        wIcon = WeatherIcon(this)
+        line.addView(wIcon, LinearLayout.LayoutParams(px(76), px(76)))
+        wTemp = Ui.text(this, "–°", 86f, k, Color.WHITE, Ui.medium)
+        wTemp.maxLines = 1
+        line.addView(wTemp, lp(wrap, wrap, left = 16))
         line.clipChildren = false
         line.clipToPadding = false
         header.clipChildren = false
@@ -470,7 +462,7 @@ class MainActivity : Activity() {
         Weather.load {
             val t = Weather.temp ?: return@load
             wIcon.kind = WeatherIcon.kindFor(Weather.code, Weather.day)
-            wTemp.text = "$t°C"
+            wTemp.text = "$t°"
             wCond.text = Weather.text(Weather.code)
         }
     }

@@ -144,7 +144,11 @@ class GlassDrawable(private val radius: Float, private val k: Float) : Drawable(
     override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
 }
 
-/** Selbst gezeichnete Wettersymbole. */
+/**
+ * Farbige, lebendige Wettersymbole, gezeichnet in einem 24er-Raster wie in der Vorschau:
+ * Sonnenstrahlen drehen sich und die Sonne leuchtet, Wolken ziehen gegeneinander,
+ * Regentropfen fallen, Schneeflocken taumeln, nachts funkeln Sterne.
+ */
 class WeatherIcon(ctx: Context) : View(ctx) {
     companion object {
         const val SUN = 0
@@ -166,6 +170,34 @@ class WeatherIcon(ctx: Context) : View(ctx) {
             95, 96, 99 -> STORM
             else -> CLOUD
         }
+
+        private const val SUN_C = 0xFFFFC94D.toInt()
+        private const val RAIN_C = 0xFF7CC4FF.toInt()
+        private const val BACK_C = 0xFFAEB8C8.toInt()
+        private const val MOON_C = 0xFFE8ECF5.toInt()
+
+        /** Wolke aus der Vorschau (dieselben Boegen), im 24er-Raster */
+        private val CLOUD_PATH: Path by lazy {
+            val p = Path()
+            p.addCircle(16.75f, 15.02f, 3.5f, Path.Direction.CW)
+            p.addCircle(12.25f, 13.10f, 5f, Path.Direction.CW)
+            p.addCircle(7.683f, 15.476f, 3.1f, Path.Direction.CW)
+            p.addRect(7f, 13f, 16.75f, 18.5f, Path.Direction.CW)
+            val u = Path()
+            u.addRect(0f, 0f, 24f, 18.5f, Path.Direction.CW)
+            p.op(u, Path.Op.INTERSECT)
+            p
+        }
+
+        /** Mondsichel: grosser Kreis ohne den versetzten zweiten */
+        private val MOON_PATH: Path by lazy {
+            val p = Path()
+            p.addCircle(15.155f, 11.99f, 7.5f, Path.Direction.CW)
+            val c = Path()
+            c.addCircle(17.5f, 11.3f, 7.09f, Path.Direction.CW)
+            p.op(c, Path.Op.DIFFERENCE)
+            p
+        }
     }
 
     var kind = CLOUD
@@ -174,110 +206,138 @@ class WeatherIcon(ctx: Context) : View(ctx) {
             invalidate()
         }
 
-    /** Lebendiges Symbol: Sonnenstrahlen drehen sich, Wolken ziehen, Regen faellt. */
     var live = false
         set(v) {
             field = v
             invalidate()
         }
-    private val t0 = android.os.SystemClock.uptimeMillis()
-    private var spin = 0f
-    private var drift = 0f
 
-    private val fill = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE }
+    private val t0 = android.os.SystemClock.uptimeMillis()
+    private val fill = Paint(Paint.ANTI_ALIAS_FLAG)
     private val line = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.WHITE
         style = Paint.Style.STROKE
         strokeCap = Paint.Cap.ROUND
     }
-    private val path = Path()
-    private val cut = Path()
+    private val inOut = android.view.animation.PathInterpolator(0.42f, 0f, 0.58f, 1f)
 
-    private fun cloud(c: Canvas, cx0: Float, cy: Float, w: Float) {
-        val cx = cx0 + drift
-        c.drawCircle(cx - w * 0.22f, cy + w * 0.05f, w * 0.19f, fill)
-        c.drawCircle(cx + w * 0.02f, cy - w * 0.08f, w * 0.26f, fill)
-        c.drawCircle(cx + w * 0.27f, cy + w * 0.07f, w * 0.17f, fill)
-        c.drawRoundRect(cx - w * 0.41f, cy + w * 0.03f, cx + w * 0.44f, cy + w * 0.24f, w * 0.11f, w * 0.11f, fill)
+    /** Wert zwischen a und b, hin und zurueck in [period] ms (wie CSS 0%/100% = a, 50% = b, ease-in-out) */
+    private fun swing(t: Long, period: Long, a: Float, b: Float, delay: Long = 0): Float {
+        val f = (((t - delay) % period + period) % period) / period.toFloat()
+        val half = if (f < 0.5f) f * 2f else (1f - f) * 2f
+        return a + (b - a) * inOut.getInterpolation(half)
     }
 
-    private fun sun(c: Canvas, cx: Float, cy: Float, r: Float) {
-        c.drawCircle(cx, cy, r, line)
+    private fun sun(c: Canvas, cx: Float, cy: Float, r: Float, t: Long, anim: Boolean) {
+        // Leuchten
+        val g = if (anim) swing(t, 3200, 0f, 1f) else 0.5f
+        fill.color = SUN_C
+        fill.alpha = (255 * (0.18f + 0.24f * g)).toInt()
+        c.drawCircle(cx, cy, r * 2f * (0.88f + 0.24f * g), fill)
+        // Strahlen
+        line.color = SUN_C
+        line.alpha = 255
+        line.strokeWidth = 1.2f
+        val rot = if (anim) (t % 24000L) * 360f / 24000f else 0f
         for (i in 0 until 8) {
-            val a = Math.PI * 2 * i / 8 + Math.toRadians(spin.toDouble())
+            val a = Math.toRadians((i * 45 + rot).toDouble())
             val cs = Math.cos(a).toFloat()
             val sn = Math.sin(a).toFloat()
-            c.drawLine(cx + cs * r * 1.5f, cy + sn * r * 1.5f, cx + cs * r * 2.0f, cy + sn * r * 2.0f, line)
+            c.drawLine(cx + cs * r * 1.35f, cy + sn * r * 1.35f, cx + cs * r * 1.8f, cy + sn * r * 1.8f, line)
         }
+        fill.alpha = 255
+        c.drawCircle(cx, cy, r, fill)
+    }
+
+    private fun clouds(c: Canvas, t: Long, anim: Boolean, dy: Float, back: Boolean) {
+        if (back) {
+            c.save()
+            c.translate(if (anim) swing(t, 9000, 1f, -1.4f) else 0f, 0f)
+            c.translate(9f, -3.2f + dy)
+            c.scale(0.62f, 0.62f)
+            fill.color = BACK_C
+            c.drawPath(CLOUD_PATH, fill)
+            c.restore()
+        }
+        c.save()
+        c.translate(if (anim) swing(t, 7000, -0.8f, 1.2f) else 0f, dy)
+        fill.color = Color.WHITE
+        c.drawPath(CLOUD_PATH, fill)
+        c.restore()
     }
 
     override fun onDraw(c: Canvas) {
         val s = Math.min(width, height).toFloat()
         if (s <= 0f) return
-        line.strokeWidth = s * 0.055f
-        val animate = live && Ui.anims
+        val anim = live && Ui.anims
         val t = android.os.SystemClock.uptimeMillis() - t0
-        if (animate) {
-            spin = (t % 24000L) * 360f / 24000f
-            // Wolke zieht in 7 s sanft hin und her (wie in der Vorschau: -0,8 bis +1,2 von 24)
-            val e = ((1 - Math.cos(2 * Math.PI * (t % 7000L) / 7000.0)) / 2).toFloat()
-            drift = s * (-0.8f + 2f * e) / 24f
-        } else {
-            spin = 0f
-            drift = 0f
-        }
-        line.alpha = 255
+        c.save()
+        c.translate((width - s) / 2f, (height - s) / 2f)
+        c.scale(s / 24f, s / 24f)
+        fill.alpha = 255
         when (kind) {
-            SUN -> sun(c, s * 0.5f, s * 0.5f, s * 0.2f)
-            MOON -> {
-                path.reset()
-                path.addCircle(s * 0.48f, s * 0.52f, s * 0.3f, Path.Direction.CW)
-                cut.reset()
-                cut.addCircle(s * 0.62f, s * 0.40f, s * 0.26f, Path.Direction.CW)
-                path.op(cut, Path.Op.DIFFERENCE)
-                c.drawPath(path, fill)
-            }
+            SUN -> sun(c, 12f, 12f, 4f, t, anim)
             PARTLY -> {
-                sun(c, s * 0.66f, s * 0.34f, s * 0.13f)
-                cloud(c, s * 0.44f, s * 0.58f, s * 0.72f)
+                sun(c, 15.5f, 8f, 2.7f, t, anim)
+                clouds(c, t, anim, 1f, false)
             }
-            CLOUD -> cloud(c, s * 0.5f, s * 0.5f, s * 0.82f)
-            RAIN -> {
-                cloud(c, s * 0.5f, s * 0.4f, s * 0.78f)
-                val xs = floatArrayOf(0.34f, 0.5f, 0.66f)
+            CLOUD, FOG -> clouds(c, t, anim, 0f, true)
+            RAIN, STORM -> {
+                clouds(c, t, anim, -3.5f, true)
+                line.color = RAIN_C
+                line.strokeWidth = 1.4f
+                val xs = floatArrayOf(9.3f, 12.8f, 16.3f)
                 for (i in xs.indices) {
-                    val x = xs[i]
-                    if (animate) {
-                        // Tropfen fallen nacheinander (1,1 s, versetzt) und verblassen
-                        val f = ((t + i * 367L) % 1100L) / 1100f
-                        val dy = s * (-1.5f + 5f * f) / 24f
-                        line.alpha = (255 * (if (f < 0.25f) f / 0.25f else 1f - (f - 0.25f) / 0.75f)).toInt()
-                        c.drawLine(s * x, s * 0.72f + dy, s * (x - 0.05f), s * 0.88f + dy, line)
-                    } else {
-                        c.drawLine(s * x, s * 0.72f, s * (x - 0.05f), s * 0.88f, line)
+                    var dy = 0f
+                    var a = 1f
+                    if (anim) {
+                        val f = ((t - i * 370L) % 1100L + 1100L) % 1100L / 1100f
+                        dy = -1.5f + 5f * f
+                        a = if (f < 0.25f) f / 0.25f else 1f - (f - 0.25f) / 0.75f
                     }
+                    line.alpha = (255 * a).toInt()
+                    c.drawLine(xs[i], 18.6f + dy, xs[i] - 0.6f, 20.8f + dy, line)
                 }
-                line.alpha = 255
             }
             SNOW -> {
-                cloud(c, s * 0.5f, s * 0.4f, s * 0.78f)
-                for (x in floatArrayOf(0.32f, 0.5f, 0.68f)) c.drawCircle(s * x, s * 0.82f, s * 0.04f, fill)
+                clouds(c, t, anim, -3.5f, true)
+                fill.color = Color.WHITE
+                val xs = floatArrayOf(9.3f, 12.8f, 16.3f)
+                for (i in xs.indices) {
+                    var dx = 0f
+                    var dy = 0f
+                    var a = 1f
+                    if (anim) {
+                        val f = ((t - i * 800L) % 2400L + 2400L) % 2400L / 2400f
+                        val e = inOut.getInterpolation(f)
+                        if (e < 0.6f) {
+                            dx = 0.8f * e / 0.6f
+                            dy = -1.5f + 3f * e / 0.6f
+                        } else {
+                            dx = 0.8f - 1.2f * (e - 0.6f) / 0.4f
+                            dy = 1.5f + 2.5f * (e - 0.6f) / 0.4f
+                        }
+                        a = if (f < 0.25f) f / 0.25f else 1f - (f - 0.25f) / 0.75f
+                    }
+                    fill.alpha = (255 * a).toInt()
+                    c.drawCircle(xs[i] + dx, 19.6f + dy, 0.95f, fill)
+                }
+                fill.alpha = 255
             }
-            FOG -> for (y in floatArrayOf(0.34f, 0.5f, 0.66f)) c.drawLine(s * 0.18f, s * y, s * 0.82f, s * y, line)
-            STORM -> {
-                cloud(c, s * 0.5f, s * 0.38f, s * 0.78f)
-                path.reset()
-                path.moveTo(s * 0.54f, s * 0.64f)
-                path.lineTo(s * 0.40f, s * 0.82f)
-                path.lineTo(s * 0.50f, s * 0.82f)
-                path.lineTo(s * 0.44f, s * 0.98f)
-                path.lineTo(s * 0.62f, s * 0.76f)
-                path.lineTo(s * 0.52f, s * 0.76f)
-                path.close()
-                c.drawPath(path, fill)
+            MOON -> {
+                fill.color = Color.WHITE
+                val stars = arrayOf(floatArrayOf(5f, 5f, 0.7f), floatArrayOf(8.5f, 2.5f, 0.5f), floatArrayOf(3f, 10f, 0.5f))
+                for (i in stars.indices) {
+                    val a = if (anim) swing(t, 2000L + i * 700L, 0.25f, 1f, i * 600L) else 0.8f
+                    fill.alpha = (255 * a).toInt()
+                    c.drawCircle(stars[i][0], stars[i][1], stars[i][2], fill)
+                }
+                fill.alpha = 255
+                fill.color = MOON_C
+                c.drawPath(MOON_PATH, fill)
             }
         }
-        if (animate && kind != MOON && kind != FOG) postInvalidateDelayed(33)
+        c.restore()
+        if (anim) postInvalidateDelayed(33)
     }
 }
 
