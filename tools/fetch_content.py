@@ -328,6 +328,9 @@ def hsv():
 # ---------------- Netflix-Titelnummern (Wikidata, frei nutzbar) ----------------
 # Damit oeffnet OK direkt die Seite des Titels in der Netflix-App statt nur der App.
 
+NF_INFO = {"err": ""}
+
+
 def netflix_ids(tmdb_keys):
     """tmdb_keys: Liste wie ["movie/123", "tv/456"] -> {key: netflix_id}"""
     out = {}
@@ -346,7 +349,8 @@ def netflix_ids(tmdb_keys):
                         {"User-Agent": "LiquidTV/1.0 (github.com/jugie145/fire-launcher)", "Accept": "application/sparql-results+json"})
             for b in data.get("results", {}).get("bindings", []):
                 out[b["kind"]["value"] + "/" + b["tid"]["value"]] = b["nf"]["value"]
-        except Exception:  # noqa: BLE001
+        except Exception as e:  # noqa: BLE001
+            NF_INFO["err"] = problem(e)
             continue
     return out
 
@@ -476,6 +480,8 @@ def main():
                     if it.get("tmdb") in ids:
                         it["link"] = "https://www.netflix.com/title/" + ids[it["tmdb"]]
             out.update(sections)
+            nfl = sections.get("netflix", {}).get("items", [])
+            out["status"]["netflix_links"] = "%d von %d %s" % (sum(1 for i in nfl if i.get("link")), len(nfl), NF_INFO["err"])
             out["status"]["tmdb"] = "ok (" + ", ".join("%s %d" % (k, len(v["items"])) for k, v in sections.items()) + ")"
         except Exception as e:  # noqa: BLE001
             out["status"]["tmdb"] = problem(e)
