@@ -164,14 +164,16 @@ object Prefs {
     fun design(c: Context): Int = sp(c).getInt("design", 0)
     fun setDesign(c: Context, v: Int) { sp(c).edit().putInt("design", v).apply() }
     /** Farbfleck im Hintergrund aus dem gezeigten Bild statt in der App-Farbe */
-    fun contentColors(c: Context): Boolean = sp(c).getBoolean("content_colors", false)
-    fun setContentColors(c: Context, v: Boolean) { sp(c).edit().putBoolean("content_colors", v).apply() }
+    /** 0 = App-Farbe, 1 = aus dem Inhalt, 2 = Mix (App-Farbe unten, Bildfarbe oben rechts) */
+    fun colorMode(c: Context): Int = sp(c).getInt("color_mode", if (sp(c).getBoolean("content_colors", false)) 1 else 0)
+    fun setColorMode(c: Context, v: Int) { sp(c).edit().putInt("color_mode", v).apply() }
+    fun contentColors(c: Context): Boolean = colorMode(c) == 1
     fun str(c: Context, key: String): String? = sp(c).getString(key, null)
     fun setStr(c: Context, key: String, v: String?) { sp(c).edit().putString(key, v).apply() }
     fun num(c: Context, key: String): Long = sp(c).getLong(key, 0L)
     fun setNum(c: Context, key: String, v: Long) { sp(c).edit().putLong(key, v).apply() }
 
-    fun sig(c: Context): String = "" + bg(c) + bgAnim(c) + glass(c) + anims(c) + h24(c) + design(c) + contentColors(c)
+    fun sig(c: Context): String = "" + bg(c) + bgAnim(c) + glass(c) + anims(c) + h24(c) + design(c) + colorMode(c)
 }
 
 object Setup {

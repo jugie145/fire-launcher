@@ -426,51 +426,86 @@ SEARCH_URL = "https://raw.githubusercontent.com/jugie145/fire-launcher/data/sear
 
 
 def search_index():
-    """Einmal am Tag neu, sonst den vorhandenen Index weiterverwenden."""
+    """Einmal am Tag neu, sonst den vorhandenen Index weiterverwenden.
+    Enthaelt auch Titel, die gerade nirgends im Abo laufen, und weitere Dienste (RTL+, Joyn, ...)."""
     try:
         old = http(SEARCH_URL)
         ts = datetime.datetime.strptime(old.get("updated", ""), "%Y-%m-%dT%H:%M:%SZ")
-        if old.get("v") == 5 and datetime.datetime.utcnow() - ts < datetime.timedelta(hours=20) and len(old.get("items", [])) > 100:
+        if old.get("v") == 6 and datetime.datetime.utcnow() - ts < datetime.timedelta(hours=20) and len(old.get("items", [])) > 100:
             return old, False
     except Exception:  # noqa: BLE001
         pass
     names = {}
-    for p in tmdb("/watch/providers/tv", watch_region="DE", language="de-DE").get("results", []):
-        names[p.get("provider_name", "").strip().lower()] = p.get("provider_id")
-    wanted = [("Netflix", names.get("netflix", 8)), ("Prime Video", names.get("amazon prime video", 9)),
-              ("WOW", names.get("wow", 30)), ("Disney+", names.get("disney plus", 337))]
+    for kind in ("tv", "movie"):
+        for p in tmdb("/watch/providers/" + kind, watch_region="DE", language="de-DE").get("results", []):
+            names.setdefault(p.get("provider_name", "").strip().lower(), p.get("provider_id"))
+    genres = {}
+    for kind in ("tv", "movie"):
+        for g in tmdb("/genre/%s/list" % kind, language="de").get("genres", []):
+            genres[g["id"]] = g["name"]
+
+    def pid(*cands):
+        for c in cands:
+            if c in names:
+                return names[c]
+        return None
+
+    # (Anzeigename, Anbieter-ID, Seiten je Sortierung)
+    wanted = [("Netflix", pid("netflix") or 8, 15), ("Prime Video", pid("amazon prime video") or 9, 15),
+              ("WOW", pid("wow") or 30, 15), ("Disney+", pid("disney plus") or 337, 15),
+              ("RTL+", pid("rtl+", "rtl plus"), 5), ("Joyn", pid("joyn plus", "joyn plus+", "joyn"), 5),
+              ("Paramount+", pid("paramount plus", "paramount+"), 5), ("Apple TV+", pid("apple tv plus", "apple tv+"), 5),
+              ("MagentaTV", pid("magentatv", "magenta tv"), 4), ("ARD Mediathek", pid("ard mediathek"), 4),
+              ("ZDF", pid("zdf", "zdf mediathek"), 4), ("Crunchyroll", pid("crunchyroll"), 3)]
     found = {}
 
     def add(r, tv, prov):
         title = ((r.get("name") if tv else r.get("title")) or "").strip()
         if not title:
             return
-        key = ("s" if tv else "f") + str(r.get("id"))
+        key = ("tv/" if tv else "movie/") + str(r.get("id"))
         e = found.get(key)
         if e is None:
             date = (r.get("first_air_date") if tv else r.get("release_date")) or ""
+            vote = r.get("vote_average") or 0
             e = {"t": title, "o": ((r.get("original_name") if tv else r.get("original_title")) or "").strip(),
                  "y": date[:4], "k": "Serie" if tv else "Film", "p": [],
                  "img": ("https://image.tmdb.org/t/p/w342" + r["poster_path"]) if r.get("poster_path") else "",
-                 "pop": r.get("popularity") or 0, "id": key[0].replace("f", "movie/").replace("s", "tv/") + str(r.get("id"))}
+                 "b": ("https://image.tmdb.org/t/p/w1280" + r["backdrop_path"]) if r.get("backdrop_path") else "",
+                 "d": (r.get("overview") or "").strip()[:320],
+                 "g": ", ".join(genres[g] for g in (r.get("genre_ids") or [])[:2] if g in genres),
+                 "r": ("%.1f" % vote).replace(".", ",") if vote > 0.1 and (r.get("vote_count") or 0) > 20 else "",
+                 "pop": r.get("popularity") or 0, "id": key}
             found[key] = e
-        if prov not in e["p"]:
+        if prov and prov not in e["p"]:
             e["p"].append(prov)
 
-    # beliebt jetzt UND meistbewertet (damit auch Klassiker wie "The Wolf of Wall Street" drin sind)
-    for prov, pid in wanted:
+    def pages(kind, n, **extra):
+        for page in range(1, n + 1):
+            try:
+                res = tmdb("/discover/" + kind, language="de-DE", page=page, **extra)
+            except Exception:  # noqa: BLE001
+                break
+            yield res.get("results", [])
+            if page >= (res.get("total_pages") or 1):
+                break
+
+    # beliebt jetzt UND meistbewertet, je Dienst
+    for prov, p_id, n in wanted:
+        if not p_id:
+            continue
         for kind in ("movie", "tv"):
             for sort in ("popularity.desc", "vote_count.desc"):
-                for page in range(1, 16):
-                    try:
-                        res = tmdb("/discover/" + kind, language="de-DE", watch_region="DE", with_watch_providers=pid,
-                                   with_watch_monetization_types="flatrate|free|ads", sort_by=sort, page=page)
-                    except Exception:  # noqa: BLE001
-                        break
-                    for r in res.get("results", []):
+                for res in pages(kind, n, watch_region="DE", with_watch_providers=p_id,
+                                 with_watch_monetization_types="flatrate|free|ads", sort_by=sort):
+                    for r in res:
                         add(r, kind == "tv", prov)
-                    if page >= (res.get("total_pages") or 1):
-                        break
+    # bekannte Titel unabhaengig vom Dienst (laufen evtl. gerade nirgends im Abo)
+    for kind in ("movie", "tv"):
+        for sort, n in (("vote_count.desc", 25), ("popularity.desc", 10)):
+            for res in pages(kind, n, sort_by=sort):
+                for r in res:
+                    add(r, kind == "tv", None)
     for page in (1, 2, 3):
         try:
             for r in tmdb("/movie/now_playing", language="de-DE", region="DE", page=page).get("results", []):
@@ -484,8 +519,7 @@ def search_index():
         tid = e.pop("id", "")
         if tid in nf and "Netflix" in e["p"]:
             e["nf"] = nf[tid]
-    return {"v": 5, "updated": datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"), "items": items}, True
-
+    return {"v": 6, "updated": datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"), "items": items}, True
 
 def main():
     target = sys.argv[1] if len(sys.argv) > 1 else "content.json"

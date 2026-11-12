@@ -94,6 +94,8 @@ class NowCard(ctx: Context, private val k: Float, private val saver: Boolean = f
     val nextBtn = FrameLayout(ctx)
     var onAction: ((String) -> Unit)? = null
     private var sel = false
+    private val coverRing = GradientDrawable().apply { cornerRadius = 14f }
+    val coverView: View get() = cover
     private var coverUrl = ""
     private val tick = object : Runnable {
         override fun run() {
@@ -128,6 +130,19 @@ class NowCard(ctx: Context, private val k: Float, private val saver: Boolean = f
         }
         cover.clipToOutline = true
         addView(cover, LayoutParams(px(72), px(72)).apply { leftMargin = px(50 + 16); topMargin = px(50 + 16) })
+        // Cover anwaehlbar: OK oeffnet Spotify
+        if (!saver) {
+            cover.id = View.generateViewId()
+            cover.isFocusable = true
+            cover.foreground = coverRing
+            cover.setOnFocusChangeListener { v, has ->
+                coverRing.setStroke(if (has) Math.max(1, (3 * k).toInt()) else 0, Color.WHITE)
+                val s2 = if (has) 1.08f else 1f
+                v.animate().scaleX(s2).scaleY(s2).setDuration(Ui.d(160)).setInterpolator(Ui.smooth).start()
+                post { focus(hasFocus()) }
+            }
+            cover.setOnClickListener { onAction?.invoke("open") }
+        }
 
         textBox.orientation = LinearLayout.VERTICAL
         textBox.gravity = Gravity.CENTER_VERTICAL
@@ -183,6 +198,9 @@ class NowCard(ctx: Context, private val k: Float, private val saver: Boolean = f
             controls.addView(box, LinearLayout.LayoutParams(px(sz), px(sz)).apply { if (i > 0) leftMargin = px(10) })
         }
         controls.clipChildren = false
+        coverRing.cornerRadius = 14f * k
+        prevBtn.nextFocusLeftId = cover.id
+        cover.nextFocusRightId = prevBtn.id
         prevBtn.nextFocusRightId = toggleBtn.id
         toggleBtn.nextFocusLeftId = prevBtn.id
         toggleBtn.nextFocusRightId = nextBtn.id

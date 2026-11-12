@@ -85,8 +85,8 @@ class SettingsActivity : Activity() {
         row(col, "Design", { if (Prefs.design(this) == 1) "GTA VI" else "Liquid Glass" }) {
             Prefs.setDesign(this, if (Prefs.design(this) == 1) 0 else 1)
         }
-        row(col, "Farben im Hintergrund", { if (Prefs.contentColors(this)) "Aus dem Inhalt" else "App-Farbe" }) {
-            Prefs.setContentColors(this, !Prefs.contentColors(this))
+        row(col, "Farben im Hintergrund", { arrayOf("App-Farbe", "Aus dem Inhalt", "Mix")[Prefs.colorMode(this) % 3] }) {
+            Prefs.setColorMode(this, (Prefs.colorMode(this) + 1) % 3)
         }
 
         row(col, "HSV-Nachrichten", { onOff(Prefs.hsvNote(this)) }) { Prefs.setHsvNote(this, !Prefs.hsvNote(this)) }

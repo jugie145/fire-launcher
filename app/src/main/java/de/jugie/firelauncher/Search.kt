@@ -29,7 +29,10 @@ import java.util.concurrent.Executors
 
 /** Suchindex (Filme und Serien bei Netflix, Prime Video, WOW, Disney+, im Kino), von GitHub einmal am Tag erzeugt. */
 object SearchIndex {
-    class Entry(val title: String, val orig: String, val year: String, val kind: String, val providers: List<String>, val img: String, val nf: String = "") {
+    class Entry(
+        val title: String, val orig: String, val year: String, val kind: String, val providers: List<String>, val img: String,
+        val nf: String = "", val backdrop: String = "", val desc: String = "", val genres: String = "", val rating: String = ""
+    ) {
         val key = norm(title) + " " + norm(orig)
     }
 
@@ -59,7 +62,8 @@ object SearchIndex {
                     val o = arr.getJSONObject(i)
                     val p = o.optJSONArray("p")
                     out.add(Entry(o.optString("t"), o.optString("o"), o.optString("y"), o.optString("k"),
-                        (0 until (p?.length() ?: 0)).map { p!!.getString(it) }, o.optString("img"), o.optString("nf")))
+                        (0 until (p?.length() ?: 0)).map { p!!.getString(it) }, o.optString("img"), o.optString("nf"),
+                        o.optString("b"), o.optString("d"), o.optString("g"), o.optString("r")))
                 }
                 if (out.isNotEmpty()) {
                     items = out
@@ -110,6 +114,13 @@ class SearchOverlay(ctx: Context, private val k: Float, private val apps: () -> 
         "Disney+" to Color.rgb(49, 186, 221), "Im Kino" to Color.rgb(232, 180, 80)
     )
     private val KIND = mapOf("Netflix" to "netflix", "Prime Video" to "prime", "WOW" to "wow", "Disney+" to "disney")
+    /** weitere Dienste: App am Namen erkennen */
+    private val OTHER = mapOf(
+        "RTL+" to "rtl", "Joyn" to "joyn", "Paramount+" to "paramount", "Apple TV+" to "apple tv", "MagentaTV" to "magenta",
+        "ARD Mediathek" to "ard", "ZDF" to "zdf", "Crunchyroll" to "crunchyroll"
+    )
+    private val detail = FrameLayout(ctx)
+    private var lastCard: View? = null
 
     init {
         visibility = View.GONE
@@ -123,6 +134,9 @@ class SearchOverlay(ctx: Context, private val k: Float, private val apps: () -> 
         }
         clipChildren = false
         addView(panel, LayoutParams(px(1760), px(952)).apply { leftMargin = px(80); topMargin = px(64) })
+        detail.visibility = View.GONE
+        detail.isClickable = true
+        addView(detail, LayoutParams(-1, -1))
 
         barBg.cornerRadius = 48f * k
         barBg.colors = intArrayOf(0x29FFFFFF, 0x0FFFFFFF)
@@ -191,6 +205,7 @@ class SearchOverlay(ctx: Context, private val k: Float, private val apps: () -> 
 
     fun open() {
         showing = true
+        detail.visibility = View.GONE
         visibility = View.VISIBLE
         alpha = 0f
         panel.translationY = 40f * k
@@ -264,13 +279,13 @@ class SearchOverlay(ctx: Context, private val k: Float, private val apps: () -> 
         if (e.img.isNotBlank()) Images.load(listOf(e.img)) { b -> if (b != null) img.setImageBitmap(b) }
         val chips = LinearLayout(context)
         chips.orientation = LinearLayout.HORIZONTAL
-        for (p in e.providers.take(2)) {
+        for (p in (if (e.providers.isEmpty()) listOf("Nicht im Abo") else e.providers.take(2))) {
             val t = Ui.text(context, p, 15f, k, Color.WHITE, Ui.medium)
             t.setPadding(px(10), px(4), px(10), px(4))
             t.background = GradientDrawable().apply {
                 cornerRadius = 99f * k
                 setColor(0xB3080A12.toInt())
-                setStroke(Math.max(1, k.toInt()), PROV[p] ?: Color.WHITE)
+                setStroke(Math.max(1, k.toInt()), PROV[p] ?: 0x99FFFFFF.toInt())
             }
             chips.addView(t, LinearLayout.LayoutParams(-2, -2).apply { rightMargin = px(6) })
         }
@@ -305,7 +320,10 @@ class SearchOverlay(ctx: Context, private val k: Float, private val apps: () -> 
                 ring.visibility = View.INVISIBLE
             }
         }
-        box.setOnClickListener { open(e) }
+        box.setOnClickListener {
+            lastCard = box
+            showDetail(e)
+        }
         if (Ui.anims) {
             box.alpha = 0f
             box.translationY = 18f * k
@@ -320,6 +338,12 @@ class SearchOverlay(ctx: Context, private val k: Float, private val apps: () -> 
     }
 
     private fun openIn(provider: String, title: String, link: String = ""): Boolean {
+        val other = OTHER[provider]
+        if (other != null) {
+            val app = apps().firstOrNull { it.label.lowercase().contains(other) } ?: return false
+            Apps.launch(context, app)
+            return true
+        }
         val kind = KIND[provider] ?: return false
         val app = apps().firstOrNull { Content.kind(it) == kind } ?: return false
         if (!Apps.openLink(context, app, Content.links(kind, title, link))) Apps.launch(context, app)
@@ -327,10 +351,140 @@ class SearchOverlay(ctx: Context, private val k: Float, private val apps: () -> 
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-        if (event.keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP && showing) {
-            close()
+        if (event.keyCode == KeyEvent.KEYCODE_BACK && showing) {
+            if (event.action == KeyEvent.ACTION_UP) {
+                if (detail.visibility == View.VISIBLE) hideDetail() else close()
+            }
             return true
         }
         return super.dispatchKeyEvent(event)
+    }
+
+    // ---------- Infoseite eines Titels: Beschreibung und alle Dienste zum Auswaehlen ----------
+
+    private fun showDetail(e: SearchIndex.Entry) {
+        hideKeyboard()
+        detail.removeAllViews()
+        detail.background = GradientDrawable(
+            GradientDrawable.Orientation.TL_BR,
+            if (Theme.gta) intArrayOf(0xFF2A1240.toInt(), 0xFF12061F.toInt()) else intArrayOf(0xFF161C2C.toInt(), 0xFF080A12.toInt())
+        )
+        val c0 = PROV[e.providers.firstOrNull() ?: ""] ?: 0xFF888888.toInt()
+        val back = FadeImage(context)
+        back.set(null, c0)
+        detail.addView(back, LayoutParams(px(1240), -1, Gravity.END))
+        if (e.backdrop.isNotBlank()) Images.load(listOf(e.backdrop)) { b -> if (b != null) back.set(b, c0) }
+        val shade = View(context)
+        shade.background = GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, intArrayOf(0xD9080A12.toInt(), 0x00080A12))
+        detail.addView(shade, LayoutParams(-1, px(560), Gravity.BOTTOM))
+
+        val poster = ImageView(context)
+        poster.scaleType = ImageView.ScaleType.CENTER_CROP
+        poster.background = GradientDrawable(GradientDrawable.Orientation.TL_BR, intArrayOf((c0 and 0x00FFFFFF) or 0x80000000.toInt(), 0xEB0E1018.toInt())).apply {
+            cornerRadius = 26f * k
+            setStroke(Math.max(1, (1.5f * k).toInt()), 0x4DFFFFFF)
+        }
+        poster.outlineProvider = object : ViewOutlineProvider() {
+            override fun getOutline(v: View, o: Outline) = o.setRoundRect(0, 0, v.width, v.height, 26f * k)
+        }
+        poster.clipToOutline = true
+        if (e.img.isNotBlank()) Images.load(listOf(e.img.replace("/w342/", "/w500/"), e.img)) { b -> if (b != null) poster.setImageBitmap(b) }
+        detail.addView(poster, LayoutParams(px(340), px(510)).apply { leftMargin = px(120); topMargin = px(150) })
+
+        val col = LinearLayout(context)
+        col.orientation = LinearLayout.VERTICAL
+        val t = Ui.text(context, e.title, 66f, k, Color.WHITE, if (Theme.gta) Theme.bold else Ui.medium)
+        t.maxLines = 2
+        t.ellipsize = TextUtils.TruncateAt.END
+        if (Theme.gta) {
+            t.isAllCaps = true
+            Theme.sunsetText(t)
+        }
+        col.addView(t)
+        val meta = listOf(e.year, e.kind, e.genres, if (e.rating.isNotBlank()) "★ " + e.rating else "").filter { it.isNotBlank() }.joinToString("  ·  ")
+        col.addView(Ui.text(context, meta, 26f, k, 0xBFFFFFFF.toInt()), LinearLayout.LayoutParams(-2, -2).apply { topMargin = px(18) })
+        if (e.desc.isNotBlank()) {
+            val d = Ui.text(context, e.desc, 26f, k, 0xD9FFFFFF.toInt())
+            d.maxLines = 5
+            d.ellipsize = TextUtils.TruncateAt.END
+            d.setLineSpacing(0f, 1.35f)
+            col.addView(d, LinearLayout.LayoutParams(-1, -2).apply { topMargin = px(18) })
+        }
+        val provs = e.providers
+        val head = Ui.text(context, if (provs.isEmpty()) "" else if (provs.size > 1) "VERFÜGBAR BEI – AUSWÄHLEN" else "VERFÜGBAR BEI",
+            22f, k, if (Theme.gta) Theme.CYAN else 0xB3FFFFFF.toInt(), if (Theme.gta) Theme.bold else Ui.medium)
+        head.letterSpacing = 0.14f
+        col.addView(head, LinearLayout.LayoutParams(-2, -2).apply { topMargin = px(44) })
+        val row = LinearLayout(context)
+        row.orientation = LinearLayout.HORIZONTAL
+        row.clipChildren = false
+        var first: View? = null
+        for (p in provs) {
+            val b = provButton(e, p)
+            if (first == null) first = b
+            row.addView(b, LinearLayout.LayoutParams(-2, px(76)).apply { rightMargin = px(18) })
+        }
+        col.addView(row, LinearLayout.LayoutParams(-2, -2).apply { topMargin = px(18) })
+        if (provs.isEmpty()) {
+            col.addView(Ui.text(context, "Gerade bei keinem Streamingdienst im Abo.", 26f, k, 0xB3FFFFFF.toInt()),
+                LinearLayout.LayoutParams(-2, -2).apply { topMargin = px(4) })
+        }
+        col.clipChildren = false
+        detail.clipChildren = false
+        detail.addView(col, LayoutParams(px(900), -2).apply { leftMargin = px(520); topMargin = px(150) })
+
+        // zurueck zur Suche (auch mit der Zurueck-Taste)
+        val backBtn = Ui.pill(context, "‹  Suche", k) { hideDetail() }
+        detail.addView(backBtn, LayoutParams(-2, -2).apply { leftMargin = px(120); topMargin = px(60) })
+
+        detail.visibility = View.VISIBLE
+        detail.alpha = 0f
+        detail.animate().alpha(1f).setDuration(Ui.d(300)).start()
+        col.translationX = 26f * k
+        col.animate().translationX(0f).setDuration(Ui.d(480)).setInterpolator(Ui.smooth).start()
+        (first ?: backBtn).requestFocus()
+    }
+
+    private fun provButton(e: SearchIndex.Entry, p: String): View {
+        val color = PROV[p] ?: 0xFFC8C8D2.toInt()
+        val b = LinearLayout(context)
+        b.orientation = LinearLayout.HORIZONTAL
+        b.gravity = Gravity.CENTER_VERTICAL
+        b.setPadding(px(34), 0, px(34), 0)
+        val bg = GradientDrawable().apply {
+            cornerRadius = 38f * k
+            setColor(0x12FFFFFF)
+            setStroke(Math.max(1, (2 * k).toInt()), (color and 0x00FFFFFF) or 0xB3000000.toInt())
+        }
+        b.background = bg
+        val dot = View(context)
+        dot.background = GradientDrawable().apply { shape = GradientDrawable.OVAL; setColor(color) }
+        b.addView(dot, LinearLayout.LayoutParams(px(14), px(14)))
+        b.addView(Ui.text(context, p, 26f, k, Color.WHITE, Ui.medium), LinearLayout.LayoutParams(-2, -2).apply { leftMargin = px(14) })
+        val kino = p == "Im Kino"
+        val installed = kino || KIND[p]?.let { k2 -> apps().any { Content.kind(it) == k2 } } ?: OTHER[p]?.let { o -> apps().any { it.label.lowercase().contains(o) } } ?: false
+        val sub = when {
+            kino -> ""
+            !installed -> "nicht installiert"
+            KIND[p] != null && KIND[p] != "wow" -> "öffnen"
+            else -> "App öffnen"
+        }
+        if (sub.isNotBlank()) b.addView(Ui.text(context, sub, 18f, k, 0xB3FFFFFF.toInt()), LinearLayout.LayoutParams(-2, -2).apply { leftMargin = px(14) })
+        b.isFocusable = true
+        b.setOnFocusChangeListener { v, has ->
+            bg.setColor(if (has) 0x33FFFFFF else 0x12FFFFFF)
+            bg.setStroke(Math.max(1, (2 * k).toInt()), if (has) Color.WHITE else (color and 0x00FFFFFF) or 0xB3000000.toInt())
+            val s = if (has) 1.06f else 1f
+            v.animate().scaleX(s).scaleY(s).setDuration(Ui.d(160)).setInterpolator(Ui.smooth).start()
+        }
+        b.setOnClickListener {
+            if (!kino) openIn(p, e.title, if (p == "Netflix" && e.nf.isNotBlank()) "https://www.netflix.com/title/" + e.nf else "")
+        }
+        return b
+    }
+
+    private fun hideDetail() {
+        detail.animate().alpha(0f).setDuration(Ui.d(220)).withEndAction { detail.visibility = View.GONE }.start()
+        (lastCard ?: field).requestFocus()
     }
 }

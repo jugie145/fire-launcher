@@ -46,6 +46,12 @@ class WaveBackground(ctx: Context) : View(ctx) {
     private var move: ValueAnimator? = null
     private var breath: ValueAnimator? = null
     private val argb = ArgbEvaluator()
+    // zweiter Farbbereich (Mix): oben rechts hinter dem Vorschlag, in der Farbe des Bildes
+    private val tint2 = Paint(Paint.FILTER_BITMAP_FLAG or Paint.ANTI_ALIAS_FLAG)
+    private val cm2 = ColorMatrix()
+    private var color2 = 0
+    private var level2 = 0f
+    private var move2: ValueAnimator? = null
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         dst.set(0f, 0f, w.toFloat(), h.toFloat())
@@ -85,7 +91,59 @@ class WaveBackground(ctx: Context) : View(ctx) {
             )
         )
         tint.colorFilter = ColorMatrixColorFilter(cm)
+        rebuild2()
         invalidate()
+    }
+
+    private fun rebuild2() {
+        val s = bmpShader ?: return
+        val rg = RadialGradient(
+            0f, 0f, 1f,
+            intArrayOf(0xFF000000.toInt(), 0x9E000000.toInt(), 0x00000000),
+            floatArrayOf(0f, 0.5f, 1f), Shader.TileMode.CLAMP
+        )
+        val m = Matrix()
+        m.setScale(850f * k, 550f * k)
+        m.postTranslate(1450f * k, 300f * k)
+        rg.setLocalMatrix(m)
+        tint2.shader = ComposeShader(s, rg, PorterDuff.Mode.DST_IN)
+        val g = 2.6f
+        cm2.set(
+            floatArrayOf(
+                Color.red(color2) / 255f * g, 0f, 0f, 0f, 0f,
+                0f, Color.green(color2) / 255f * g, 0f, 0f, 0f,
+                0f, 0f, Color.blue(color2) / 255f * g, 0f, 0f,
+                0f, 0f, 0f, 1f, 0f
+            )
+        )
+        tint2.colorFilter = ColorMatrixColorFilter(cm2)
+    }
+
+    /** Mix: Farbe des gezeigten Bildes oben rechts; 0 = ausblenden. */
+    fun setSpot2(c: Int) {
+        move2?.cancel()
+        val fc = if (color2 == 0) c else color2
+        val fl = level2
+        val tl = if (c == 0) 0f else 1f
+        val tc = if (c == 0) color2 else c
+        if (!Ui.anims) {
+            color2 = tc
+            level2 = tl
+            rebuild2()
+            invalidate()
+            return
+        }
+        val a = ValueAnimator.ofFloat(0f, 1f)
+        a.duration = 900
+        a.addUpdateListener {
+            val t = it.animatedValue as Float
+            color2 = argb.evaluate(t, fc, tc) as Int
+            level2 = fl + (tl - fl) * t
+            rebuild2()
+            invalidate()
+        }
+        a.start()
+        move2 = a
     }
 
     /** Farbbereich auf einen Punkt (in Pixeln) und eine Farbe setzen. */
@@ -154,6 +212,10 @@ class WaveBackground(ctx: Context) : View(ctx) {
         if (tint.shader != null) {
             tint.alpha = (255 * level).toInt()
             c.drawRect(dst, tint)
+        }
+        if (level2 > 0.01f && tint2.shader != null) {
+            tint2.alpha = (255 * level * level2).toInt()
+            c.drawRect(dst, tint2)
         }
     }
 }

@@ -200,7 +200,10 @@ class MainActivity : Activity() {
         }
         // Farben aus dem Inhalt: Farbfleck nimmt die Hauptfarbe des gezeigten Bildes
         hero.onColor = { c ->
-            if (Prefs.contentColors(this) && spotX >= 0f && !nowCardFocused()) wave.setSpot(spotX, spotY, c, true)
+            when (Prefs.colorMode(this)) {
+                1 -> if (spotX >= 0f && !nowCardFocused()) wave.setSpot(spotX, spotY, c, true)
+                2 -> wave.setSpot2(c)
+            }
         }
         content.addView(hero, lp(match, px(460), top = 44))
 
@@ -252,7 +255,12 @@ class MainActivity : Activity() {
         nowCard = NowCard(this, k)
         nowCard.id = View.generateViewId()
         nowCard.visibility = View.GONE
-        nowCard.onAction = { a -> NowPlaying.control(this, a) }
+        nowCard.onAction = { a ->
+            if (a == "open") {
+                val sp = favApps.firstOrNull { Content.kind(it) == "spotify" } ?: Apps.loadAll(this).firstOrNull { Content.kind(it) == "spotify" }
+                if (sp != null) Apps.launch(this, sp)
+            } else NowPlaying.control(this, a)
+        }
         bar.addView(nowCard, FrameLayout.LayoutParams(px(740), px(204)).apply {
             leftMargin = px(560 - 50)
             topMargin = px(-20 - 50)
@@ -332,7 +340,7 @@ class MainActivity : Activity() {
         fSearch.nextFocusLeftId = if (with) nowCard.toggleBtn.id else fSleep.id
         fSearch.nextFocusRightId = fApps.id
         fApps.nextFocusLeftId = fSearch.id
-        nowCard.prevBtn.nextFocusLeftId = fSleep.id
+        nowCard.coverView.nextFocusLeftId = fSleep.id
         nowCard.nextBtn.nextFocusRightId = fSearch.id
     }
 
@@ -367,20 +375,46 @@ class MainActivity : Activity() {
 
     private val nowListener: (Spotify.Track?) -> Unit = { t -> updateNow(t) }
 
-    private val sleepSteps = intArrayOf(0, 30, 60, 90)
+    private val sleepSteps = intArrayOf(0, 30, 60, 90, -1)
+    private var sleepIdx = 0
+    private var sleepEdit = false
+    private var sleepMin = 45
 
+    /** OK auf dem Sleeptimer: Aus, 30, 60, 90, Benutzerdefiniert (dann ◀ ▶ einstellen, OK bestaetigt). */
     private fun cycleSleep() {
-        val left = HomeService.sleepRemainingSeconds()
-        val cur = if (left <= 0) 0 else sleepSteps.indexOfFirst { it * 60L >= left }.let { if (it < 0) 3 else it }
-        val nx = sleepSteps[(cur + 1) % sleepSteps.size]
-        if (nx == 0) HomeService.cancelSleepTimer()
-        else if (!HomeService.startSleepTimer(nx)) {
+        if (sleepEdit) {
+            sleepEdit = false
+            startSleep(sleepMin)
+            return
+        }
+        if (HomeService.sleepRemainingSeconds() <= 0) sleepIdx = 0
+        sleepIdx = (sleepIdx + 1) % sleepSteps.size
+        val nx = sleepSteps[sleepIdx]
+        when {
+            nx == -1 -> {
+                sleepEdit = true
+                updateSleepLabel()
+            }
+            nx == 0 -> {
+                HomeService.cancelSleepTimer()
+                updateSleepLabel(0)
+            }
+            else -> startSleep(nx)
+        }
+    }
+
+    private fun startSleep(min: Int) {
+        if (!HomeService.startSleepTimer(min)) {
             android.widget.Toast.makeText(this, "Für den Sleeptimer muss „Home-Taste umleiten“ in den Einstellungen an sein.", android.widget.Toast.LENGTH_LONG).show()
         }
-        updateSleepLabel(nx)
+        updateSleepLabel(min)
     }
 
     private fun updateSleepLabel(force: Int = -1) {
+        if (sleepEdit) {
+            sleepLabel.text = "◀  $sleepMin Min.  ▶"
+            return
+        }
         val left = HomeService.sleepRemainingSeconds()
         sleepLabel.text = when {
             force == 0 -> "Sleeptimer"
@@ -398,6 +432,8 @@ class MainActivity : Activity() {
                 sp.setSpan(android.text.style.ForegroundColorSpan(0xFFFFB36B.toInt()), 0, if (c == null) 6 else 9, 0)
                 countdown.text = sp
             }
+            // Einstellen abbrechen, wenn man woanders hingeht
+            if (sleepEdit && !fSleep.hasFocus()) sleepEdit = false
             updateSleepLabel()
             handler.postDelayed(this, 1000)
         }
@@ -420,6 +456,31 @@ class MainActivity : Activity() {
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        // Sleeptimer einstellen: ◀ ▶ im Minutentakt, gedrueckt halten wird schneller
+        if (sleepEdit && fSleep.hasFocus()) {
+            val dir = when (event.keyCode) {
+                KeyEvent.KEYCODE_DPAD_LEFT -> -1
+                KeyEvent.KEYCODE_DPAD_RIGHT -> 1
+                else -> 0
+            }
+            if (dir != 0) {
+                if (event.action == KeyEvent.ACTION_DOWN) {
+                    val rc = event.repeatCount
+                    val step = if (rc > 20) 10 else if (rc > 8) 5 else 1
+                    sleepMin = Math.max(1, Math.min(300, sleepMin + dir * step))
+                    updateSleepLabel()
+                }
+                return true
+            }
+            if (event.keyCode == KeyEvent.KEYCODE_BACK) {
+                if (event.action == KeyEvent.ACTION_UP) {
+                    sleepEdit = false
+                    sleepIdx = 0
+                    updateSleepLabel()
+                }
+                return true
+            }
+        }
         // Mediatasten steuern Spotify, solange die Karte ausgewaehlt ist
         if (nowCardFocused() && event.action == KeyEvent.ACTION_DOWN) {
             val a = when (event.keyCode) {
