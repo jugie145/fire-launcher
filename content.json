@@ -1,0 +1,2460 @@
+{
+ "updated": "2026-11-14T20:55:11Z",
+ "status": {
+  "netflix_links": "29 von 36 ",
+  "tmdb": "ok (netflix 36, prime 36, wow 36, disney 36, kino 18)",
+  "youtube": "ok (12 Videos)",
+  "twitch": "ok (10 Streams)",
+  "kanaele": "ok (12 von 12)",
+  "sport": "ok (12 Spiele)",
+  "suche": "ok (4130 Titel, 569 mit Netflix-Nummer) ",
+  "hsv": "ok (4 Spiele)"
+ },
+ "netflix": {
+  "label": "Netflix",
+  "source": "Daten: TMDB · JustWatch",
+  "items": [
+   {
+    "title": "The Body",
+    "meta": "2026  ·  Serie  ·  Mystery, Drama  ·  ★ 7,1",
+    "desc": "In der Halloweennacht löst ein aus dem Ruder gelaufenes Aufnahmeritual bei einer Mädchen-Tanztruppe katholische Schuldgefühle, unheilige Begierden und geisterhafte Visionen aus.",
+    "label": "Neue Folgen bei Netflix",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/hYJqUoXRZnodGxgVZTM8uwr5kbC.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/zleCYDRbW5mKwgZwVK4SNIrKXWx.jpg",
+    "trailer": "https://www.youtube.com/watch?v=wl7uj7n7DoY",
+    "tmdb": "tv/291507",
+    "link": "https://www.netflix.com/title/81983578"
+   },
+   {
+    "title": "Never Surrender",
+    "meta": "2026  ·  Film  ·  Action, Krimi  ·  ★ 7,3",
+    "desc": "Als es eine brutale Gang auf sein abgelegenes Zuhause abgesehen hat, müssen ein Veteran mit Schuldgefühlen und seine Enkelkinder zusammenhalten, um zu überleben.",
+    "label": "Neue Filme bei Netflix",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/umxN2kMcUm6VoxSOdcEcQoXuC4q.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/9wypfSz5OyWnew6mt5hviGw6WhM.jpg",
+    "trailer": "https://www.youtube.com/watch?v=o0d1IA85D9o",
+    "tmdb": "movie/1616687"
+   },
+   {
+    "title": "Godzilla Minus One",
+    "meta": "2023  ·  Film  ·  Science Fiction, Horror  ·  ★ 7,6",
+    "desc": "Japan, 1945: Kurz nach dem Ende des Zweiten Weltkriegs täuscht der Kamikaze-Pilot Koichi Shishima technische Probleme bei seinem Flugzeug vor und landet auf der Insel Odo. Hier begegnet er zum ersten Mal der Riesenechse Godzilla, die die gesamte Insel dem Erdboden gleichmacht. Zwei Jahre später: Shishima ist inzwischen nach Tokio zurückgekehrt, wo er Frau und Kind hat. Zur gleichen Zeit machen Berichte die Runde, dass der durch Atomtests im Bikini-Atoll mutierte Godzilla mehrere US-Kriegsschiffe zerstört hat und sich bereits auf dem Weg nach Japan befindet. Godzilla sorgt nun dafür, dass das Land an einen neuen Tiefpunkt gelangt. Minus 1...",
+    "label": "Gerade angesagt",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/oHBhHoNe59VH6bUMazDtJmWOFSS.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/qLDYv9VSHEL7Jvo248bM2wXhR6p.jpg",
+    "trailer": "",
+    "tmdb": "movie/940721",
+    "link": "https://www.netflix.com/title/81767635"
+   },
+   {
+    "title": "Law & Order: Special Victims Unit",
+    "meta": "1999  ·  Serie  ·  Krimi, Drama  ·  ★ 8,0",
+    "desc": "Bei Polizei und Staatsanwaltschaft gelten Sexualverbrechen als besonders abscheulich. In New York City gehören die engagierten Detectives, die in diesen brutalen Fällen ermitteln, zur Sondereinheit für Sexualdelikte. Dies sind ihre Geschichten. Innerhalb der New Yorker Polizei gibt es eine Sondereinheit, die Special Victims Unit. Die Fälle, die das SVU untersucht, beschränken sich ausschließlich auf Sexualdelikte und Verbrechen an Kindern",
+    "label": "Beliebte Serien",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/xhK9YCxNwnE0OB1SWvCY39heHQI.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/pHNhUwSXuDQ9jPZOCb8SgJaQZsc.jpg",
+    "trailer": "",
+    "tmdb": "tv/2734",
+    "link": "https://www.netflix.com/title/70140403"
+   },
+   {
+    "title": "Swapped – Getauscht",
+    "meta": "2026  ·  Film  ·  Abenteuer, Animation  ·  ★ 8,8",
+    "desc": "Ein winziger Waldbewohner und ein majestätischer Vogel tauschen plötzlich die Körper und müssen gemeinsam das wildeste Abenteuer ihres Lebens überstehen.",
+    "label": "Bestbewertete Filme",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/zMwhWailP1WY7sb6AoE6b8ugoy.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/4yhSZS01r0hrGI9guzKjhmXKUgB.jpg",
+    "trailer": "",
+    "tmdb": "movie/1007757",
+    "link": "https://www.netflix.com/title/81749852"
+   },
+   {
+    "title": "Teach You a Lesson",
+    "meta": "2026  ·  Serie  ·  Action & Adventure, Drama  ·  ★ 9,4",
+    "desc": "Wenn in Schulen jeglicher Respekt verloren geht, ist es Zeit für unkonventionelle Inspektor*innen – und strikte, direkte Lektionen, die in keinem Lehrbuch zu finden sind.",
+    "label": "Bestbewertete Serien",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/vyG93jhmPL7tBIhRtCLa5mdBKob.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/9HLoBoEuJawLH8ZBfpdYNcXral8.jpg",
+    "trailer": "",
+    "tmdb": "tv/276161",
+    "link": "https://www.netflix.com/title/81947300"
+   },
+   {
+    "title": "One Year to Live, Buy a Man",
+    "meta": "2026  ·  Film  ·  Liebesfilm, Drama  ·  ★ 7,4",
+    "desc": "Die 40-jährige Yui Katakura (Ko Shibasaki) verwendet all ihre Zeit darauf, Geld für den Ruhestand anzusparen, weswegen sie romantische Beziehungen immer als schlechte Investition betrachtet hat. Doch als sie bei einer kostenlosen Krebsvorsorgeuntersuchung erfährt, dass ihr nur noch ein Jahr zu leben bleibt, muss sie ihr Lebenskonzept überdenken. Als plötzlich inmitten dieses Schocks ein gutaussehender Host mit rosa Haaren namens Yoshitaka Sena (Eiji Akaso) vor ihr auftaucht und sie darum bittet, etwas Geld zu leihen, hat sie eine Idee. Da sie ohnehin sterben wird, braucht sie ihre Ersparnisse nicht mehr und „kauft“ Sena für 720.000 Yen.",
+    "label": "Heute empfohlen: Liebesfilm",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/6vGH7JZFLzFawpwCcnNweF8j3KD.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/lkEQXQ1YpMCzCrLOBxHLGdCHLVb.jpg",
+    "trailer": "",
+    "tmdb": "movie/1654940",
+    "link": "https://www.netflix.com/title/81505776"
+   },
+   {
+    "title": "Dead-End Job",
+    "meta": "2026  ·  Serie  ·  Mystery, Drama  ·  ★ 7,6",
+    "desc": "Ein hoch verschuldeter junger Mann erhält lukrative Teilzeitjobs von einer geheimnisvollen Agentur – aber seine Jagd nach Geld gerät zum Albtraum.",
+    "label": "Neue Folgen bei Netflix",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/gWedDgBsZkuOho2qe3q2sTQmbpO.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/yyA9CI8BLNg6LtVRvmVxki4xiGb.jpg",
+    "trailer": "https://www.youtube.com/watch?v=Sn2ZCxOxsN0",
+    "tmdb": "tv/289517",
+    "link": "https://www.netflix.com/title/81997887"
+   },
+   {
+    "title": "Winstead – Ein Hund feiert Weihnachten",
+    "meta": "2026  ·  Film  ·  Komödie, Drama  ·  ★ 7,2",
+    "desc": "Als Familie Goss von einem medizinischen Notfall erschüttert wird, unternimmt der entschlossene Hund Winstead alles, um seine Menschen vor Heiligabend wieder zusammenzubringen.",
+    "label": "Neue Filme bei Netflix",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/hhQT0TySg3LXCE8BEPpfPJ5zJA2.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/hEXgLJwyLjA5mfikYqa6dfKoPEq.jpg",
+    "trailer": "https://www.youtube.com/watch?v=gHS3A1GGa1g",
+    "tmdb": "movie/1570488",
+    "link": "https://www.netflix.com/title/82090597"
+   },
+   {
+    "title": "Heartland",
+    "meta": "2026  ·  Film  ·  Thriller, Mystery  ·  ★ 7,2",
+    "desc": "Zwanzig Jahre sind vergangen, seit der einstige Country-Superstar Misty Jones (Jessica Chastain) das Musikbusiness hinter sich gelassen und sich komplett aus der Öffentlichkeit zurückgezogen hat. Eines Tages wendet sich jedoch ihr Bruder (Norbert Leo Butz) verzweifelt an sie, nachdem seine Tochter Charlie (Carter Faith), ein aufstrebender Country-Star, spurlos in Nashville verschwunden ist und hofft darauf, dass Misty mit Hilfe ihrer früheren Kontakte vielleicht etwas herausfinden könnte. Als sie daraufhin zurück zu ihrer alten Wirkungsstätte reist, um den Dingen auf den Grund zu gehen, bei der Polizei aber zunächst wenig Gehör findet, ermittelt sie auf eigene Faust. Die Spuren, auf die sie dabei stößt, sind jedoch schrecklich – und erinnern sie daran, weshalb sie selbst Nashville und dem Showgeschäft einst den Rücken zugewandt hatte.",
+    "label": "Gerade angesagt",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/psTMZj8gvsfYVfvd7FZCHH4xL6P.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/nSjDoqJLJUfuA5200ZSiY14d5GW.jpg",
+    "trailer": "",
+    "tmdb": "movie/1543469",
+    "link": "https://www.netflix.com/title/81486332"
+   },
+   {
+    "title": "The Office",
+    "meta": "2005  ·  Serie  ·  Komödie  ·  ★ 8,6",
+    "desc": "In der Papiergroßhandelsfirma Dunder Mifflin herrscht der alltägliche Bürowahnsinn. Verkaufsleiter Michael Scott hält sich für einen lustigen Entertainer und den besten Chef der Welt. Für weitere Egokrämpfe sorgt der pedantische Nerd Dwight Schrute, der um Michaels Posten buhlt. Zum bunten Büro-Team gehören u. a. der talentierte wie unterforderte Jim Halpert, die scheue Sekretärin Pam Beesly, der übermotivierte Ryan Howard sowie der spätere Regionalmanager Andy Bernard und die ehrgeizige Karrierefrau Karen Filippelli. Zusammen sabotieren sie die Langeweile und Arbeitspflicht des lästigen Alltags, der im fröhlichen Chaos versinkt.",
+    "label": "Beliebte Serien",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/9vMzIrMIncPmtalcxh1MOrgcE6C.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/7DJKHzAi83BmQrWLrYYOqcoKfhR.jpg",
+    "trailer": "",
+    "tmdb": "tv/2316",
+    "link": "https://www.netflix.com/title/70136120"
+   },
+   {
+    "title": "Demon Slayer: Kimetsu no Yaiba Infinity Castle",
+    "meta": "2025  ·  Film  ·  Animation, Action  ·  ★ 8,8",
+    "desc": "Während die Mitglieder des Dämonentöter-Korps und die Hashira in Vorbereitung auf den bevorstehenden Kampf gegen die Dämonen ein gemeinsames Krafttrainingsprogramm, das Hashira-Training, absolvieren, taucht Muzan Kibutsuji in der Ubuyashiki-Villa auf. Da der Leiter des Dämonenkorps in Gefahr ist, eilen Tanjiro und die Hashira zum Hauptquartier, werden aber von Muzan Kibutsuji in einen tiefen Abstieg in einen mysteriösen Raum gestürzt. Das Ziel, in das Tanjiro und das Dämonentöter-Korps gestürzt sind, ist die Festung der Dämonen - die Unendlichkeitsburg. Und so ist das Schlachtfeld für die finale Schlacht zwischen dem Dämonentöterkorps und den Dämonen bereitet.",
+    "label": "Bestbewertete Filme",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/1RgPyOhN4DRs225BGTlHJqCudII.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/cqlahADJmDdqQvLAPuEYD6EKPAN.jpg",
+    "trailer": "",
+    "tmdb": "movie/1311031"
+   },
+   {
+    "title": "Breaking Bad",
+    "meta": "2008  ·  Serie  ·  Drama, Krimi  ·  ★ 9,0",
+    "desc": "Ein krebskranker Chemielehrer tut sich mit einem ehemaligen Schüler zusammen, um die Zukunft seiner Familie durch die Herstellung und den Verkauf von Meth zu sichern.",
+    "label": "Bestbewertete Serien",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/tsRy63Mu5cu8etL1X7ZLyf7UP1M.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/anFx9aTOOYqgS3v7x3R84Kz67ly.jpg",
+    "trailer": "",
+    "tmdb": "tv/1396",
+    "link": "https://www.netflix.com/title/70143836"
+   },
+   {
+    "title": "Nur bis Weihnachten",
+    "meta": "2026  ·  Film  ·  Liebesfilm, Komödie  ·  ★ 6,7",
+    "desc": "Eine ambitionierte Großstädterin sucht nach Abwechslung, tauscht an Weihnachten mit ihrer häuslichen Schwester das Leben – und stolpert mitten in ein neues Chaos.",
+    "label": "Heute empfohlen: Liebesfilm",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/4BsOLok9WaTTTcSpmoMtCLERScS.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/nDtERIPcoAOXtTKsrCMVcyU68WQ.jpg",
+    "trailer": "",
+    "tmdb": "movie/1757174"
+   },
+   {
+    "title": "Dragon Ball Super: Beerus",
+    "meta": "2026  ·  Serie  ·  Animation, Action & Adventure  ·  ★ 9,6",
+    "desc": "Jahre nach dem erbitterten Kampf gegen Majin Boo herrscht auf der Erde endlich Frieden. Doch dann erwacht Beerus, der Gott der Zerstörung, aus seinem langen Schlaf. Als er von dem Saiyajin hört, der Freezer besiegt hat, taucht er unvermittelt bei Son Goku auf – und die ganze Erde gerät in Gefahr. Goku und seine Freunde stellen sich einem Kampf, der das Universum erschüttert.",
+    "label": "Neue Folgen bei Netflix",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/8phLVFEXOe02JgFmH9ldn3j4tXW.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/sGuCmIy8kEmx3FWZyMj654rF6g8.jpg",
+    "trailer": "https://www.youtube.com/watch?v=lJMXyiENRAM",
+    "tmdb": "tv/312359",
+    "link": "https://www.netflix.com/title/83189604"
+   },
+   {
+    "title": "Auf Kollisionskurs",
+    "meta": "2026  ·  Film  ·  Thriller, Drama  ·  ★ 6,3",
+    "desc": "Während der spanischen Wirtschaftskrise verübt eine Bande 2013 einen Bankraub mitten in Madrid. Nachdem der ältere Pedro in Verkleidung die Vorhut gebildet und den Direktor Ernesto unter einem Vorwand dazu gebracht hat, ihn außerhalb der regulären Öffnungszeiten hereinzulassen, drängen sich Carla und Tomás in die Filiale, sorgen mit einem Taser dafür, dass Ernesto bewusstlos wird und plündern die Schließfächer. Draußen bemerkt aber eine Zeugin, dass irgendetwas nicht stimmt und alarmiert die Polizei. Das Trio entkommt mit Hilfe von Fluchtwagenfahrer Raúl, doch während der Fahrt kommt es zum Streit und einem fatalen Crash. Alle vier können zwar entkommen, doch zwischen den Beteiligten entwickelt sich ein Katz-und-Maus-Spiel aus Täuschung und Angst, während ein Kommissar die Spuren verfolgt und der Bande deutlich näher ist, als er es erahnt.",
+    "label": "Neue Filme bei Netflix",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/uI3kWI7kGW5E0F8WduewgQYPt34.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/kUKRy03AVq10EXKvb6DcLLohC2O.jpg",
+    "trailer": "https://www.youtube.com/watch?v=8hVLhaK619k",
+    "tmdb": "movie/1571955",
+    "link": "https://www.netflix.com/title/82078375"
+   },
+   {
+    "title": "Die Vorahnung",
+    "meta": "2007  ·  Film  ·  Thriller, Drama  ·  ★ 6,3",
+    "desc": "Der Tag ist für Linda Hanson völlig normal verlaufen, bis ein Polizist an ihrer Tür klingelt. Mit der Nachricht vom Unfalltod ihres Mannes Jim bricht für die zweifache Mutter eine Welt zusammen. Traumatisiert schläft sie ein, nur um am nächsten Tag einen noch größeren Schock zu erleben: Jim sitzt quicklebendig am Küchentisch. Zunächst glaubt Linda geträumt zu haben, doch am Morgen darauf ist sein Tod wieder grausame Realität. Als sich Déjà-vu-Vorfälle häufen, erkennt Linda, dass ihre Erlebnisse offenbar nur die Visionen von Ereignissen sind, die erst in der Zukunft geschehen werden. Aber kann sie Jims Tod verhindern?",
+    "label": "Gerade angesagt",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/esXYvlivZ8j0HGqob949CIjqnGi.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/IahMQZif1FcMBoChS58yHO1679.jpg",
+    "trailer": "",
+    "tmdb": "movie/9963",
+    "link": "https://www.netflix.com/title/70056439"
+   },
+   {
+    "title": "Dr. House",
+    "meta": "2004  ·  Serie  ·  Drama  ·  ★ 8,6",
+    "desc": "Dr. Gregory House, Arzt am fiktiven Princeton-Plainsboro Teaching Hospital, ist nicht gerade einfühlsam im Umgang mit Patienten und würde am liebsten gar nicht mit ihnen sprechen, wenn er damit ungeschoren davon kommen könnte. Nach erfolgreicher Entfernung großer Teile nekrotisierten Gewebes aus seinem rechten Oberschenkel, leidet er selbst unter ständigen Schmerzen und ist auf seinen Gehstock angewiesen, der seine bittere, schonungslose Haltung zusätzlich unterstreicht. Ruppig im Umgang mit seinen Patienten und Kollegen, gelingt es ihm jedoch immer wieder, schnelle und akurate Diagnosen zu stellen, nachdem er seinen Patienten scheinbar keine Aufmerksamkeit gezollt hat. Obwohl sein Verhalten oft ans Unsoziale grenzt, ist House ein herausragender, wenn auch eigenbrödlerischer Mediziner, dessen unkonventionelle Denkweise und tadellosen Instinkte ihm großen Respekt eingebracht haben.",
+    "label": "Beliebte Serien",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/r0Q6eeN9L1ORL9QsV0Sg8ZV3vnv.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/tS3c86kDSlaSUDbjpGpxrQdXsx2.jpg",
+    "trailer": "",
+    "tmdb": "tv/1408",
+    "link": "https://www.netflix.com/title/70136117"
+   },
+   {
+    "title": "Chihiros Reise ins Zauberland",
+    "meta": "2001  ·  Film  ·  Animation, Familie  ·  ★ 8,5",
+    "desc": "Als die kleine Chihiro mit ihren Eltern während eines Ausflugs einen dunklen Tunnel durchquert, ahnt sie noch nicht, was sie auf der anderen Seite erwarten wird. Denn dort liegt eine für Menschen normalerweise unsichtbare Stadt der Geister. Zu allem Übel muss Chihiro dann auch noch feststellen, dass sich ihre Eltern in Schweine verwandelt haben und sie selbst plötzlich unsichtbar zu werden scheint...",
+    "label": "Bestbewertete Filme",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/m4TUa2ciEWSlk37rOsjiSIvZDXE.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/wWNLsGvKqhi6cNWul0uvhqbQ4kl.jpg",
+    "trailer": "",
+    "tmdb": "movie/129",
+    "link": "https://www.netflix.com/title/60023642"
+   },
+   {
+    "title": "The Chosen",
+    "meta": "2019  ·  Serie  ·  Action & Adventure, Familie  ·  ★ 8,8",
+    "desc": "Das Leben des Christus gesehen durch die Augen derer, die ihn kannten.",
+    "label": "Bestbewertete Serien",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/3siv3RaQrdr2tQiv9jHq71sLlzo.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/nr0r7YTn1l84KLG1iCSO5ofHTvO.jpg",
+    "trailer": "",
+    "tmdb": "tv/85077"
+   },
+   {
+    "title": "Twilight - Biss zum Morgengrauen",
+    "meta": "2008  ·  Film  ·  Fantasy, Drama  ·  ★ 6,3",
+    "desc": "Bella Swan war schon immer ein wenig anders als ihre gleichaltrigen Mitschüler. Als ihre Mutter erneut heiratet, zieht sie zu ihrem Vater nach Forks, einer langweiligen, verregneten Kleinstadt im Staat Washington. Ihre Erwartungen an ihr neues Leben sind gering, doch dann begegnet sie in der Schule dem geheimnisvollen und äußerst attraktiven Edward. Die beiden fühlen sich magisch zueinander hingezogen, doch etwas steht einer normalen Beziehung der beiden im Weg: Edward ist ein Vampir.",
+    "label": "Heute empfohlen: Liebesfilm",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/weAYfu6FfrNxEDJ3xH1XpgQcqUv.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/lh5yhaG4kXj7KHEywD5lcAruHN2.jpg",
+    "trailer": "",
+    "tmdb": "movie/8966",
+    "link": "https://www.netflix.com/title/70099113"
+   },
+   {
+    "title": "Die Tagebücher der Apothekerin",
+    "meta": "2023  ·  Serie  ·  Animation, Mystery  ·  ★ 8,7",
+    "desc": "Maomao führte ein friedliches Leben, bis sie eines Tages entführt und als niedere Dienerin an den Kaiserhof verkauft wird. Die junge Apothekerin ist jedoch keine Persönlichkeit, die für ein willfähriges Leben unter Hoheiten bestimmt ist. Als ein Kronprinz nach dem anderen einer mysteriösen Krankheit zum Opfer fällt, schreitet sie unauffällig ein, um ein potentes Heilmittel für ihre Gesundung herzustellen. Trotz ihrer Vorsicht bemerkt der höhergestellte Hofdiener Jinshi ihre Affinität für Heilkräuter und verlangt fortan bei medizinischen Problemen des Hofes nach ihrer Expertise – dadurch verstrickt sie sich unweigerlich in die Intrigen am Kaiserhof.",
+    "label": "Neue Folgen bei Netflix",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/gffVOVZ2Y9cmVIZ26Gt9ByMGCYH.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/6Ph6TDAUYPTYMXp7PhpIrcWxstn.jpg",
+    "trailer": "",
+    "tmdb": "tv/220542",
+    "link": "https://www.netflix.com/title/81712068"
+   },
+   {
+    "title": "Allen",
+    "meta": "2026  ·  Film  ·  Science Fiction, Abenteuer  ·  ★ 6,9",
+    "desc": "Als Junge schloss Petey in einer australischen Küstenstadt heimlich Freundschaft mit einem freundlichen Außerirdischen namens Allen. Eines Tages verschwand Allen jedoch spurlos. Zwanzig Jahre später kehrt der Außerirdische überraschend mit einem weltverändernden Geheimnis zurück. Petey wird dadurch aus seinem geordneten Erwachsenenleben gerissen und muss seinem alten Freund helfen, die Welt zu retten.",
+    "label": "Neue Filme bei Netflix",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/51fGmBW7WjyJouP9TjIcxRpCUNk.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/iG36rViTqPdvO7qNwApGOjRiUeJ.jpg",
+    "trailer": "",
+    "tmdb": "movie/1518204",
+    "link": "https://www.netflix.com/title/81382720"
+   },
+   {
+    "title": "Possible Love",
+    "meta": "2026  ·  Film  ·  Drama  ·  ★ 7,4",
+    "desc": "Ein entlassener Arbeiter und seine Frau begegnen einer Dokumentarfilmerin und deren Ehemann und werden mit ihren verborgenen Sehnsüchten konfrontiert.",
+    "label": "Gerade angesagt",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/k0BY5D4Ya6NHhsvNYMmaabpvUtS.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/7UAzxqezg5yvZyK3k62wOAzg0Zs.jpg",
+    "trailer": "",
+    "tmdb": "movie/1483525",
+    "link": "https://www.netflix.com/title/82106490"
+   },
+   {
+    "title": "Vampire Diaries",
+    "meta": "2009  ·  Serie  ·  Drama, Sci-Fi & Fantasy  ·  ★ 8,3",
+    "desc": "Die Highschool-Schülerin Elena Gilbert hat ihre Eltern bei einem Autounfall verloren. Ihre Tante Jenna Sommers, die jüngere Schwester der Mutter, ist nach Mystic Falls gekommen, um sich um sie und ihren jüngeren Bruder Jeremy zu kümmern. Als der neue Mitschüler Stefan Salvatore auf der Bildfläche erscheint, weckt er sofort Elenas Interesse. Sie ahnt nicht, dass es sich bei Stefan um einen bereits jahrhundertealten Vampir handelt. Als dann noch Stefans älterer Bruder Damon auftaucht, der von Elena ebenfalls angezogen ist, überschlagen sich die Ereignisse. Stefan wird misstrauisch, denn er weiß, dass Damon nichts Gutes im Sinn hat. Elena wird in eine Welt hineingeworfen, von deren Existenz sie bislang nichts geahnt hat.",
+    "label": "Beliebte Serien",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/cJYLon9ejKJV7ua03ab8Tj9u067.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/aBkVgChtyyJaHyZh1gfd8DbzQon.jpg",
+    "trailer": "",
+    "tmdb": "tv/18165",
+    "link": "https://www.netflix.com/title/70143860"
+   },
+   {
+    "title": "Der Herr der Ringe - Die Rückkehr des Königs",
+    "meta": "2003  ·  Film  ·  Abenteuer, Fantasy  ·  ★ 8,5",
+    "desc": "Saurons Heer will Minas Tirith angreifen, die in Felsen errichtete Hauptstadt von Gondor. Angesichts der Bedrohlichkeit des feindlichen Heeres wiegt es umso schwerer, dass Gondors König fehlt und nur der schwächliche Truchsess Denethor über das einst mächtige Königreich wacht. Wird Aragorn die Kraft aufbringen, jene Aufgabe zu übernehmen, für die sein Schicksal ihn bestimmt hat? Während Gandalf verzweifelt versucht, die mutlosen Kämpfer von Gondor zu motivieren, sammelt Théoden die Krieger von Rohan, um am Kampf teilzunehmen. Aber obwohl sie tapfer und leidenschaftlich Widerstand leisten, haben die Streitkräfte der Menschen dem überwältigenden Ansturm der feindlichen Legionen gegen das Königreich kaum etwas entgegenzusetzen. Jeder Sieg fordert große Opfer. Trotz der starken Verluste stellen sich die Gefährten der größten Schlacht ihres Lebens - vereint durch ein einziges Ziel: Sauron muss so lange abgelenkt werden, bis Frodo den Ring vernichtet hat...",
+    "label": "Bestbewertete Filme",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/ctiw6FZK4N36LmkjSklWEbuvlq9.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/uFjlP9U9UOZAzGB25HUtmlEpXbc.jpg",
+    "trailer": "",
+    "tmdb": "movie/122"
+   },
+   {
+    "title": "Frieren - Nach dem Ende der Reise",
+    "meta": "2023  ·  Serie  ·  Animation, Action & Adventure  ·  ★ 8,8",
+    "desc": "Nach einer zehnjährigen Odyssee gelingt es der Elfenmagierin Frieren zusammen mit Himmels Heldengruppe, den Dämonenkönig zu stürzen und dem Land Frieden zu schenken. Als Elfe mit langer Lebensdauer, streift sie weiter durch die Lande, doch als sie nach 50 Jahren ihren ehemaligen Kameraden einen Besuch abstattet, sind ihre Gesichter von tiefen Furchen gezeichnet. Kurz später wird Frieren Zeugin von Himmels Ableben, was für sie Schmerz und tiefes Bedauern mit sich bringt – Bedauern darüber, nicht genug Zeit mit ihnen verbracht zu haben. Mit dieser Reue im Herzen begibt sie sich auf eine Reise, um verschiedenste Menschen kennenzulernen und mit ihnen neue Abenteuer zu teilen.",
+    "label": "Bestbewertete Serien",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/rBOnrVlck7BIlGeWVlzYiZeg4l2.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/k1YVj5fGW1oKjZ19oy0PcphKXlj.jpg",
+    "trailer": "",
+    "tmdb": "tv/209867",
+    "link": "https://www.netflix.com/title/81726714"
+   },
+   {
+    "title": "New Moon - Bis(s) zur Mittagsstunde",
+    "meta": "2009  ·  Film  ·  Abenteuer, Fantasy  ·  ★ 6,0",
+    "desc": "Aus Sorge um Bella, die von Edwards Vampirbruder attackiert wurde, trennt sich Edward von ihr und zieht mit seiner Familie fort. Trost in ihrem unendlichen Schmerz findet Bella nur bei ihrem Jugendfreund Jacob, der ihr wieder Hoffnung und Halt gibt. Doch auch Jacob verbirgt ein dunkles Geheimnis, eine zweite übernatürliche Identität, die ihn nicht nur zum Rivalen um Bella, sondern auch zum erbitterten Feind Edwards macht...",
+    "label": "Heute empfohlen: Liebesfilm",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/dF2c20sRDgySZLaLS2OUerL07sz.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/kU3ykN1gVctU12QqBv1RdpuDHpr.jpg",
+    "trailer": "",
+    "tmdb": "movie/18239",
+    "link": "https://www.netflix.com/title/70113010"
+   },
+   {
+    "title": "Black Doves",
+    "meta": "2024  ·  Serie  ·  Action & Adventure, Mystery  ·  ★ 7,1",
+    "desc": "Eine Spionin, die sich als Frau eines Politikers ausgibt, erfährt vom Mord an ihrem Geliebten und sucht nun mit einem befreundeten Auftragsmörder nach der Wahrheit – und Rache.",
+    "label": "Neue Folgen bei Netflix",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/uyL0MH8gtDlChQKpfpkVoUP41VY.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/srlsyEfIBz2MNWBndVc3opOaNGS.jpg",
+    "trailer": "",
+    "tmdb": "tv/225385",
+    "link": "https://www.netflix.com/title/81682935"
+   },
+   {
+    "title": "Gegen den Hurrikan",
+    "meta": "2026  ·  Film  ·  Drama  ·  ★ 7,5",
+    "desc": "Wirpul (Benny Emmanuel) und sein Halbbruder Candi (Kristyan Ferrer) haben sich voneinander entfremdet. Ein Job bringt die beiden jedoch unerwartet wieder zusammen, als sie auf die Yacht eines wohlhabenden Mannes aufpassen sollen. Während Wirpul das Schiff als Kapitän steuert, ist Candi an Bord als Mechaniker tätig. Als sich vor der Küste der mexikanischen Touristenmetropole Acapulco ein Sturm zusammenbraut, sind die beiden allein an Bord. Während Candi Schlimmes befürchtet und das Boot zurück in den Hafen bringen will, will Candi den Anweisungen seines Chefs Folge leisten und auf See bleiben. Tatsächlich entwickelt sich der Sturm zum gefährlichen Hurrikan und bald kämpfen die zwei Halbbrüder um ihr Überleben.",
+    "label": "Neue Filme bei Netflix",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/cpNMIRCrDl0sxDL1tHBzfWi0UZC.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/wxG9VUpcp1CC9BErJNNTFTqdQm.jpg",
+    "trailer": "",
+    "tmdb": "movie/1780005"
+   },
+   {
+    "title": "Ein guter Anwalt",
+    "meta": "2026  ·  Film  ·  Thriller, Drama  ·  ★ 6,7",
+    "desc": "Als ein Anwalt nach einer Überdosis im Entzug landet, hat er eine Woche Zeit, um mithilfe eines Referendars seine Karriere zu retten und seinen Prozess vorzubereiten.",
+    "label": "Gerade angesagt",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/fzlch1j1aVGJKI0GB6IdgbG5gpJ.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/yD7S1H1Wa0RTXUyQ458ERxeponM.jpg",
+    "trailer": "",
+    "tmdb": "movie/1616419",
+    "link": "https://www.netflix.com/title/81955038"
+   },
+   {
+    "title": "The Mentalist",
+    "meta": "2008  ·  Serie  ·  Krimi, Drama  ·  ★ 8,4",
+    "desc": "Der Job des charismatischen Ex-TV-Show-Stars Patrick Jane innerhalb des California Bureau of Investigation ist es, die Ermittlungen einer Spezialeinheit zu unterstützen. Jane, der seine Karriere als \"Mentalist\" mit vermeintlich übersinnlichen Fähigkeiten nach einer familiären Tragödie beendete, besitzt eine unvergleichliche Beobachtungsgabe und verblüffende Kombinationsfähigkeiten.",
+    "label": "Beliebte Serien",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/rJFqKcmMSttdNP58l0dVzY2NcTA.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/4GrRdnfrxNZw5hr2OA4NGZfxX3U.jpg",
+    "trailer": "",
+    "tmdb": "tv/5920",
+    "link": "https://www.netflix.com/title/70155590"
+   },
+   {
+    "title": "Dilwale Dulhania Le Jayenge - Wer zuerst kommt, kriegt die Braut",
+    "meta": "1995  ·  Film  ·  Komödie, Drama  ·  ★ 8,5",
+    "desc": "Eine Europareise mit romantischen Folgen: Auf seiner Interrailtour begegnet Raj Simran, einem Mädchen aus gutem Hause. Seinen Annäherungsversuchen geht sie zunächst erfolgreich aus dem Weg, denn immerhin ist Simran bereits einem Anderen versprochen. Doch in der Schweiz, auf fahrenden Zügen und duftenden Almwiesen, erliegt sie seinem Charme, und bald ist klar: Sie gehören zusammen. Nur Simrans Familie stellt sich ihrem Glück entgegen. \"Dilwale Dulhania Le Jayenge\" markiert die Geburtsstunde des Leinwandtraumpaars Shah Rukh Khan und Kajol und gilt unumstritten als Meilenstein indischer Film- und Kulturgeschichte. Neben des ausgeprägt zelebrierten Schweiz-Mythos kommen hier alle wichtigen Grundzutaten soliden Bollywoodkinos zusammen und machen den Film zu einer der erfolgreichsten indischen Produktionen aller Zeiten, die selbst heute noch in den Kinos Indiens zu sehen ist.",
+    "label": "Bestbewertete Filme",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/7VDLEHli74eLsYLNcq9djn1Gw76.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/mZTE5SrxAEhgeM3sWLXNhRTjiGc.jpg",
+    "trailer": "",
+    "tmdb": "movie/19404",
+    "link": "https://www.netflix.com/title/60036747"
+   },
+   {
+    "title": "365 Days - Dieser Tag",
+    "meta": "2022  ·  Film  ·  Liebesfilm, Drama  ·  ★ 5,9",
+    "desc": "Lauras neues Leben auf Sizilien ähnelt einem Märchen: eine glamouröse Hochzeit, ein Ehemann, der ihr jeden Wunsch erfüllt, eine herrliche Villa am Meer und Luxus, wie Laura ihn zuvor niemals kannte. Alles könnte perfekt sein, wenn ihr Ehemann nicht ausgerechnet Don Massimo Torricelli wäre – Oberhaupt eines mächtigen Mafia-Clans. Die Ehefrau des gefährlichsten Mannes Siziliens zu sein, hat Konsequenzen, wie Laura sehr bald feststellen muss. Denn Massimo hat viele Feinde, die vor nichts zurückschrecken, und seine größte Schwachstelle ist Laura …",
+    "label": "Heute empfohlen: Liebesfilm",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/zBG5Mg29NH9xxpWMMG7BIvKwYhL.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/oZNI08UnRwGH6Gl8iR7Dq8HV806.jpg",
+    "trailer": "",
+    "tmdb": "movie/829557",
+    "link": "https://www.netflix.com/title/81397576"
+   },
+   {
+    "title": "LEGO Ninjago: Aufstieg der Drachen",
+    "meta": "2023  ·  Serie  ·  Animation, Action & Adventure  ·  ★ 8,1",
+    "desc": "Um Drachen vor Bösewichten zu retten, die ihre Lebenskraft rauben wollen, setzen zwei Jugendliche aus verschiedenen Welten ihre neu entdeckten Ninja-Kräfte ein.",
+    "label": "Neue Folgen bei Netflix",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/4vubgrPvqDKNFP1kNvHpd3do9hd.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/6EFYy5JAwYeQx3t5vj1XuibjQlS.jpg",
+    "trailer": "",
+    "tmdb": "tv/212989",
+    "link": "https://www.netflix.com/title/81519765"
+   },
+   {
+    "title": "ग़ज़ब रात",
+    "meta": "2026  ·  Film  ·  Thriller, Krimi  ·  ★ 5,8",
+    "desc": "",
+    "label": "Neue Filme bei Netflix",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/8I4YFWgi9IZW4VUi398A0BqLnm.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/e4N7M52cBbyi24xLga8yI6yt1u1.jpg",
+    "trailer": "",
+    "tmdb": "movie/1453407"
+   }
+  ]
+ },
+ "prime": {
+  "label": "Prime Video",
+  "source": "Daten: TMDB · JustWatch",
+  "items": [
+   {
+    "title": "Der Herr der Ringe: Die Ringe der Macht",
+    "meta": "2022  ·  Serie  ·  Action & Adventure, Sci-Fi & Fantasy  ·  ★ 7,2",
+    "desc": "Bekannte und neue Charaktere müssen sich dem Wiedererstarken des Bösen in Mittelerde stellen. Von den dunkelsten Tiefen des Nebelgebirges bis zu den majestätischen Wäldern von Lindon, vom Inselkönigreich Númenor bis zu den entlegensten Winkeln der Landkarte werden diese Reiche und Charaktere ein Vermächtnis schaffen, das die Zukunft von Mittelerde prägen wird.",
+    "label": "Neue Folgen bei Prime Video",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/i1phX1JpaqSnHBBGta6LBFYVCZq.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/k2JoKm6FCt1aurhV9taI4Zjn0ff.jpg",
+    "trailer": "https://www.youtube.com/watch?v=-aCsZkSYPGQ",
+    "tmdb": "tv/84773"
+   },
+   {
+    "title": "Der Astronaut – Project Hail Mary",
+    "meta": "2026  ·  Film  ·  Science Fiction, Abenteuer  ·  ★ 8,6",
+    "desc": "Als Ryland Grace erwacht, muss er feststellen, dass er ganz allein ist. Er ist anscheinend der einzige Überlebende einer Raumfahrtmission, Millionen Kilometer von zu Hause entfernt, auf einem Flug ins Tau-Ceti-Sternsystem. Aber was erwartet ihn dort? Und warum sind alle anderen Besatzungsmitglieder tot? Nach und nach dämmert es Grace, dass von seinem Überleben nicht nur die Mission, sondern die Zukunft der gesamten Erdbevölkerung abhängt.",
+    "label": "Neue Filme bei Prime Video",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/8Tfys3mDZVp4tNoH2ktm06a0Tau.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/qUraey7aJVaqx6NhlXl5Q7Z1rEX.jpg",
+    "trailer": "https://www.youtube.com/watch?v=3UpWQEyOKe8",
+    "tmdb": "movie/687163"
+   },
+   {
+    "title": "The Dark Knight",
+    "meta": "2008  ·  Film  ·  Action, Thriller  ·  ★ 8,5",
+    "desc": "Gemeinsam mit Bezirksstaatsanwalt Harvey Dent und Lieutenant James Gordon versucht der im Fledermauskostüm agierende Milliardär Bruce Wayne dem Verbrechen in Gotham City Einhalt zu gebieten. Wie aus dem Nichts taucht plötzlich ein psychotischer Superverbrecher auf - der Joker. In seiner wahnhaften Vision möchte er die Stadt in Chaos und Anarchie stürzen und Batman scheint der einzige, der ihn stoppen kann. Bis es zum endgültigen Show-Down kommt, wird aber viel Blut fließen und auch Menschen die Bruce Wayne nahe stehen, könnten Opfer werden.",
+    "label": "Gerade angesagt",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/cfT29Im5VDvjE0RpyKOSdCKZal7.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/z1DfRQf2CgnROyhVZ6ch8FbWt71.jpg",
+    "trailer": "",
+    "tmdb": "movie/155"
+   },
+   {
+    "title": "Dr. House",
+    "meta": "2004  ·  Serie  ·  Drama  ·  ★ 8,6",
+    "desc": "Dr. Gregory House, Arzt am fiktiven Princeton-Plainsboro Teaching Hospital, ist nicht gerade einfühlsam im Umgang mit Patienten und würde am liebsten gar nicht mit ihnen sprechen, wenn er damit ungeschoren davon kommen könnte. Nach erfolgreicher Entfernung großer Teile nekrotisierten Gewebes aus seinem rechten Oberschenkel, leidet er selbst unter ständigen Schmerzen und ist auf seinen Gehstock angewiesen, der seine bittere, schonungslose Haltung zusätzlich unterstreicht. Ruppig im Umgang mit seinen Patienten und Kollegen, gelingt es ihm jedoch immer wieder, schnelle und akurate Diagnosen zu stellen, nachdem er seinen Patienten scheinbar keine Aufmerksamkeit gezollt hat. Obwohl sein Verhalten oft ans Unsoziale grenzt, ist House ein herausragender, wenn auch eigenbrödlerischer Mediziner, dessen unkonventionelle Denkweise und tadellosen Instinkte ihm großen Respekt eingebracht haben.",
+    "label": "Beliebte Serien",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/r0Q6eeN9L1ORL9QsV0Sg8ZV3vnv.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/tS3c86kDSlaSUDbjpGpxrQdXsx2.jpg",
+    "trailer": "",
+    "tmdb": "tv/1408"
+   },
+   {
+    "title": "Demon Slayer: Kimetsu no Yaiba Infinity Castle",
+    "meta": "2025  ·  Film  ·  Animation, Action  ·  ★ 8,8",
+    "desc": "Während die Mitglieder des Dämonentöter-Korps und die Hashira in Vorbereitung auf den bevorstehenden Kampf gegen die Dämonen ein gemeinsames Krafttrainingsprogramm, das Hashira-Training, absolvieren, taucht Muzan Kibutsuji in der Ubuyashiki-Villa auf. Da der Leiter des Dämonenkorps in Gefahr ist, eilen Tanjiro und die Hashira zum Hauptquartier, werden aber von Muzan Kibutsuji in einen tiefen Abstieg in einen mysteriösen Raum gestürzt. Das Ziel, in das Tanjiro und das Dämonentöter-Korps gestürzt sind, ist die Festung der Dämonen - die Unendlichkeitsburg. Und so ist das Schlachtfeld für die finale Schlacht zwischen dem Dämonentöterkorps und den Dämonen bereitet.",
+    "label": "Bestbewertete Filme",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/1RgPyOhN4DRs225BGTlHJqCudII.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/cqlahADJmDdqQvLAPuEYD6EKPAN.jpg",
+    "trailer": "",
+    "tmdb": "movie/1311031"
+   },
+   {
+    "title": "The Chosen",
+    "meta": "2019  ·  Serie  ·  Action & Adventure, Familie  ·  ★ 8,8",
+    "desc": "Das Leben des Christus gesehen durch die Augen derer, die ihn kannten.",
+    "label": "Bestbewertete Serien",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/3siv3RaQrdr2tQiv9jHq71sLlzo.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/nr0r7YTn1l84KLG1iCSO5ofHTvO.jpg",
+    "trailer": "",
+    "tmdb": "tv/85077"
+   },
+   {
+    "title": "Love of Your Life",
+    "meta": "2026  ·  Film  ·  Liebesfilm, Drama  ·  ★ 6,7",
+    "desc": "Mayas Zufallsbegegnung mit Charlie entfacht eine große Liebe. Doch als ihre Träume zerplatzen, wird Maya in ein neues Leben katapultiert. Sie muss neu herausfinden, wer sie ist, was sie will und wie sie wieder lieben kann.",
+    "label": "Heute empfohlen: Liebesfilm",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/4hneB0UFKOZAGJHqJ3VhDcG72uH.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/dL3Tcv4FU2K85bgnGRBgLjFSrLr.jpg",
+    "trailer": "",
+    "tmdb": "movie/1381078"
+   },
+   {
+    "title": "Reacher",
+    "meta": "2022  ·  Serie  ·  Action & Adventure, Krimi  ·  ★ 8,1",
+    "desc": "Als Ex Militärpolizist Jack Reacher wegen eines Mordes, den er nicht begangen hat, verhaftet wird, findet er sich inmitten einer tödlichen Verschwörung korrupter Polizisten, dubioser Geschäftsleute und intriganter Politiker wieder und muss herausfinden, was in Margrave, Georgia, vor sich geht. Die erste Staffel von Reacher basiert auf dem internationalen Bestseller Größenwahn von Lee Child.",
+    "label": "Neue Folgen bei Prime Video",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/pF0qkRsrHkdYadPWY9AMeFZfcwk.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/n5qHxX9OybwH5EFfa5DEeXKFCCQ.jpg",
+    "trailer": "https://www.youtube.com/watch?v=_buobMh9Rn8",
+    "tmdb": "tv/108978"
+   },
+   {
+    "title": "Apokalypse Z - Neue Welt",
+    "meta": "2026  ·  Film  ·  Action, Thriller  ·  ★ 6,2",
+    "desc": "Nach dem Ausbruch des TSJ-Virus sind die Kanarischen Inseln zum letzten Zufluchtsort Europas geworden. Als sich eine Spezialeinheit auf das spanische Festland begibt, um dringend benötigte Vorräte zu beschaffen, schließt sich Roberto der Mission mit eigenen Absichten an. Was als riskanter Versorgungseinsatz beginnt, entwickelt sich zu einem Kampf ums Überleben, bei dem die Gruppe auf Horden Infizierter trifft und ihre unterschiedlichen Interessen zunehmend zum Problem werden. Zwischen Misstrauen und der ständigen Gefahr müssen Roberto und seine Begleiter entscheiden, wie weit sie gehen wollen, um sich selbst und andere zu schützen.",
+    "label": "Neue Filme bei Prime Video",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/o3XwuDUj0n8qnK91p6q8LKfr6rj.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/cetKHC0wHV7xtwJmC1azDqB7jH8.jpg",
+    "trailer": "https://www.youtube.com/watch?v=bd86AbJp9zs",
+    "tmdb": "movie/1507696"
+   },
+   {
+    "title": "Krieg der Welten",
+    "meta": "2025  ·  Film  ·  Science Fiction, Thriller  ·  ★ 4,0",
+    "desc": "Will Radford ist ein Top-Cybersicherheitsanalytiker des Heimatschutzes, der potenzielle Bedrohungen für die nationale Sicherheit durch ein Massenüberwachungsprogramm aufspürt, bis ihn eines Tages ein Angriff eines unbekannten Wesens dazu bringt, sich zu fragen, ob die Regierung etwas vor ihm verbirgt … und vor dem Rest der Welt.",
+    "label": "Gerade angesagt",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/iZLqwEwUViJdSkGVjePGhxYzbDb.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/3dQfE0RRDgPEtTDY5iTM92DaqGA.jpg",
+    "trailer": "",
+    "tmdb": "movie/755898"
+   },
+   {
+    "title": "Vampire Diaries",
+    "meta": "2009  ·  Serie  ·  Drama, Sci-Fi & Fantasy  ·  ★ 8,3",
+    "desc": "Die Highschool-Schülerin Elena Gilbert hat ihre Eltern bei einem Autounfall verloren. Ihre Tante Jenna Sommers, die jüngere Schwester der Mutter, ist nach Mystic Falls gekommen, um sich um sie und ihren jüngeren Bruder Jeremy zu kümmern. Als der neue Mitschüler Stefan Salvatore auf der Bildfläche erscheint, weckt er sofort Elenas Interesse. Sie ahnt nicht, dass es sich bei Stefan um einen bereits jahrhundertealten Vampir handelt. Als dann noch Stefans älterer Bruder Damon auftaucht, der von Elena ebenfalls angezogen ist, überschlagen sich die Ereignisse. Stefan wird misstrauisch, denn er weiß, dass Damon nichts Gutes im Sinn hat. Elena wird in eine Welt hineingeworfen, von deren Existenz sie bislang nichts geahnt hat.",
+    "label": "Beliebte Serien",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/cJYLon9ejKJV7ua03ab8Tj9u067.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/aBkVgChtyyJaHyZh1gfd8DbzQon.jpg",
+    "trailer": "",
+    "tmdb": "tv/18165"
+   },
+   {
+    "title": "Der Herr der Ringe - Die zwei Türme",
+    "meta": "2002  ·  Film  ·  Abenteuer, Fantasy  ·  ★ 8,4",
+    "desc": "Der Weg der Gefährten hat sich geteilt. Ringträger Frodo und sein treuer Begleiter Sam treffen in den Bergen von Emyn Muil auf Gollum, dem einst Bilbo Beutlin den Einen Ring wegnahm. Gollums Versuch, den mächtigen Ring von Frodo zu stehlen, misslingt, doch die Hobbits bringen es nicht übers Herz, die Kreatur zu töten. Stattdessen soll Gollum die beiden nach Mordor an die Pforten von Barad-Dûr, Saurons Festung, führen, wo Frodo den Ring vernichten will. Währenddessen folgen Aragorn, Elben-Bogenschütze Legolas und Zwerg Gimli den Spuren der von Orks verschleppten Hobbits. Im Menschenkönigreich Rohan ersuchen sie Unterstützung. Doch König Theoden steht unter einem tödlichen Bann Saurons. Erst als Gandalf als wiedergeborener weißer Zauberer zurückkehrt, wendet sich das Blatt. Er befreit Theoden von dem Fluch und bringt die Menschen von Rohan hinter sich. Unterdessen rückt Saurons Verbündeter Saruman mit einer 10.000 Mann starken Armee von Uruk-hais in RIchtung der Menschenstadt vor...",
+    "label": "Bestbewertete Filme",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/6G73mNyooWAEQTpckPSnFxFoNmc.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/tgBCeAjPwXeUaf8LsRL0LzBIcdR.jpg",
+    "trailer": "",
+    "tmdb": "movie/121"
+   },
+   {
+    "title": "Off Campus",
+    "meta": "2026  ·  Serie  ·  Drama  ·  ★ 8,8",
+    "desc": "Hannah Wells gibt Eishockey-Kapitän Garrett Graham Nachhilfe, um ihren Schwarm zu erobern. Doch aus ihrem Deal entsteht eine echte Verbindung, während sich beide ihrer Vergangenheit stellen. Zusammen mit ihren Freunden Logan, Dean, Tucker und Allie navigieren sie durch das Chaos aus College-Leben und Liebe.",
+    "label": "Bestbewertete Serien",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/3ANXZWhhcqPAh0q6nRZ979TIwxC.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/tcPc5ZMBO4y2BtCJMe3o2nwZb2B.jpg",
+    "trailer": "",
+    "tmdb": "tv/273240"
+   },
+   {
+    "title": "The Last Sunrise",
+    "meta": "2026  ·  Film  ·  Liebesfilm, Drama  ·  ★ 6,9",
+    "desc": "Basierend auf dem beliebten Roman erzählt \"The Last Sunrise\" die Geschichte von Ry, einer chronisch kranken Studentin, die einen Sommerurlaub auf Mallorca mit ihrer Mutter verbringt. Als sie sich in Julián verliebt und lernt, im Moment zu leben, drohen ihr Gesundheitszustand und lang gehegte Familiengeheimnisse vor Sommerende alles zu zerstören.",
+    "label": "Heute empfohlen: Liebesfilm",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/zFCWfU2ViMIm38G1W8UsnSpqmWn.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/3PWJqDfygN0YNNjWsDUOXclCp3h.jpg",
+    "trailer": "",
+    "tmdb": "movie/1516698"
+   },
+   {
+    "title": "Campus Drivers",
+    "meta": "2026  ·  Serie  ·  Drama  ·  ★ 7,8",
+    "desc": "Loïs kommt mit Max, der Liebe ihres Lebens, in Belrose an. Lane, der Entwickler von \"Campus Drivers\", der angesagtesten App auf dem Campus, ist dafür bekannt, dass er sich auf niemanden einlässt. Ihre Wege hätten sich nie kreuzen sollen. Doch manche Begegnungen verändern alles und reißen alte Wunden wieder auf. Und wenn die Liebe unerwartet aufflammt, ist nichts mehr sicher.",
+    "label": "Neue Folgen bei Prime Video",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/oaWJm4brEMSWBmQIB73DFxsU683.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/oPltcyfWWfVmxB6lV8JZZJV3m7Q.jpg",
+    "trailer": "https://www.youtube.com/watch?v=xybsbjGt1KA",
+    "tmdb": "tv/303044"
+   },
+   {
+    "title": "The Mongoose",
+    "meta": "2026  ·  Film  ·  Action, Thriller  ·  ★ 6,2",
+    "desc": "Ein fälschlicherweise beschuldigter Kriegsheld, der nichts zu verlieren hat, führt die Polizei auf eine epische, im Fernsehen übertragene Verfolgungsjagd, unterstützt von Mitgliedern seines ehemaligen Bataillons der Spezialeinheiten der Armee und von einem faszinierten Publikum, das seine sichere Flucht anfeuert, genau beobachtet.",
+    "label": "Neue Filme bei Prime Video",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/bySCyjQXNPgsnLTlgJpSMnRazPD.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/nNMAZ9d83p5xjgPDVMoTMbxXjrc.jpg",
+    "trailer": "https://www.youtube.com/watch?v=t_027RPU0L4",
+    "tmdb": "movie/1294189"
+   },
+   {
+    "title": "Inception",
+    "meta": "2010  ·  Film  ·  Action, Science Fiction  ·  ★ 8,4",
+    "desc": "Beim Versuch in das Unterbewusstsein des Industriellen Saito einzudringen, stoßen Cobb und seine Mitstreiter auf unerwartete Schwierigkeiten. Saito hatte Verteidigungsstrategien gegen den Gedankendiebstahl trainiert und baut nun einen Abwehrriegel auf, doch erst der Verrat eines Kollegen lässt den Versuch scheitern, dem Schlafenden Geheimnisse zu entlocken. Da seine Auftraggeber unbedingten Erfolg gefordert hatten, muss Cobb, der auf Grund einer drohenden Verurteilung nicht mehr in die USA zurück kann, fliehen, doch Saito kommt ihm zuvor. Allerdings nicht um ihn zu bestrafen, sondern um ihm einen Deal vorzuschlagen.",
+    "label": "Gerade angesagt",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/8ZTVqvKDQ8emSGUEMjsS4yHAwrp.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/t5WUY5ZSxwVIVExaMZmmIj88BKA.jpg",
+    "trailer": "",
+    "tmdb": "movie/27205"
+   },
+   {
+    "title": "The Mentalist",
+    "meta": "2008  ·  Serie  ·  Krimi, Drama  ·  ★ 8,4",
+    "desc": "Der Job des charismatischen Ex-TV-Show-Stars Patrick Jane innerhalb des California Bureau of Investigation ist es, die Ermittlungen einer Spezialeinheit zu unterstützen. Jane, der seine Karriere als \"Mentalist\" mit vermeintlich übersinnlichen Fähigkeiten nach einer familiären Tragödie beendete, besitzt eine unvergleichliche Beobachtungsgabe und verblüffende Kombinationsfähigkeiten.",
+    "label": "Beliebte Serien",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/rJFqKcmMSttdNP58l0dVzY2NcTA.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/4GrRdnfrxNZw5hr2OA4NGZfxX3U.jpg",
+    "trailer": "",
+    "tmdb": "tv/5920"
+   },
+   {
+    "title": "Zurück in die Zukunft",
+    "meta": "1985  ·  Film  ·  Abenteuer, Komödie  ·  ★ 8,3",
+    "desc": "Der Teenager Marty McFly wird mit der Zeitmaschine seines Freundes, dem skurrilen Wissenschaftler Dr. Emmett Brown, versehentlich ins Jahr 1955 geschleudert. Dort verhindert er zunächst unabsichtlich, dass sich seine zukünftigen Eltern kennen lernen und in einander verlieben, womit er seine eigene Zeugung gefährdet. Zu allem Überfluss verguckt sich seine Mutter auch noch in ihn. Ihm bleibt nun eine Woche Zeit, seinen tollpatschigen Vater mit seiner Mutter zu verkuppeln und gemeinsam mit Docs dreißig Jahre jüngerem alter Ego einen Plan zu entwickeln, wie sie das bevorstehende große Gewitter nutzen können, um ihn in die Gegenwart zurück zu schicken.",
+    "label": "Bestbewertete Filme",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/5bzPWQ2dFUl2aZKkp7ILJVVkRed.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/i9cmMivQ8cgTYUjfrzznsFJ0GYg.jpg",
+    "trailer": "",
+    "tmdb": "movie/105"
+   },
+   {
+    "title": "Avatar - Der Herr der Elemente",
+    "meta": "2005  ·  Serie  ·  Animation, Action & Adventure  ·  ★ 8,8",
+    "desc": "Im Mittelpunkt von „Avatar: Der Herr der Elemente“ steht der zwölfjährige Aang, der in einer von der Feuernation beherrschten asiatischen Fantasy-Welt lebt. Aang ist nicht nur der letzte Luftbändiger, sondern auch der Avatar, der Herr über alle Elemente. Er ist derjenige, der eigentlich Wasser, Erde, Luft und Feuer beherrschen sollte. Doch der Avatar war 100 Jahre lang in einem Gletscher am Südpol eingefroren, und während dieser Zeit ist die Feuernation ihrem Ziel der totalen Weltherrschaft immer näher gekommen. Erst als Aang von Katara, einer Wasserbändigerin, und deren Bruder Sokka aus dem ewigen Eis befreit wird, hat er eine Chance, seine Mission zu erfüllen: Er muss die aus den Fugen geratene Welt retten und die Balance der Elemente wiederherstellen. Eine große Herausforderung für einen Zwölfjährigen – schließlich muss er noch Vieles lernen.",
+    "label": "Bestbewertete Serien",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/7oBGhqJIghRBvOwo5Qe0yM0cnMc.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/wGAz0skYHUOB8LzZLtVcMjOAOZz.jpg",
+    "trailer": "",
+    "tmdb": "tv/246"
+   },
+   {
+    "title": "Die theoretische Unwahrscheinlichkeit von Liebe",
+    "meta": "2026  ·  Film  ·  Liebesfilm, Komödie  ·  ★ 7,8",
+    "desc": "Olive, eine Doktorandin, küsst spontan den einschüchterndsten Professor ihres Fachbereichs, Adam Carlsen. Ihr gemeinsames Bedürfnis nach einer Scheinbeziehung wird zum chemischen Experiment, das womöglich die Formel für die Liebe liefert.",
+    "label": "Heute empfohlen: Liebesfilm",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/o7Oy9Gbx1CCyaweL8xUhtMW4Puq.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/jJjyJUT5uASrZ5BGRBf0DwTZIhh.jpg",
+    "trailer": "",
+    "tmdb": "movie/1032863"
+   },
+   {
+    "title": "Undercover-Liebe",
+    "meta": "2026  ·  Serie  ·  Komödie, Drama  ·  ★ 9,0",
+    "desc": "Yoon Yi-jun, der Erbe der Taekang-Gruppe, ist der Hauptverdächtige in einem Mordfall. Um die Wahrheit aufzudecken, schleust sich Kang Jae-hee als männlicher Sekretär ein. Doch je näher sie der Wahrheit kommen, desto näher kommen sich auch Yi-jun und Jae-hee. Werden Jae-hee, die ihre wahre Identität verbirgt, und Yi-jun, der ein Geheimnis hütet, einander ihre wahren Gefühle offenbaren?",
+    "label": "Neue Folgen bei Prime Video",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/ob7m6JqZ7jSOocR3VL73VxRC6Is.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/fFcn3MngCVaQ19kAraXgmIOshN0.jpg",
+    "trailer": "",
+    "tmdb": "tv/303745"
+   },
+   {
+    "title": "Drive – The Pretenders",
+    "meta": "2026  ·  Film  ·  Liebesfilm, Thriller  ·  ★ 7,6",
+    "desc": "Eine junge Rennwagen-Mechanikerin täuscht eine Verlobung mit dem skandalträchtigsten Racing-Star der Szene vor – offiziell für seinen Ruf, insgeheim für ihre eigene Chance am Steuer. Doch bald droht die Lüge alles zu zerstören, auch das, was längst mehr ist als nur ein Spiel.",
+    "label": "Neue Filme bei Prime Video",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/hbz4aeVsjnKb2HRoFbbr46Egh8y.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/o1amTBOej7F2wdrTSKzGE6eG2CT.jpg",
+    "trailer": "",
+    "tmdb": "movie/1596275"
+   },
+   {
+    "title": "Harry Potter und der Stein der Weisen",
+    "meta": "2001  ·  Film  ·  Abenteuer, Fantasy  ·  ★ 7,9",
+    "desc": "Harry Potter erfährt an seinem 11. Geburtstag, dass seine verstorbenen Eltern mächtige Zauberer waren und auch er selbst magische Kräfte besitzt. Als er von Hogwarts, der Schule für Hexerei und Zauberei, aufgenommen wird, erlebt Harry das Abenteuer seines Lebens. Er lernt Quidditch, das hoch in der Luft gespielt wird, und auf dem Weg, sich einem schwarzen Magier zu stellen, der ihn vernichten will, muss Harry eine spannende Schachpartie mit lebenden Figuren überstehen…",
+    "label": "Gerade angesagt",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/bfh9Z3Ghz4FOJAfLOAhmc3ccnHU.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/nKspzM3rVJASkT4CvZvuj9KDT7l.jpg",
+    "trailer": "",
+    "tmdb": "movie/671"
+   },
+   {
+    "title": "The Flash",
+    "meta": "2014  ·  Serie  ·  Drama, Sci-Fi & Fantasy  ·  ★ 7,7",
+    "desc": "Barry Allen ist ein junger kriminaltechnischer Ermittler, der nach Starling kommt, um eine Reihe von Überfällen zu untersuchen, die mit einer Tragödie in seiner Vergangenheit zusammenhängen könnten. Dabei triftt er auf den maskierten Helden Arrow und wird selbst zum kostümierten Kämpfer für das Gute",
+    "label": "Beliebte Serien",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/gFkHcIh7iE5G0oVOgpmY8ONQjhl.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/yZevl2vHQgmosfwUdVNzviIfaWS.jpg",
+    "trailer": "",
+    "tmdb": "tv/60735"
+   },
+   {
+    "title": "Miracle in Cell No. 7",
+    "meta": "2019  ·  Film  ·  Drama  ·  ★ 8,2",
+    "desc": "Als Hirte führt Memo Anfang der 1980er-Jahre ein bescheidenes aber glückliches Leben zusammen mit seiner Mutter und seiner sechsjährigen Tochter Ova in einem kleinen Dorf der Agäis-Region. Von den Unruhen des Staatsstreichs bekommen sie in der Einöde nichts mit. Das unbescholtene Leben nimmt ein jähes Ende, als dem Familienvater eines Tages der Tod der Tochter eines Militärangehörigen zu Last gelegt wird. Ihm wird der Prozess gemacht, er wird zum Tode verurteilt und in Zelle Sieben des Gefängnisses gesteckt. Die Aussichten, dass der geistig behinderte Mann das Leben in dieser Zelle überleben wird, stehen schlecht. Obwohl ihn die anderen Insassen anfangs nicht gut behandeln, stellen sie bald fest, dass Memo kein schlechter Mensch ist, und sind immer mehr davon überzeugt, dass so jemand wie er, keinen Mord begehen kann.",
+    "label": "Bestbewertete Filme",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/inEy3A5OPgeYW4rjRiGycfEeQzA.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/sOfUbzu6OUL5cscGODPdpHn9C1g.jpg",
+    "trailer": "",
+    "tmdb": "movie/637920"
+   },
+   {
+    "title": "Attack on Titan",
+    "meta": "2013  ·  Serie  ·  Animation, Sci-Fi & Fantasy  ·  ★ 8,7",
+    "desc": "In 2000 Jahren lebt die Menschheit – oder das, was davon übrig ist – hinter 50 Meter hohen, gewaltigen Mauern. Diese Festung verspricht Sicherheit, doch wer sich nach draußen wagt, kehrt selten unversehrt zurück. Denn die Welt wird von riesigen Titanen beherrscht, die anscheinend nur ein Ziel haben: Menschen zu fressen! Als eines Tages ein Exemplar von ungeheuren Ausmaßen über die Mauer blickt, ahnen die Einwohner von Shiganshina schnell, dass ihrem Dorf nach hundert Jahren des Friedens erneut eine Katastrophe bevorsteht. Doch während sich die meisten hilflos ihrem Schicksal ergeben, schwört der junge Eren Jäger Rache. Eines Tages wird er die Welt jenseits der Mauern entdecken und die Titanen allesamt vernichten!",
+    "label": "Bestbewertete Serien",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/rqbCbjB19amtOtFQbb3K2lgm2zv.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/qlbcGr0EYKRICD0MTrIwnIztQna.jpg",
+    "trailer": "",
+    "tmdb": "tv/1429"
+   },
+   {
+    "title": "Culpa Mia - Meine Schuld",
+    "meta": "2023  ·  Film  ·  Drama, Liebesfilm  ·  ★ 7,7",
+    "desc": "Noah muss ihre Stadt, ihren Freund und ihre Freunde hinter sich lassen und in die Villa des neuen reichen Ehemanns ihrer Mutter ziehen. Dort lernt sie Nick, ihren neuen Stiefbruder, kennen. Sie verlieben sich heimlich unsterblich ineinander.",
+    "label": "Heute empfohlen: Liebesfilm",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/oz4U9eA6ilYf1tyiVuGmkftdLac.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/slzaPwGjl1eejJQYDVykq3UWK9M.jpg",
+    "trailer": "",
+    "tmdb": "movie/1010581"
+   },
+   {
+    "title": "THE TERMINAL LIST – DIE ABSCHUSSLISTE",
+    "meta": "2022  ·  Serie  ·  Action & Adventure, Drama  ·  ★ 8,0",
+    "desc": "Lt. Commander James Reece sinnt auf Rache, als er die mysteriösen Kräfte untersucht, die hinter dem Mord an seinem gesamten Zug stecken. Frei von der Kommandostruktur des Militärs wendet Reece die Lektionen an, die er in fast zwei Jahrzehnten Kriegsführung gelernt hat, um die Verantwortlichen zur Strecke zu bringen.",
+    "label": "Neue Folgen bei Prime Video",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/2qS2LGqsAyT1NEDeIj24Hp2IR10.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/unrIQnCLVtImAy9r58r0VqPMHfx.jpg",
+    "trailer": "",
+    "tmdb": "tv/120911"
+   },
+   {
+    "title": "Fall 2: Deadpoint",
+    "meta": "2026  ·  Film  ·  Thriller  ·  ★ 7,2",
+    "desc": "Während eines gefährlichen Aufstiegs am thailändischen Mount Kwan sitzen zwei Kletterer in schwindelerregender Höhe fest; dort machen die enorme Tiefe, die völlige Ausgesetztheit und die schier aussichtslosen Umstände jeden Augenblick zu einem Kampf ums Überleben.",
+    "label": "Neue Filme bei Prime Video",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/nGau0KBOaRILSK5MqFcuTfv7GMl.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/fgSm5ylwiXbIHn8UbUXDjk9RRu4.jpg",
+    "trailer": "",
+    "tmdb": "movie/1101412"
+   },
+   {
+    "title": "Der Herr der Ringe - Die Gefährten",
+    "meta": "2001  ·  Film  ·  Abenteuer, Fantasy  ·  ★ 8,5",
+    "desc": "Dem Hobbit Bilbo Beutlin fällt zufällig ein machtvoller Ring in die kleinen Hände. Dieses Schmuckstück erlaubte es dem finsteren Herrscher Sauron einst, die Welt zu unterjochen. Der Ring schien über Jahrhunderte verloren, bis Bilbo ihn an sich nahm und seinen „Schatz“ sechzig Jahre lang bewahrte. An seinem 111. Geburtstag gibt er ihn schweren Herzens an seinen Neffen Frodo weiter und verlässt seine Heimat Mittelerde. Für den jungen Hobbit Frodo wird der Ring jedoch zur schweren Bürde. Der böse Geist Saurons, der in dem „Einen“ gefangen ist, wird immer stärker. Frodo bleibt nur eine Möglichkeit: Er muss ihn vernichten. Allerdings ist das nicht gerade einfach. Nur in den ewigen Feuern des Schicksalsberges im Lande Mordor, wo der Ring geschmiedet wurde, kann er auch vernichtet werden. Doch bis dahin muss Frodo an der Seite des Zauberers Gandalf und seiner Gefährten durch Feindesland ziehen, immer verfolgt von Saurons Lakaien …",
+    "label": "Gerade angesagt",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/oiwc338EoBgS4sEI2ixAny4KQKg.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/k6lw7hhaMDzJ170bfZfBbnipxcW.jpg",
+    "trailer": "",
+    "tmdb": "movie/120"
+   },
+   {
+    "title": "The 100",
+    "meta": "2014  ·  Serie  ·  Sci-Fi & Fantasy, Action & Adventure  ·  ★ 7,9",
+    "desc": "Vor 97 Jahren wurde der Planet Erde bei einer nuklearen Katastrophe fast vollständig zerstört und die gesamte Menschheit ausgelöscht – bis auf 400 Bewohner internationaler Raumstationen. Nun wurde bereits die dritte Generation geboren, was die Mitgliederzahl auf 2.700 anwachsen lässt und somit zur Ressourcenknappheit führt. Drakonische Maßnahmen sind die Folge, und so werden 100 jugendliche Sträflinge zurück auf die Erde verbannt um zu testen, ob diese mittlerweile wieder bewohnbar ist …",
+    "label": "Beliebte Serien",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/8ZerYKvIaNUJZvAHXYTQu4qTwFw.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/f8SQDuoCrBChfCw3tKEsyoqmqoY.jpg",
+    "trailer": "",
+    "tmdb": "tv/48866"
+   },
+   {
+    "title": "Gladiator",
+    "meta": "2000  ·  Film  ·  Action, Drama  ·  ★ 8,2",
+    "desc": "Der gefeierte römische Feldherr Maximus wird vom sterbenden Kaiser Marcus Aurelius gebeten, seine Nachfolge anzutreten. Um dies zu verhindern, tötet Aurelius’ Sohn seinen Vater und ordnet die Exekution von Maximus und seiner Familie an. Maximus gelingt die Flucht. Verwundet wird er von einem Sklavenhändler gefangen genommen und muss sich fortan als Gladiator beweisen. Als Kampfmaschine hat er schließlich nur noch ein Ziel: Rache an seinem Peiniger zu nehmen …",
+    "label": "Bestbewertete Filme",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/Ar7QuJ7sJEiC0oP3I8fKBKIQD9u.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/32wJunadteAxUkXnbQ1lHjjp5pa.jpg",
+    "trailer": "",
+    "tmdb": "movie/98"
+   },
+   {
+    "title": "Du+Ich - Allein gegen alle",
+    "meta": "2026  ·  Film  ·  Liebesfilm, Drama  ·  ★ 5,5",
+    "desc": "Die 18-jährige Alma Lancaster scheint ein perfektes Leben zu führen. Sie stammt aus einer wohlhabenden Familie, die überzeugt ist, dass sie Jura studiert. Doch heimlich verfolgt Alma ihre wahre Leidenschaft, die des Filmedrehens. An der Universität begegnet sie Vadim Arcadi, einem verschlossenen Studenten, mit dem sie gezwungen ist, ein Studentenfilm zu produzieren.",
+    "label": "Heute empfohlen: Liebesfilm",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/nkEhDomjmPHJSA4Tx8pxv0NlKEy.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/mxvceFo19LhLyGd0gZu2egFmKYz.jpg",
+    "trailer": "",
+    "tmdb": "movie/1641629"
+   },
+   {
+    "title": "LEGO Ninjago: Aufstieg der Drachen",
+    "meta": "2023  ·  Serie  ·  Animation, Action & Adventure  ·  ★ 8,1",
+    "desc": "Um Drachen vor Bösewichten zu retten, die ihre Lebenskraft rauben wollen, setzen zwei Jugendliche aus verschiedenen Welten ihre neu entdeckten Ninja-Kräfte ein.",
+    "label": "Neue Folgen bei Prime Video",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/4vubgrPvqDKNFP1kNvHpd3do9hd.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/6EFYy5JAwYeQx3t5vj1XuibjQlS.jpg",
+    "trailer": "",
+    "tmdb": "tv/212989"
+   },
+   {
+    "title": "Masterplan",
+    "meta": "2026  ·  Film  ·  Action, Thriller  ·  ★ 6,7",
+    "desc": "Ein Meisterdieb hat es auf die Mona Lisa abgesehen. Für den Coup rekrutiert er zwei Fremde: die italienische Cyber-Expertin Chiara und den französischen Sprengstoffspezialisten Jay. Dann offenbart er ihnen, ihr Vater zu sein. Die neuen Familienmitglieder müssen lernen, zusammenzuarbeiten und sich nicht gegenseitig umzubringen, damit der Raub des Jahrhunderts gelingen kann.",
+    "label": "Neue Filme bei Prime Video",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/fAlQZsCOCvxOj0PmFmt4i8IWR2u.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/5xmXVd7nCK3tAo34XkO58SxUCip.jpg",
+    "trailer": "",
+    "tmdb": "movie/1561726"
+   }
+  ]
+ },
+ "wow": {
+  "label": "WOW",
+  "source": "Daten: TMDB · JustWatch",
+  "items": [
+   {
+    "title": "SV Darmstadt 98 – 1. FC Heidenheim 1846",
+    "meta": "2. Bundesliga  ·  Fr 18:30 Uhr",
+    "desc": "Live bei WOW.",
+    "label": "Live-Sport bei WOW",
+    "images": [],
+    "utc": "2026-11-20T17:30:00Z"
+   },
+   {
+    "title": "DSC Arminia Bielefeld – 1. FC Magdeburg",
+    "meta": "2. Bundesliga  ·  Fr 18:30 Uhr",
+    "desc": "Live bei WOW.",
+    "label": "Live-Sport bei WOW",
+    "images": [],
+    "utc": "2026-11-20T17:30:00Z"
+   },
+   {
+    "title": "FC Bayern München – 1. FC Köln",
+    "meta": "Bundesliga  ·  Fr 20:30 Uhr",
+    "desc": "Live bei WOW.",
+    "label": "Live-Sport bei WOW",
+    "images": [],
+    "utc": "2026-11-20T19:30:00Z"
+   },
+   {
+    "title": "VfL Wolfsburg – Holstein Kiel",
+    "meta": "2. Bundesliga  ·  Sa 13:00 Uhr",
+    "desc": "Live bei WOW.",
+    "label": "Live-Sport bei WOW",
+    "images": [],
+    "utc": "2026-11-21T12:00:00Z"
+   },
+   {
+    "title": "Hannover 96 – SpVgg Greuther Fürth",
+    "meta": "2. Bundesliga  ·  Sa 13:00 Uhr",
+    "desc": "Live bei WOW.",
+    "label": "Live-Sport bei WOW",
+    "images": [],
+    "utc": "2026-11-21T12:00:00Z"
+   },
+   {
+    "title": "1. FC Nürnberg – Eintracht Braunschweig",
+    "meta": "2. Bundesliga  ·  Sa 13:00 Uhr",
+    "desc": "Live bei WOW.",
+    "label": "Live-Sport bei WOW",
+    "images": [],
+    "utc": "2026-11-21T12:00:00Z"
+   },
+   {
+    "title": "Bayer 04 Leverkusen – SC Paderborn 07",
+    "meta": "Bundesliga  ·  Sa 15:30 Uhr",
+    "desc": "Live bei WOW.",
+    "label": "Live-Sport bei WOW",
+    "images": [],
+    "utc": "2026-11-21T14:30:00Z"
+   },
+   {
+    "title": "Eintracht Frankfurt – TSG Hoffenheim",
+    "meta": "Bundesliga  ·  Sa 15:30 Uhr",
+    "desc": "Live bei WOW.",
+    "label": "Live-Sport bei WOW",
+    "images": [],
+    "utc": "2026-11-21T14:30:00Z"
+   },
+   {
+    "title": "1. FC Union Berlin – RB Leipzig",
+    "meta": "Bundesliga  ·  Sa 15:30 Uhr",
+    "desc": "Live bei WOW.",
+    "label": "Live-Sport bei WOW",
+    "images": [],
+    "utc": "2026-11-21T14:30:00Z"
+   },
+   {
+    "title": "Borussia Mönchengladbach – Borussia Dortmund",
+    "meta": "Bundesliga  ·  Sa 15:30 Uhr",
+    "desc": "Live bei WOW.",
+    "label": "Live-Sport bei WOW",
+    "images": [],
+    "utc": "2026-11-21T14:30:00Z"
+   },
+   {
+    "title": "SV 07 Elversberg – SC Freiburg",
+    "meta": "Bundesliga  ·  Sa 15:30 Uhr",
+    "desc": "Live bei WOW.",
+    "label": "Live-Sport bei WOW",
+    "images": [],
+    "utc": "2026-11-21T14:30:00Z"
+   },
+   {
+    "title": "FC Schalke 04 – VfB Stuttgart",
+    "meta": "Bundesliga  ·  Sa 18:30 Uhr",
+    "desc": "Live bei WOW.",
+    "label": "Live-Sport bei WOW",
+    "images": [],
+    "utc": "2026-11-21T17:30:00Z"
+   },
+   {
+    "title": "LEGO Ninjago: Aufstieg der Drachen",
+    "meta": "2023  ·  Serie  ·  Animation, Action & Adventure  ·  ★ 8,1",
+    "desc": "Um Drachen vor Bösewichten zu retten, die ihre Lebenskraft rauben wollen, setzen zwei Jugendliche aus verschiedenen Welten ihre neu entdeckten Ninja-Kräfte ein.",
+    "label": "Neue Folgen bei WOW",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/4vubgrPvqDKNFP1kNvHpd3do9hd.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/6EFYy5JAwYeQx3t5vj1XuibjQlS.jpg",
+    "trailer": "https://www.youtube.com/watch?v=8bCTifHJhYY",
+    "tmdb": "tv/212989"
+   },
+   {
+    "title": "Michael",
+    "meta": "2026  ·  Film  ·  Musik, Drama  ·  ★ 8,6",
+    "desc": "Der junge Michael Jackson wird als achtes von zehn Kindern unter der strengen Führung seines Vaters Joe früh für eine Musikkarriere gedrillt wird. Mit der Familienband Jackson Five feiert er erste Erfolge, im Alter von 13 Jahren startet er bereits die Solokarriere. Auch im Erwachsenenalter ist sein Leben von der Musik dominiert. Ende der 1970er-Jahre lernt er bei Filmarbeiten Diana Ross und den Produzenten Quincy Jones kennen, was seine musikalische Ausrichtung grundlegend verändert. Das von Jones produzierte Album \"Off the Wall\" (1979) wird ein großer Erfolg, der 1982 durch die bahnbrechende und meistverkaufte Platte \"Thriller\" noch übertroffen wird. Parallel zu diesem Aufstieg kommt es zum Bruch mit seinem Vater Joe, den Jackson als Manager entlässt und durch den Anwalt John Branca ersetzt.",
+    "label": "Neue Filme bei WOW",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/ufSwlnECLoUbBjPrFqEQcWBzHwc.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/uEk5QnmWN8t8t0rZ8gvOITg2yuR.jpg",
+    "trailer": "https://www.youtube.com/watch?v=FAIDTS_yU_Y",
+    "tmdb": "movie/936075"
+   },
+   {
+    "title": "Shadow Chase - Im Netz der Diebe",
+    "meta": "2025  ·  Film  ·  Action, Krimi  ·  ★ 8,4",
+    "desc": "Wong Tak-chung ist ein pensionierter Überwachungsexperte der Polizei von Macau. Als eine Gangsterbande die Hafenstadt terrorisiert, sind seine ehemaligen Chefs allerdings am verzweifeln, weil seine Nachfolger den Verbrechern einfach nichts nachweisen können. Deshalb wird Wong aus dem Ruhestand zurück in den Dienst beordert. Gemeinsam mit einem Team junger Ermittler, die mit modernster Technologie arbeiten, nimmt der Veteran sich des Falles an, verlässt sich dabei aber lieber weiterhin auf traditionelle Methoden und seine Old-School-Ausrüstung. Dass die Kollaboration zwischen Alt und Jung, abgebrüht und nassforsch nicht gerade reibungslos abläuft, ist glücklicherweise nur ein kleines Hindernis. Denn schnell stellen sich erste Ergebnisse ein. Als Fu Long-sheng, der Boss der Verbrecher, und sein psychopathischer Sohn Hu Feng bemerken, dass Wong und sein Team ihnen auf der Spur sind, gehen sie zum Frontalangriff auf die Cops über, die nun kompromisslos zusammenhalten müssen.",
+    "label": "Gerade angesagt",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/4BtL2vvEufDXDP4u6xQjjQ1Y2aT.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/5Jyh6FeadADzRSzGrjbmjkNzIFw.jpg",
+    "trailer": "",
+    "tmdb": "movie/1419406"
+   },
+   {
+    "title": "Law & Order: Special Victims Unit",
+    "meta": "1999  ·  Serie  ·  Krimi, Drama  ·  ★ 8,0",
+    "desc": "Bei Polizei und Staatsanwaltschaft gelten Sexualverbrechen als besonders abscheulich. In New York City gehören die engagierten Detectives, die in diesen brutalen Fällen ermitteln, zur Sondereinheit für Sexualdelikte. Dies sind ihre Geschichten. Innerhalb der New Yorker Polizei gibt es eine Sondereinheit, die Special Victims Unit. Die Fälle, die das SVU untersucht, beschränken sich ausschließlich auf Sexualdelikte und Verbrechen an Kindern",
+    "label": "Beliebte Serien",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/xhK9YCxNwnE0OB1SWvCY39heHQI.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/pHNhUwSXuDQ9jPZOCb8SgJaQZsc.jpg",
+    "trailer": "",
+    "tmdb": "tv/2734"
+   },
+   {
+    "title": "Der Soldat James Ryan",
+    "meta": "1998  ·  Film  ·  Kriegsfilm, Drama  ·  ★ 8,2",
+    "desc": "Aus der Sicht einer Einheit amerikanischer Soldaten beginnt der Film am Tag der historischen D-Day-Invasion des 2. Weltkrieges mit der Landung am Strand. Von hier aus startet die Einheit zu einem gefährlichen Sonderauftrag: Captian John Miller muss mit seinen Männern hinter die feindlichen Linien dringen, um den Gefreiten James Ryan zu finden, dessen drei Brüder auf dem Schlachtfeld gestorben sind. Angesichts dieser schier unlösbaren Aufgabe beginnen die Männer an ihren Befehlen zu zweifeln. Warum acht Leben riskieren, um eines zu retten ? Umgeben von der brutalen Realität des Krieges sucht jeder nach seiner eigenen Antwort. Und sie suchen nach der Stärke, über die unsichere Zukunft mit Ehre, Anstand und Mut zu triumphieren.",
+    "label": "Bestbewertete Filme",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/rW2xRFlJRbTnBJlQTSjQmjevIwb.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/g0QGqHG2fjaIyWLtKWMqleGD27o.jpg",
+    "trailer": "",
+    "tmdb": "movie/857"
+   },
+   {
+    "title": "Chernobyl",
+    "meta": "2019  ·  Serie  ·  Drama  ·  ★ 8,7",
+    "desc": "Im April 1986 kommt es im ukrainischen Atommeiler Tschernobyl zu einer katastrophalen Kernschmelze. Feuerwehr und Ersthelfer geben alles, um den Unglücksort zu sichern und die Folgen des Ereignisses einzudämmen - doch diese sind weitreichend.",
+    "label": "Bestbewertete Serien",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/900tHlUYUkp7Ol04XFSoAaEIXcT.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/VSo72IlEI8TUI8Z6NWgLcINjWT.jpg",
+    "trailer": "",
+    "tmdb": "tv/87108"
+   },
+   {
+    "title": "Little Women",
+    "meta": "2019  ·  Film  ·  Drama, Liebesfilm  ·  ★ 7,9",
+    "desc": "Die vier March-Schwestern Jo, Meg, Amy und Beth wachsen Mitte des 19. Jahrhunderts in der von starren Geschlechterrollen dominierten Gesellschaft der Vereinigten Staaten auf. Je älter sie werden, desto mehr müssen sie einsehen, welche Hindernisse ihnen bei ihrer Selbstbehauptung als Frauen in den Weg gelegt werden. Gleichzeitig wird ihnen dadurch aber auch klar, wie sehr sie sich letzten Endes doch unterscheiden. Während die stolze Jo etwa Schriftstellerin werden will und das gesellschaftliche Rollendiktat der Ehefrau und Mutter verachtet, folgt Meg ihrem Herzen in die Heirat. Amy hingegen will ihre Einzigartigkeit durch die Malerei ausdrücken. In der Männerwelt werden die vier Frauen oft kritisch beäugt – mit Ausnahme des jungen Laurie, der sich für Jo interessiert.",
+    "label": "Heute empfohlen: Liebesfilm",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/lqxxwTRk0l7CubY6JkJdhnwJEkn.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/mj3FDGE6BTN0k5hRAE83yBQKXPr.jpg",
+    "trailer": "",
+    "tmdb": "movie/331482"
+   },
+   {
+    "title": "The Gilded Age",
+    "meta": "2022  ·  Serie  ·  Drama  ·  ★ 7,7",
+    "desc": "Marian Brook ist Spross einer alteingesessenen, konservativen Familie im New York der 1880er Jahre. Sie kommt mit einer Nachbarsfamilie in Kontakt, der der skrupellose Eisenbahn-Tycoon George Russell vorsteht. Dessen Sohn ist der schnittige und zugängliche Larry, daneben gehört die ehrgeizige Ehefrau Bertha zur Familie. Die Tatsache, dass die Russells eben erst „kürzlich“ zu ihrem Reichtum gekommen sind, bildet eine Barriere für den Einstieg in die höhere Gesellschaft, in der Familientradition groß geschrieben wird. Marian stößt in eine neue Welt vor, die sich direkt vor ihrer Haustür befindet.",
+    "label": "Neue Folgen bei WOW",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/afUVsProh46h31w2EvL7qyHXrqj.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/eTAHRmVSE0vdtpvjzxOiM5yuQhs.jpg",
+    "trailer": "https://www.youtube.com/watch?v=wKj1cMz3yfI",
+    "tmdb": "tv/81723"
+   },
+   {
+    "title": "Der Super Mario Galaxy Film",
+    "meta": "2026  ·  Film  ·  Familie, Komödie  ·  ★ 8,2",
+    "desc": "Die Brüder Mario und Luigi sowie Prinzessin Peach und Toad erleben ein neues Abenteuer. Geleitet von mysteriösen Sternkatapulten, reisen sie durch die Galaxie. Dabei landen sie auf verschiedenen Planeten, wo sie es mit einem neuen Gegner zu tun bekommen, aber auch auf neue Freunde treffen.",
+    "label": "Neue Filme bei WOW",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/kxQiIJ4gVcD3K6o14MJ72p5yRcE.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/lggrFZlEDu3kmic1DnZl9c6bcD9.jpg",
+    "trailer": "https://www.youtube.com/watch?v=Qt5NnNIAslY",
+    "tmdb": "movie/1226863"
+   },
+   {
+    "title": "Forrest Gump",
+    "meta": "1994  ·  Film  ·  Komödie, Drama  ·  ★ 8,5",
+    "desc": "Von seiner Mutter rückhaltlos unterstützt, macht sich der geistig ein wenig zurückgebliebene Forrest Gump in die Welt auf. Er bringt Elvis seinen Tanzstil bei, findet in der jungen Jenny eine echte Freundin, wird aufgrund seines Laufvermögens ein Football-Star, steht im Vietnamkrieg seinen Mann, rettet seinen Vorgesetzten Dan Taylor vor dem sicheren Tod und wird schließlich im Shrimps-Business zum Millionär. Doch all die Zeit kann er seine große Liebe Jenny nicht vergessen.",
+    "label": "Gerade angesagt",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/66Kn4XWhkuPkJxOJyPEx4U2CUfN.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/zUWRCzac72YuO9k5kEWSe0aGbs7.jpg",
+    "trailer": "",
+    "tmdb": "movie/13"
+   },
+   {
+    "title": "Navy CIS",
+    "meta": "2003  ·  Serie  ·  Krimi, Drama  ·  ★ 7,6",
+    "desc": "Der Naval Crime Investigative Service wird dann gerufen, wenn Verbrechen begangen werden, die gegen den Uniform Code of Military Justice verstoßen und innerhalb der Navy stattfinden. Das Hauptquartier befindet sich in Washington D.C. und steht unter der Leitung von Special Agent Leroy Jethro Gibbs. Er selbst ist ein Veteran aus dem Irak-Krieg und hat mit moderner Technik wenig zu tun. Aus diesem Grund ermittelt er gemeinsam mit einem Elite-Team, bestehend aus dem Ballistik-Experten Tony DiNozzo, dem Technikspezialisten Tim McGee, der Forensikspezialistin Abby Sciuto sowie dem Gerichtsmediziner Ducky Mallard.",
+    "label": "Beliebte Serien",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/rHKRZCBpDFSNc45kzyf665LJYp3.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/y4fGncqELtnvRQuwSpuH8LncZqU.jpg",
+    "trailer": "",
+    "tmdb": "tv/4614"
+   },
+   {
+    "title": "Django Unchained",
+    "meta": "2012  ·  Film  ·  Drama, Western  ·  ★ 8,2",
+    "desc": "Als das Sklavenpaar Django und seine Frau Broomhilda bei einer Auktion getrennt werden, hat Django nur noch ein Ziel vor Augen: seine Frau wiederzufinden. Die Gelegenheit ergibt sich für den in Fesseln Geschlagenen schneller als erwartet, als er vom früheren Zahnarzt und jetzigen Kopfgeldjäger Dr. Schultz befreit wird, damit er ihm bei der Identifikation steckbrieflich gesuchter Verbrecher behilflich sei. Zum Dank will Dr. Schultz ihn zum Kopfgeldjäger ausbilden und ihm helfen, seine Frau ausfindig zu machen. Schließlich führt Django und Dr. Schultz die Spur nach Candyland, wo Broomhilda in den Besitz des charismatischen und überaus gefährlichen Calvin Candie übergegangen ist. Sie erschleichen sich erfolgreich das Vertrauen von Candie. Doch der Haussklave Stephen durchschaut ihr Spiel…",
+    "label": "Bestbewertete Filme",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/2oZklIzUbvZXXzIFzv7Hi68d6xf.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/yK0qrQhi3BbOXvTNOBWHgpcbckZ.jpg",
+    "trailer": "",
+    "tmdb": "movie/68718"
+   },
+   {
+    "title": "Planet Erde II: Eine Erde - viele Welten",
+    "meta": "2016  ·  Serie  ·  Dokumentarfilm, Familie  ·  ★ 8,6",
+    "desc": "Planet Erde II nimmt uns näher mit heran als jemals zuvor, fängt überraschende Verhaltensweisen und außergewöhnliche Orte ein, die vor zehn Jahren unerreichbar gewesen sind. Zusätzlich widmet sich die Serie einem neuen Lebensraum: Zum ersten Mal legt eine richtungsweisende Naturdokumentation ihr Augenmerk in einer Episode auf die Großstadt und die verblüffenden Überlebensstrategien von Tieren im Großstadtdschungel.",
+    "label": "Bestbewertete Serien",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/1DYpBOVdb7Mzc9DgMCdIBTN1JEC.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/rsGM1tH5e18SYJPZozYODqWEXfl.jpg",
+    "trailer": "",
+    "tmdb": "tv/68595"
+   },
+   {
+    "title": "Liebe braucht keine Ferien",
+    "meta": "2006  ·  Film  ·  Komödie, Liebesfilm  ·  ★ 7,1",
+    "desc": "Sitzengelassen, Enttäuscht, Hintergangen. Das dürfte auf den ersten Blick wohl alles sein, was die urbane Medienfrau Amanda aus Los Angeles und die Londoner Journalistin Iris aus der englischen Provinz verbindet. Dennoch bringt sie die Suche nach absolut männerfreien Weihnachtsfeiertagen und zwei Wochen Erholung für den emotionalen Haushalt zusammen und auf die gleiche Lösung: ein Wohnungstausch auf Zeit. Sie tauschen die Seiten des Atlantiks, Häuser, Autos und irgendwie ihr Leben. Nur damit, dass der Tapetenwechsel auch für eine neue Liebe sorgt, hätten sie nie gerechnet. Neben der Begegnung mit regionalen Gepflogenheiten wartet so in England der unwiderstehliche Charme Grahams auf Amanda während Iris in Amerika von Miles' herzlichem Ungestüm verführt wird.",
+    "label": "Heute empfohlen: Liebesfilm",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/9Ebn8atCcGk5OZrx4xmoTobAxoh.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/8gKJOyPNVJ7FAZXftdzi1OjdCKI.jpg",
+    "trailer": "",
+    "tmdb": "movie/1581"
+   },
+   {
+    "title": "WAR",
+    "meta": "2026  ·  Serie  ·  Drama  ·  ★ 7,3",
+    "desc": "Zwei der renommiertesten rivalisierenden Kanzleien Londons – Cathcarts und Taylor & Byrne – stehen sich in der Scheidungsklage des Jahrhunderts gegenüber: Tech-Gigant Morgan Henderson und seine getrennt lebende Frau, die internationale Filmstar Carla Duval. Beide Seiten sind sich sicher, dass sie gewinnen werden. Doch als sich der Fall zuspitzt und Loyalitäten bröckeln, steht der Ruf aller Beteiligten auf dem Spiel, und jeder kämpft um den Sieg.",
+    "label": "Neue Folgen bei WOW",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/muPKymUvvBqjLCyGSacxKgjrhxN.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/AtCR5LMuvwepTi1kipKq878Rbuq.jpg",
+    "trailer": "https://www.youtube.com/watch?v=3pJGKhUxuNM",
+    "tmdb": "tv/298852"
+   },
+   {
+    "title": "Scream 7",
+    "meta": "2026  ·  Film  ·  Horror, Mystery  ·  ★ 6,2",
+    "desc": "Als in der beschaulichen Stadt, in der sich Sidney Prescott ein neues Leben aufgebaut hat, ein neuer Ghostface-Killer auftaucht, werden ihre schlimmsten Befürchtungen wahr: Ihre Tochter gerät ins Visier der Ermordung. Entschlossen, ihre Familie zu schützen, muss Sidney sich den Schrecken ihrer Vergangenheit stellen, um dem Blutvergießen ein für alle Mal ein Ende zu setzen.",
+    "label": "Neue Filme bei WOW",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/3eUyLEF5M0ky3h6KJsWiWzaakB8.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/5VhF4IxrieKUVBYZ5As4AVphsUH.jpg",
+    "trailer": "https://www.youtube.com/watch?v=hLOPtdjQgXw",
+    "tmdb": "movie/1159559"
+   },
+   {
+    "title": "Jurassic World: Die Wiedergeburt",
+    "meta": "2025  ·  Film  ·  Science Fiction, Abenteuer  ·  ★ 6,2",
+    "desc": "Fünf Jahre nach den Ereignissen von 'Jurassic World: Ein neue Zeitalter' wird die Spezialistin für verdeckte Operationen, Zora Bennett, auf eine streng geheime Mission geschickt: Sie soll genetisches Material von den drei größten Dinosauriern der Welt sichern. Doch als ihr Team auf eine Familie trifft, deren Boot bei einem Ausflug gekentert ist, stranden sie gemeinsam auf einer abgelegenen Insel. Dort stoßen sie auf eine finstere und schockierende Entdeckung, die jahrzehntelang vor der Menschheit verborgen blieb – und deren Geheimnis alles verändern könnte.",
+    "label": "Gerade angesagt",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/zNriRTr0kWwyaXPzdg1EIxf0BWk.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/uUGZdps8TesT34lPMfvTWuyZmZe.jpg",
+    "trailer": "",
+    "tmdb": "movie/1234821"
+   },
+   {
+    "title": "Law & Order",
+    "meta": "1990  ·  Serie  ·  Krimi, Drama  ·  ★ 7,3",
+    "desc": "Vertreter der Polizei und der Staatsanwaltschaft klären Kriminalverbrechen in und um New York auf. Mit allen zur Verfügung stehenden Mitteln versuchen die Ermittler dabei, den oder die Straftäter zur Verantwortung zu ziehen.",
+    "label": "Beliebte Serien",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/hrfP9BQ4mOMZOa8nHbFJLSDHBLz.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/hmd2tEtjolLWpNLCTvXS2PO5VCi.jpg",
+    "trailer": "",
+    "tmdb": "tv/549"
+   },
+   {
+    "title": "Jurassic Park",
+    "meta": "1993  ·  Film  ·  Abenteuer, Science Fiction  ·  ★ 8,0",
+    "desc": "John Hammond, ein reicher Unternehmer, errichtet auf einer einsamen Insel heimlich einen Erlebnispark, der für seine Gäste außergewöhnliche Attraktionen bereithält. Es ist gelungen, aus einer urzeitlichen DNA leibhaftige Dinosaurier ins Leben zu rufen. Bevor der Park für das Publikum geöffnet wird, lädt er einen führenden Paläontologen, dessen Freundin, eine Paläobotanikerin, einen berühmten Mathematiker und seine beiden wißbegierigen Enkel ein, um die besorgten Investoren zu beruhigen. Aber der Besuch seiner ersten Gäste verläuft alles andere als nach Plan. Die urzeitlichen Monster brechen aus, entziehen sich jeder Kontrolle und starten eine mörderische Jagd auf ihre Schöpfer ...",
+    "label": "Bestbewertete Filme",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/f082quUW2kAtZXFZVGEfhwacZoG.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/zgvLWNSKBrufJM8OAtVxJ2s7Nf8.jpg",
+    "trailer": "",
+    "tmdb": "movie/329"
+   },
+   {
+    "title": "Die fantastische Welt von Gumball",
+    "meta": "2011  ·  Serie  ·  Animation, Familie  ·  ★ 8,5",
+    "desc": "Der zwölfjährige Gumball ist ein blauer Kater, der mit seiner Familie und Freunden in der Kleinstadt Elmore lebt. Sein Vater Richard ist ein fettes, rosa Kaninchen und verheiratet mit Nicole, einer blauen Katze. Während Richard das Haus und die Kinder hütet, sorgt Familienoberhaupt Nicole mit ihrer Arbeit in der Regenbogenfabrik für den Unterhalt. Wenn Gumball wieder mal nur Streiche und Chaos im Kopf hat, ist es seine clevere vierjährige Schwester Anais, ein pinkes Häschen, die meistens eine Katastrophe abwenden kann. Gumballs bester Freund ist Darwin, ein zehnjähriger Goldfisch, der ursprünglich als Haustier zur Familie kam. Seit ihm Beine gewachsen sind, geht er mit Gumball in die Schule und wird wie das dritte Kind der Familie behandelt.",
+    "label": "Bestbewertete Serien",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/gmO3aezFgDcrhcymhNSJLGZ3CT.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/xyJFZiUrhlNLIAGCfgfPoTz2GU4.jpg",
+    "trailer": "",
+    "tmdb": "tv/37606"
+   },
+   {
+    "title": "Wie werde ich ihn los - in 10 Tagen?",
+    "meta": "2003  ·  Film  ·  Komödie, Liebesfilm  ·  ★ 6,9",
+    "desc": "Seltsame Voraussetzungen für eine Beziehung: die Journalistin Andie will Ben in zehn Tagen loswerden, weil sie einen Artikel darüber schreiben will, er hingegen hat gewettet, daß sie sich in zehn Tagen in ihn verliebt, und sollte er es schaffen, winkt dem Werbefachmann ein attraktiver Auftrag.",
+    "label": "Heute empfohlen: Liebesfilm",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/cdYj6HFpKp5NTmLiHHbNEGSmDT4.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/tbItaTxxZ0nLLWZQ6bASc4pYY43.jpg",
+    "trailer": "",
+    "tmdb": "movie/9919"
+   },
+   {
+    "title": "Fire Country",
+    "meta": "2022  ·  Serie  ·  Drama, Krimi  ·  ★ 8,0",
+    "desc": "Bode Donovan (Max Thieriot) ist ganz unten angekommen. Nach einem schweren Schicksalsschlag ist er auf die schiefe Bahn geraten, was ihn letztendlich hinter Gitter geführt hat. Das Einzige, was ihn jetzt noch retten kann: eine zweite Chance. Diese erhält er in Form eines Resozialisierungsprojekts der Feuerwehr, in welchem Häftlingen Strafverkürzung versprochen wird, wenn sie bei der hochgefährlichen Tätigkeit bewähren. Bode nimmt an dem Feuerweh-Programm Teil und kehrt kurzerhand in seine alte Heimatstadt Edgewater in Nordkalifornien zurück, um der erfahrenen Feuerwehr-Crew im Kampf gegen gefährliche Waldbrände zur Seite zu stehen. Kann er sich im Dienst beweisen und sich endlich den Schatten der Vergangenheit stellen?",
+    "label": "Neue Folgen bei WOW",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/r6jUY6q3ObYOeFFWxM7jemS7IWE.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/6XnA02VRG4dhBpTZWGZuXQdYGDW.jpg",
+    "trailer": "",
+    "tmdb": "tv/202297"
+   },
+   {
+    "title": "The Internship - Praktikum im Töten",
+    "meta": "2026  ·  Film  ·  Action  ·  ★ 6,4",
+    "desc": "Eine von der CIA ausgebildete Attentäterin rekrutiert andere Absolventen des geheimen Programms „The Internship“, dem auch sie angehörte und das Ihre Kindheit und die vieler anderer zerstört hat, um diese Organisation gewaltsam zu zerschlagen. Die CIA schlägt mit tödlicher Gewalt zurück.",
+    "label": "Neue Filme bei WOW",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/eUERZRVjCTNdgnESlQxyaOJ2d4K.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/swO8i4150zNjNpFESjHE28rN94M.jpg",
+    "trailer": "",
+    "tmdb": "movie/1584215"
+   },
+   {
+    "title": "Gladiator",
+    "meta": "2000  ·  Film  ·  Action, Drama  ·  ★ 8,2",
+    "desc": "Der gefeierte römische Feldherr Maximus wird vom sterbenden Kaiser Marcus Aurelius gebeten, seine Nachfolge anzutreten. Um dies zu verhindern, tötet Aurelius’ Sohn seinen Vater und ordnet die Exekution von Maximus und seiner Familie an. Maximus gelingt die Flucht. Verwundet wird er von einem Sklavenhändler gefangen genommen und muss sich fortan als Gladiator beweisen. Als Kampfmaschine hat er schließlich nur noch ein Ziel: Rache an seinem Peiniger zu nehmen …",
+    "label": "Gerade angesagt",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/Ar7QuJ7sJEiC0oP3I8fKBKIQD9u.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/32wJunadteAxUkXnbQ1lHjjp5pa.jpg",
+    "trailer": "",
+    "tmdb": "movie/98"
+   },
+   {
+    "title": "True Detective",
+    "meta": "2014  ·  Serie  ·  Drama, Mystery  ·  ★ 8,3",
+    "desc": "Eine Anthologieserie, in der polizeiliche Ermittlungen die persönlichen und beruflichen Geheimnisse der Beteiligten innerhalb und außerhalb des Gesetzes aufdecken.",
+    "label": "Beliebte Serien",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/v8YFr8BbU9qsO8PYIulzTeM6Qk.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/jAw8EVQKDgrZcH0hZhgycwpPP4N.jpg",
+    "trailer": "",
+    "tmdb": "tv/46648"
+   },
+   {
+    "title": "No Country for Old Men",
+    "meta": "2007  ·  Film  ·  Krimi, Thriller  ·  ★ 7,9",
+    "desc": "Ein Mann stolpert förmlich über einen blutigen Tatort, einen Pick-up-Truck, vollgeladen mit Heroin, und unwiderstehlichen zwei Millionen Dollar in bar. Seine Entscheidung, das Geld für sich zu behalten, setzt eine gewaltvolle Kettenreaktion in Gang, die noch nicht einmal das Gesetz von West-Texas aufhalten kann.",
+    "label": "Bestbewertete Filme",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/gddUsvfyySrM5k8B8wwJy2VRlBx.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/nVaCwvzqy14tj5mBwzjWPZdDL02.jpg",
+    "trailer": "",
+    "tmdb": "movie/6977"
+   },
+   {
+    "title": "Adventure Time - Abenteuerzeit mit Finn und Jake",
+    "meta": "2010  ·  Serie  ·  Animation, Komödie  ·  ★ 8,5",
+    "desc": "Der 14-jährige Finn, ein Junge mit einem merkwürdigen Hut, erlebt zusammen mit seinem besten Freund, dem magischen Hund Jake, schräge, teils surreale, aber stets spannende Abenteuer im Lande „Ooo“.",
+    "label": "Bestbewertete Serien",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/d8rse1RgMzXwmZvBpDvcG1VUO2Y.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/1CC0HM4V853LUDPZSEJRKB7GrFH.jpg",
+    "trailer": "",
+    "tmdb": "tv/15260"
+   },
+   {
+    "title": "Ein Herz und eine Krone",
+    "meta": "1953  ·  Film  ·  Liebesfilm, Komödie  ·  ★ 7,9",
+    "desc": "Auf Staatsbesuch in Rom hat die junge Prinzessin Ann die dauernde Pflicht zum würdevollen Repräsentieren satt. Heimlich schleicht sie sich davon, um die »Ewige Stadt« und das wahre Leben kennen zu lernen. Am Abend schläft sie völlig erschöpft inmitten antiker Ruinen ein. Dort gabelt sie der attraktive Journalist Joe Bradley auf, der jedoch noch keine Ahnung hat, wer da vor ihm liegt, und sie kurzerhand zur Ausnüchterung mit in seine Wohnung schleppt. Als er am nächsten Morgen aufwacht und die Pressekonferenz der Prinzessin abgesagt wird, dämmert ihm, welchen Vogel er da gefangen hat …",
+    "label": "Heute empfohlen: Liebesfilm",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/gzRISGjiDMj4xqYE9ES2KNIXxpo.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/17QFIPaxpZjWffMVS56VfKtdpjH.jpg",
+    "trailer": "",
+    "tmdb": "movie/804"
+   },
+   {
+    "title": "Elsbeth",
+    "meta": "2024  ·  Serie  ·  Krimi, Drama  ·  ★ 6,7",
+    "desc": "Im Mittelpunkt der US-Anwaltsserie „Elsbeth“ steht die Juristin Elsbeth Tascioni, eine recht eigenwillige, etwas schrille, aber herzliche Strafverteidigerin. Sie zieht es nach New York, wo sie nach einer erfolgreichen Karriere in Chicago neue Wege beschreiten möchte. Elsbeth Tascioni sorgt hier mit ihrer Fähigkeit, genauestens und messerscharf zu beobachten, für Aufsehen, so auch bei den Beamten des NYPD, die sie bei ihren Ermittlungen unterstützt",
+    "label": "Neue Folgen bei WOW",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/5PqkJBZdzkZnfg0LCuKcrHlspco.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/7lnNSbT90qwtrn1h9TvEkVFMz2P.jpg",
+    "trailer": "",
+    "tmdb": "tv/226285"
+   },
+   {
+    "title": "Five Nights at Freddy's 2",
+    "meta": "2025  ·  Film  ·  Horror, Thriller  ·  ★ 6,6",
+    "desc": "Sie sind nicht mehr nur bei Freddy’s … Seit den albtraumhaften Geschehnissen in Freddy’s Pizzeria ist ein Jahr vergangen. Die Geschichten darüber, was sich dort genau abgespielt hat, haben sich längst zu einem lokalen Mythos verklärt – ein Mythos, der so populär ist, dass die Stadt nun sogar das erste „Fazfest“ abhalten will. Der ehemalige Wachmann Mike und die Polizistin Vanessa haben Mikes elfjähriger Schwester Abby die Wahrheit über das Schicksal ihrer animatronischen Freunde bislang verschwiegen. Eines Tages schleicht sich Abby heimlich davon, um sich mit Freddy, Bonnie, Chica und Foxy zu treffen. Sie ahnt nicht, dass sie damit eine Reihe von schrecklichen Ereignissen in Gang setzt, die dunkle Geheimnisse über den Ursprung von Freddy’s Pizzeria enthüllen – und einen Schrecken entfesseln, der seit Jahrzehnten verborgen lag.",
+    "label": "Neue Filme bei WOW",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/laWV5ohHOxYnCkvrJcZf6IDOIDO.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/byFxrm3IS9wErulqpqDIsaLaTeG.jpg",
+    "trailer": "",
+    "tmdb": "movie/1228246"
+   },
+   {
+    "title": "Dracula - Die Auferstehung",
+    "meta": "2025  ·  Film  ·  Horror, Fantasy  ·  ★ 7,3",
+    "desc": "Die Geschichte von Prinz Vladimir aus dem 15. Jahrhundert, der nach dem Tod seiner geliebten Frau Gott verflucht und in einen Vampir verwandelt wird. Später, im London des 19. Jahrhunderts, entdeckt er die Doppelgängerin seiner Frau und verdammt sich selbst, indem er ihr nachstellt.",
+    "label": "Gerade angesagt",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/be5SIsRGMckO8tU9lrLcIik70Dy.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/pcNwDuieKeSxz6CyOqASdp9oqzt.jpg",
+    "trailer": "",
+    "tmdb": "movie/1246049"
+   },
+   {
+    "title": "The Rookie",
+    "meta": "2018  ·  Serie  ·  Krimi, Drama  ·  ★ 8,5",
+    "desc": "In einem Alter, in dem sich andere zur Ruhe setzen wollen, tauscht John Nolan das beschauliche Kleinstadtleben gegen einen Neuanfang in Los Angeles ein: Er möchte seinen Lebenstraum verwirklichen und als Polizist arbeiten. Inmitten von Anwärtern in ihren 20ern muss sich Nolan nun als ältester Rookie des LAPD bewähren.",
+    "label": "Beliebte Serien",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/6iNWfGVCEfASDdlNb05TP5nG0ll.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/70kTz0OmjjZe7zHvIDrq2iKW7PJ.jpg",
+    "trailer": "",
+    "tmdb": "tv/79744"
+   },
+   {
+    "title": "Jäger des verlorenen Schatzes",
+    "meta": "1981  ·  Film  ·  Abenteuer, Action  ·  ★ 7,9",
+    "desc": "Der Archäologe Dr. Henry Jones wird von Regierungsagenten auf die Bundeslade angesetzt, das Behältnis, in dem Moses Gesetzestafeln aufbewahrt wurden. Laut Geheiminformationen suchen auch die Nazis nach der Lade, da sie den Besitzer unbesiegbar machen soll. Jones, genannt Indiana Jones, reist daraufhin nach Nepal, wo er einen alten Kollegen aufspüren will, jedoch nur dessen Tochter findet, die sich ihm anschließt. Ein altes Schmuckstück führt sie nach Ägypten, wo die Nazis mit Belloqs Hilfe bereits Ausgrabungen vornehmen. So kommt es zum Wettlauf um die Auffindung der Quelle der Seelen…",
+    "label": "Bestbewertete Filme",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/zPACwR32amTNvzId9qyapCWXYDJ.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/8cWx3s2Wfo15DzUyIE8scg3eNdb.jpg",
+    "trailer": "",
+    "tmdb": "movie/85"
+   },
+   {
+    "title": "Harry und Sally",
+    "meta": "1989  ·  Film  ·  Komödie, Liebesfilm  ·  ★ 7,4",
+    "desc": "Harry nervt Sally und Sally nervt Harry. Das war während ihrer gemeinsamen unfreiwilligen 18-Stunden-Fahrt nach New York so, und bleibt auch so fünf Jahre später, als sie sich zufällig im Flugzeug treffen. Weitere fünf Jahre später – beide im Beziehungsfrust – tritt das ungleiche Paar mehr aus Not den Gegenbeweis für Harrys Lieblingsthese an: „Männer und Frauen können nie Freunde sein – der Sex kommt ihnen immer in die Quere.“ Und wie in jeder guten Komödie merken die beiden als allerletzte, dass sie im Grunde füreinander geschaffen sind.",
+    "label": "Heute empfohlen: Liebesfilm",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/dbdegCWeD4iK5LXxSBjGdIRsVXS.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/i6L2FanSxToy4OxGDUYxzST4FwR.jpg",
+    "trailer": "",
+    "tmdb": "movie/639"
+   },
+   {
+    "title": "CIA",
+    "meta": "2026  ·  Serie  ·  Krimi, Drama  ·  ★ 8,4",
+    "desc": "Im Büro der New Yorker CIA-Zweigstelle müssen zwei gegensätzliche Ermittler mit ihrem Team unterschiedliche Fälle aufklären und Kriminellen das Handwerk legen, die eine Gefahr für die USA darstellen. CIA-Agent Colin Glass eckt mit seinem losen Mundwerk gerne bei anderen Kollegen an und hält sich selten an die Regeln. Ihm gegenüber steht FBI-Agent Bill Goodman, der sich bei der Arbeit vornehmlich strikt an Vorschriften und das Gesetz hält. Schon bald müssen Glass und Goodman jedoch einsehen, dass sich ihre widersprüchlichen Persönlichkeiten als große Stärke bei ihrer gemeinsamen Arbeit herausstellen.",
+    "label": "Neue Folgen bei WOW",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/faxI8ewOUkQRy4z4vwP6kci8Ilk.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/fEXauqIabKrMPQ2lVTHKdrkrR4Z.jpg",
+    "trailer": "",
+    "tmdb": "tv/289560"
+   },
+   {
+    "title": "Hamnet",
+    "meta": "2025  ·  Film  ·  Drama, Liebesfilm  ·  ★ 7,7",
+    "desc": "Wir schreiben das Jahr 1580 und der im kleinen englischen Dorf Stratford-upon-Avon als Lateinlehrer arbeitende William Shakespeare verliebt sich in Agnes. Im Dorf wird hinter immer weniger vorgehaltener Hand vermutet, sie sei eigentlich gar keine Heilerin, sondern eine richtige Hexe. Aber das ist William egal. Die beiden stürzen sich Hals über Kopf in das gemeinsame Leben und bekommen auch schnell drei Kinder. Erst wird Susanna geboren, kurz darauf die Zwillinge Judith und Hamnet. Doch mit der Familie endet das Träumen zumindest für William noch nicht. Er will das Lehren endlich hinter sich lassen können und als Dramatiker arbeiten. Auf dem Land geht das jedoch eher schlecht als recht. Also geht er, ermutigt von Agnes, nach London. Erst ist die Familie als nur räumlich voneinander getrennt, dann pflügt die Pest durch das Land und tötet auch Hamnet mit gerade einmal elf Jahren. Das treibt William an, seinem Sohn zu Ehren ein Stück zu schreiben...",
+    "label": "Neue Filme bei WOW",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/73BClq9FOcrWrutnpiqhCNEWEwJ.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/Ua43qwtLJNtFcTeAtO3q1SG5NV.jpg",
+    "trailer": "",
+    "tmdb": "movie/858024"
+   }
+  ]
+ },
+ "disney": {
+  "label": "Disney+",
+  "source": "Daten: TMDB · JustWatch",
+  "items": [
+   {
+    "title": "VisionQuest",
+    "meta": "2026  ·  Serie  ·  Sci-Fi & Fantasy, Drama  ·  ★ 8,3",
+    "desc": "Nach Visions Flucht vor jenen, die ihn als Waffe missbrauchen wollten, führt er ein Leben im Verborgenen. Auf der Suche nach einer neuen Bestimmung zieht er auch die diversen KIs zu Rate, die innerhalb seiner Programmierung ein neues Zuhause gefunden haben. Unter ihnen befinden sich nicht nur Friday, Edith und Jarvis, sondern auch der berüchtigte Ultron. Doch Visions unauffällige Existenz findet ein abruptes Ende, als ein Kopfgeld auf ihn ausgesetzt wird. Auf der Flucht schließt er sich Thomas Shepherd an, einem geheimnisvollen Jungen, bei dem es sich um Visions wiedergeborenen Sohn handeln könnte. Dabei sieht sich Vision zunehmend gezwungen, sich seiner eigenen Natur zu stellen, Ultrons Einfluss zu widerstehen und das Rätsel um seinen jungen Begleiter zu entschlüsseln.",
+    "label": "Neue Folgen bei Disney+",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/31o1Ufd7bStD5dGEcpzapOjwaqx.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/WGyAyBPncfuu8MZhLY9RtfZPM0.jpg",
+    "trailer": "https://www.youtube.com/watch?v=rcw2IBSlHwE",
+    "tmdb": "tv/213375"
+   },
+   {
+    "title": "Toy Story 5",
+    "meta": "2026  ·  Film  ·  Animation, Familie  ·  ★ 8,3",
+    "desc": "Die Kult-Spielzeuge sind zurück – und diesmal trifft Spielzeug auf Technik. Woody, Buzz Lightyear, Jessie und der Rest der Bande stehen vor einer ganz neuen Herausforderung, als sie auf Lilypad treffen, ein funkelnagelneues Tablet, das sehr eigenwillige Vorstellungen davon hat, was für ihr Kind Bonnie am besten ist. Wird das Spielen jemals wieder so sein wie zuvor?",
+    "label": "Neue Filme bei Disney+",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/qjTqY5coNiz6sVtPng40IzltsoN.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/geypzdXdx8LooxB691r3bhlrybB.jpg",
+    "trailer": "https://www.youtube.com/watch?v=GlHL_3smXSE",
+    "tmdb": "movie/1084244"
+   },
+   {
+    "title": "Coco - Lebendiger als das Leben!",
+    "meta": "2017  ·  Film  ·  Familie, Animation  ·  ★ 8,2",
+    "desc": "Miguel ist zwölf Jahre alt und ein großer Fan von Musik – aber leider hasst seine Schusterfamilie alles, was mit Tönen und Instrumenten zu tun hat. Miguels Ururgroßvater verließ damals seine Frau und Tochter, um Musiker zu werden, seitdem fühlen sich die Riveras durch Musik verflucht. Doch Familie hin oder her – Miguel will seinem Idol, dem Sänger Ernesto de la Cruz, trotzdem nacheifern. Aus Versehen kommt er dabei ins Reich der Toten und betritt dadurch einen wunderschönen Ort, an dem er die Seelen seiner toten Verwandten trifft. Miguels Ururgroßmutter Imelda ist darunter, und das nette Schwindler-Skelett Hector. Zusammen suchen Skelett und Junge im Totenreich nach de la Cruz, wobei allerdings die Zeit drängt: Zu lange darf Miguel nicht in der Unterwelt bleiben…",
+    "label": "Gerade angesagt",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/g7CHF8gTLGooTbP4GznIGwaqAGL.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/x7YxGQGItXaLzl5eQNqGo0837fs.jpg",
+    "trailer": "",
+    "tmdb": "movie/354912"
+   },
+   {
+    "title": "Law & Order: Special Victims Unit",
+    "meta": "1999  ·  Serie  ·  Krimi, Drama  ·  ★ 8,0",
+    "desc": "Bei Polizei und Staatsanwaltschaft gelten Sexualverbrechen als besonders abscheulich. In New York City gehören die engagierten Detectives, die in diesen brutalen Fällen ermitteln, zur Sondereinheit für Sexualdelikte. Dies sind ihre Geschichten. Innerhalb der New Yorker Polizei gibt es eine Sondereinheit, die Special Victims Unit. Die Fälle, die das SVU untersucht, beschränken sich ausschließlich auf Sexualdelikte und Verbrechen an Kindern",
+    "label": "Beliebte Serien",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/xhK9YCxNwnE0OB1SWvCY39heHQI.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/pHNhUwSXuDQ9jPZOCb8SgJaQZsc.jpg",
+    "trailer": "",
+    "tmdb": "tv/2734"
+   },
+   {
+    "title": "Demon Slayer: Kimetsu no Yaiba Infinity Castle",
+    "meta": "2025  ·  Film  ·  Animation, Action  ·  ★ 8,8",
+    "desc": "Während die Mitglieder des Dämonentöter-Korps und die Hashira in Vorbereitung auf den bevorstehenden Kampf gegen die Dämonen ein gemeinsames Krafttrainingsprogramm, das Hashira-Training, absolvieren, taucht Muzan Kibutsuji in der Ubuyashiki-Villa auf. Da der Leiter des Dämonenkorps in Gefahr ist, eilen Tanjiro und die Hashira zum Hauptquartier, werden aber von Muzan Kibutsuji in einen tiefen Abstieg in einen mysteriösen Raum gestürzt. Das Ziel, in das Tanjiro und das Dämonentöter-Korps gestürzt sind, ist die Festung der Dämonen - die Unendlichkeitsburg. Und so ist das Schlachtfeld für die finale Schlacht zwischen dem Dämonentöterkorps und den Dämonen bereitet.",
+    "label": "Bestbewertete Filme",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/1RgPyOhN4DRs225BGTlHJqCudII.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/cqlahADJmDdqQvLAPuEYD6EKPAN.jpg",
+    "trailer": "",
+    "tmdb": "movie/1311031"
+   },
+   {
+    "title": "One Piece",
+    "meta": "1999  ·  Serie  ·  Action & Adventure, Komödie  ·  ★ 8,8",
+    "desc": "Wir schreiben das große Zeitalter der Piraten. Mit dem Tod des einstigen Piratenkönigs Gold Roger begann die Suche nach dem begehrten One Piece, dem größten Schatz der Welt. Diesen hatte Roger noch kurz vor seiner Hinrichtung versteckt. Seitdem ist die Grandline bevölkert von fiesen und miesen Gestalten, die nach Gold, Reichtum und Macht gieren. Nur einer ist irgendwie anders. Einst aß er von der Gum-Gum-Frucht, jetzt lässt er mit gummimäßigen Kräften und mordsmäßigem Appetit jeden Feind erzittern – hier kommt Ruffy, der künftige König der Piraten!",
+    "label": "Bestbewertete Serien",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/2rmK7mnchw9Xr3XdiTFSxTTLXqv.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/8f33Q5AuM2G5ZqFeusbIqDjr3cI.jpg",
+    "trailer": "",
+    "tmdb": "tv/37854"
+   },
+   {
+    "title": "Titanic",
+    "meta": "1997  ·  Film  ·  Drama, Liebesfilm  ·  ★ 7,9",
+    "desc": "Atlantischer Ozean, 1912: Auf der Jungfernfahrt der Titanic trifft der mittellose Maler Jack Dawson auf die schöne, aber unglückliche Erste-Klasse-Passagierin Rose DeWitt Bukater. Rose reist gemeinsam mit ihrer Mutter und ihrem versnobten Verlobten Cal, den sie aus finanziellen Gründen heiraten soll, aber nicht liebt. Als Jack beobachtet, wie Rose über die Reling klettert, um sich ins Meer zu stürzen, und ihren sicheren Tod abwenden kann, beginnt für beide eine Liebesgeschichte über Klassengrenzen hinweg. Gemeinsam mit Jack entdeckt Rose das ausgelassene Leben der einfachen Passagiere unter Deck der Titanic und das wahre Wesen der Liebe. Währenddessen steuert die als unsinkbar geltende Titanic geradewegs auf einen Eisberg zu.",
+    "label": "Heute empfohlen: Liebesfilm",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/sCzcYW9h55WcesOqA12cgEr9Exw.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/MlnPG3oxhfmuiDwcoeElQWui9m.jpg",
+    "trailer": "",
+    "tmdb": "movie/597"
+   },
+   {
+    "title": "Die neuvermählte Kaiserin",
+    "meta": "2026  ·  Serie  ·  Drama, Sci-Fi & Fantasy  ·  ★ 8,5",
+    "desc": "Die Beziehung zwischen Navier (Shin Min-a), Kaiserin des Östlichen Reiches, und ihrem Ehemann, Kaiser Sovieshu (Ju Ji-hoon), ist mehr als angespannt. Nicht nur in ihrem Reich wird die Stimmung innerhalb der Bevölkerung immer unruhiger, auch privat wird das regierende Paar vor eine große Herausforderung gestellt. Denn der Kaiser hat sich in eine entlaufene Sklavin verliebt und somit das Versprechen gebrochen, das er einst Navier gegeben hat: niemals eine Nebenfrau zu haben. Gleichzeitig reist Prinz Heinrey (Lee Jong-Suk), der Thronfolger des Westlichen Königreichs, zum Palast des Östlichen Kaiserreichs. Dort soll er als Spion fungieren, doch er verliebt sich schließlich in Kaiserin Navier.",
+    "label": "Neue Folgen bei Disney+",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/fNcpHmuZLKoyhNMBEzdqzX8iIvg.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/l0v4MHlLMtmn1DrhL4G6fM9en3s.jpg",
+    "trailer": "https://www.youtube.com/watch?v=aScUjuKvHSo",
+    "tmdb": "tv/279246"
+   },
+   {
+    "title": "Vaiana",
+    "meta": "2026  ·  Film  ·  Familie, Fantasy  ·  ★ 7,4",
+    "desc": "Vaiana will unbedingt weit raus aufs offene Meer, endlich mal die Welt jenseits des Riffs sehen, das die Insel ihres Volkes umgibt. Doch keiner der Motunui-Stammesgenossen der 16 Jahre alten Prinzessin traut sich so wirklich, dieses Abenteuer einmal konsequent anzugehen - und auch ihr ist der Versuch, das Riff hinter sich zu lassen, verboten. Doch dann gerät das Inselvolk in eine Notlage, und die Nahrung beginnt, langsam knapp zu werden. Vaiana schmiedet deshalb einen Plan und setzt schließlich eines Tages auf eigene Faust in See. Mit an Bord sind der treudoofe Hahn Heihei und das Hausschwein Pua. Unterwegs offenbart sich ihr sogar noch der legendäre Halbgott Maui, dem sehr mächtige Fähigkeiten nachgesagt werden. Doch schnell stellt sich heraus, dass das mit den Kräften zwar nicht gelogen war, Maui aber eine ganz eigene Suppe angerührt hat, die er zusammen mit Vaiana nun erst mal auslöffeln muss...",
+    "label": "Neue Filme bei Disney+",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/c6BPbkO5Npt1OdwttAxCFo06wtH.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/pIXzPjgwHYrCqojcyWWaUozJdDF.jpg",
+    "trailer": "https://www.youtube.com/watch?v=OyQPNSxZRIE",
+    "tmdb": "movie/1108427"
+   },
+   {
+    "title": "Avengers: Endgame",
+    "meta": "2019  ·  Film  ·  Abenteuer, Science Fiction  ·  ★ 8,2",
+    "desc": "Thanos hat also tatsächlich Wort gehalten, seinen Plan in die Tat umgesetzt und die Hälfte allen Lebens im Universum ausgelöscht. Die Avengers? Machtlos. Iron Man und Nebula sitzen auf dem Planeten Titan fest, während auf der Erde absolutes Chaos herrscht. Doch dann finden Captain America und die anderen überlebenden Helden auf der Erde heraus, dass Nick Fury vor den verheerenden Ereignissen gerade noch ein Notsignal absetzen konnte, um Verstärkung auf den Plan zu rufen. Die Superhelden-Gemeinschaft bekommt mit Captain Marvel kurzerhand tatkräftige Unterstützung im Kampf gegen ihren vermeintlich übermächtigen Widersacher. Und dann ist da auch noch Ant-Man, der wie aus dem Nichts auftaucht und sich der Truppe erneut anschließt, um die ganze Sache womöglich doch noch zu einem guten Ende zu bringen …",
+    "label": "Gerade angesagt",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/7RyHsO4yDXtBv1zUU3mTpHeQ0d5.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/ibO8Pj0aA1nwj3Q9FMpMcYZkdCA.jpg",
+    "trailer": "",
+    "tmdb": "movie/299534"
+   },
+   {
+    "title": "The Office",
+    "meta": "2005  ·  Serie  ·  Komödie  ·  ★ 8,6",
+    "desc": "In der Papiergroßhandelsfirma Dunder Mifflin herrscht der alltägliche Bürowahnsinn. Verkaufsleiter Michael Scott hält sich für einen lustigen Entertainer und den besten Chef der Welt. Für weitere Egokrämpfe sorgt der pedantische Nerd Dwight Schrute, der um Michaels Posten buhlt. Zum bunten Büro-Team gehören u. a. der talentierte wie unterforderte Jim Halpert, die scheue Sekretärin Pam Beesly, der übermotivierte Ryan Howard sowie der spätere Regionalmanager Andy Bernard und die ehrgeizige Karrierefrau Karen Filippelli. Zusammen sabotieren sie die Langeweile und Arbeitspflicht des lästigen Alltags, der im fröhlichen Chaos versinkt.",
+    "label": "Beliebte Serien",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/9vMzIrMIncPmtalcxh1MOrgcE6C.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/7DJKHzAi83BmQrWLrYYOqcoKfhR.jpg",
+    "trailer": "",
+    "tmdb": "tv/2316"
+   },
+   {
+    "title": "Der Herr der Ringe - Die Rückkehr des Königs",
+    "meta": "2003  ·  Film  ·  Abenteuer, Fantasy  ·  ★ 8,5",
+    "desc": "Saurons Heer will Minas Tirith angreifen, die in Felsen errichtete Hauptstadt von Gondor. Angesichts der Bedrohlichkeit des feindlichen Heeres wiegt es umso schwerer, dass Gondors König fehlt und nur der schwächliche Truchsess Denethor über das einst mächtige Königreich wacht. Wird Aragorn die Kraft aufbringen, jene Aufgabe zu übernehmen, für die sein Schicksal ihn bestimmt hat? Während Gandalf verzweifelt versucht, die mutlosen Kämpfer von Gondor zu motivieren, sammelt Théoden die Krieger von Rohan, um am Kampf teilzunehmen. Aber obwohl sie tapfer und leidenschaftlich Widerstand leisten, haben die Streitkräfte der Menschen dem überwältigenden Ansturm der feindlichen Legionen gegen das Königreich kaum etwas entgegenzusetzen. Jeder Sieg fordert große Opfer. Trotz der starken Verluste stellen sich die Gefährten der größten Schlacht ihres Lebens - vereint durch ein einziges Ziel: Sauron muss so lange abgelenkt werden, bis Frodo den Ring vernichtet hat...",
+    "label": "Bestbewertete Filme",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/ctiw6FZK4N36LmkjSklWEbuvlq9.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/uFjlP9U9UOZAzGB25HUtmlEpXbc.jpg",
+    "trailer": "",
+    "tmdb": "movie/122"
+   },
+   {
+    "title": "Chernobyl",
+    "meta": "2019  ·  Serie  ·  Drama  ·  ★ 8,7",
+    "desc": "Im April 1986 kommt es im ukrainischen Atommeiler Tschernobyl zu einer katastrophalen Kernschmelze. Feuerwehr und Ersthelfer geben alles, um den Unglücksort zu sichern und die Folgen des Ereignisses einzudämmen - doch diese sind weitreichend.",
+    "label": "Bestbewertete Serien",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/900tHlUYUkp7Ol04XFSoAaEIXcT.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/VSo72IlEI8TUI8Z6NWgLcINjWT.jpg",
+    "trailer": "",
+    "tmdb": "tv/87108"
+   },
+   {
+    "title": "Twilight - Biss zum Morgengrauen",
+    "meta": "2008  ·  Film  ·  Fantasy, Drama  ·  ★ 6,3",
+    "desc": "Bella Swan war schon immer ein wenig anders als ihre gleichaltrigen Mitschüler. Als ihre Mutter erneut heiratet, zieht sie zu ihrem Vater nach Forks, einer langweiligen, verregneten Kleinstadt im Staat Washington. Ihre Erwartungen an ihr neues Leben sind gering, doch dann begegnet sie in der Schule dem geheimnisvollen und äußerst attraktiven Edward. Die beiden fühlen sich magisch zueinander hingezogen, doch etwas steht einer normalen Beziehung der beiden im Weg: Edward ist ein Vampir.",
+    "label": "Heute empfohlen: Liebesfilm",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/weAYfu6FfrNxEDJ3xH1XpgQcqUv.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/lh5yhaG4kXj7KHEywD5lcAruHN2.jpg",
+    "trailer": "",
+    "tmdb": "movie/8966"
+   },
+   {
+    "title": "Dragon Ball Super: Beerus",
+    "meta": "2026  ·  Serie  ·  Animation, Action & Adventure  ·  ★ 9,6",
+    "desc": "Jahre nach dem erbitterten Kampf gegen Majin Boo herrscht auf der Erde endlich Frieden. Doch dann erwacht Beerus, der Gott der Zerstörung, aus seinem langen Schlaf. Als er von dem Saiyajin hört, der Freezer besiegt hat, taucht er unvermittelt bei Son Goku auf – und die ganze Erde gerät in Gefahr. Goku und seine Freunde stellen sich einem Kampf, der das Universum erschüttert.",
+    "label": "Neue Folgen bei Disney+",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/8phLVFEXOe02JgFmH9ldn3j4tXW.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/sGuCmIy8kEmx3FWZyMj654rF6g8.jpg",
+    "trailer": "https://www.youtube.com/watch?v=lJMXyiENRAM",
+    "tmdb": "tv/312359"
+   },
+   {
+    "title": "Avatar: Fire and Ash",
+    "meta": "2025  ·  Film  ·  Science Fiction, Abenteuer  ·  ★ 7,6",
+    "desc": "Nach dem verheerenden Krieg gegen die RDA und dem Verlust ihres ältesten Sohnes sehen sich Jake Sully und Neytiri mit einer neuen Bedrohung auf Pandora konfrontiert: dem Aschvolk, einem gewalttätigen und machthungrigen Na'vi-Stamm unter der Führung des skrupellosen Varang. Jakes Familie muss in einem Konflikt, der sie an ihre emotionalen und physischen Grenzen bringt, um ihr Überleben und die Zukunft von Pandora kämpfen.",
+    "label": "Neue Filme bei Disney+",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/u8DU5fkLoM5tTRukzPC31oGPxaQ.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/nB8gjQdI6RPczGcJ5mzCgAdjdH8.jpg",
+    "trailer": "https://www.youtube.com/watch?v=xvGLuoScVso",
+    "tmdb": "movie/83533"
+   },
+   {
+    "title": "Avengers: Infinity War",
+    "meta": "2018  ·  Film  ·  Abenteuer, Action  ·  ★ 8,2",
+    "desc": "Der mächtige Titan Thanos  hat es sich zur Aufgabe gemacht das halbe Universum auszulöschen. Um diesen perfiden Plan Realität werden zu lassen, benötigt er allerdings zuerst alle sechs Infinity-Steine, die ihm in Verbindung mit einem speziell gefertigten Handschuh, gottgleiche Kräfte verleihen. Da sich unglücklicherweise auch auf der Erde zwei dieser Steine befinden, betraut er seine treu ergebene Black Order mit deren Beschaffung. Sowohl die Avengers, als auch die Guardians of the Galaxy und Thor erfahren jedoch von Thanos' Plänen und stellen sich dem Schurken entgegen. Doch mit einen derart mächtigen Gegner hatte es bisher keiner von ihnen zu tun...",
+    "label": "Gerade angesagt",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/mDfJG3LC3Dqb67AZ52x3Z0jU0uB.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/2hj7diAFcApL2YfWwjiYCuRI4WW.jpg",
+    "trailer": "",
+    "tmdb": "movie/299536"
+   },
+   {
+    "title": "Die Simpsons",
+    "meta": "1989  ·  Serie  ·  Animation, Komödie  ·  ★ 8,0",
+    "desc": "Die Simpsons sind eine amerikanische Durchschnittsfamilie. Immer neue Geschichten gibt es über Homer, Marge, Bart, Lisa und Maggie und über die weiteren Bewohner von Springfield zu erzählen.",
+    "label": "Beliebte Serien",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/jIArNHIekrCSVgdMbKPAXpPY03Y.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/bVkuU5MMGu9Bvmmeb9uvPV7j4z3.jpg",
+    "trailer": "",
+    "tmdb": "tv/456"
+   },
+   {
+    "title": "Der Herr der Ringe - Die Gefährten",
+    "meta": "2001  ·  Film  ·  Abenteuer, Fantasy  ·  ★ 8,5",
+    "desc": "Dem Hobbit Bilbo Beutlin fällt zufällig ein machtvoller Ring in die kleinen Hände. Dieses Schmuckstück erlaubte es dem finsteren Herrscher Sauron einst, die Welt zu unterjochen. Der Ring schien über Jahrhunderte verloren, bis Bilbo ihn an sich nahm und seinen „Schatz“ sechzig Jahre lang bewahrte. An seinem 111. Geburtstag gibt er ihn schweren Herzens an seinen Neffen Frodo weiter und verlässt seine Heimat Mittelerde. Für den jungen Hobbit Frodo wird der Ring jedoch zur schweren Bürde. Der böse Geist Saurons, der in dem „Einen“ gefangen ist, wird immer stärker. Frodo bleibt nur eine Möglichkeit: Er muss ihn vernichten. Allerdings ist das nicht gerade einfach. Nur in den ewigen Feuern des Schicksalsberges im Lande Mordor, wo der Ring geschmiedet wurde, kann er auch vernichtet werden. Doch bis dahin muss Frodo an der Seite des Zauberers Gandalf und seiner Gefährten durch Feindesland ziehen, immer verfolgt von Saurons Lakaien …",
+    "label": "Bestbewertete Filme",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/oiwc338EoBgS4sEI2ixAny4KQKg.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/k6lw7hhaMDzJ170bfZfBbnipxcW.jpg",
+    "trailer": "",
+    "tmdb": "movie/120"
+   },
+   {
+    "title": "X-Men '97",
+    "meta": "2024  ·  Serie  ·  Animation, Action & Adventure  ·  ★ 8,7",
+    "desc": "\"X-Men '97\" ist eine Zeitreise in die legendären 1990er Jahre, in der die X-Men, eine Gruppe Mutanten, ihre erstaunlichen Kräfte zum Schutz einer Welt einsetzen, von der sie gehasst und gefürchtet werden. Ihnen steht eine nie dagewesene Herausforderung bevor, als sie sich einer unerwarteten und gefährlichen neuen Zukunft stellen müssen.",
+    "label": "Bestbewertete Serien",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/jIyEmnBrZtl6SEWyBoMO2hZnzMa.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/2HKBc5UiFw8JrruHq8S1Y7TnlW0.jpg",
+    "trailer": "",
+    "tmdb": "tv/138502"
+   },
+   {
+    "title": "New Moon - Bis(s) zur Mittagsstunde",
+    "meta": "2009  ·  Film  ·  Abenteuer, Fantasy  ·  ★ 6,0",
+    "desc": "Aus Sorge um Bella, die von Edwards Vampirbruder attackiert wurde, trennt sich Edward von ihr und zieht mit seiner Familie fort. Trost in ihrem unendlichen Schmerz findet Bella nur bei ihrem Jugendfreund Jacob, der ihr wieder Hoffnung und Halt gibt. Doch auch Jacob verbirgt ein dunkles Geheimnis, eine zweite übernatürliche Identität, die ihn nicht nur zum Rivalen um Bella, sondern auch zum erbitterten Feind Edwards macht...",
+    "label": "Heute empfohlen: Liebesfilm",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/dF2c20sRDgySZLaLS2OUerL07sz.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/kU3ykN1gVctU12QqBv1RdpuDHpr.jpg",
+    "trailer": "",
+    "tmdb": "movie/18239"
+   },
+   {
+    "title": "Rivals",
+    "meta": "2024  ·  Serie  ·  Drama  ·  ★ 7,4",
+    "desc": "Es ist 1986 und Großbritannien boomt. \"Rivals\" taucht kopfüber in die halsbrecherische Welt des Fernsehens ein, wo Frisuren groß und Ambitionen noch größer sind. Deals werden sowohl in Vorstandsetagen als auch in Schlafzimmern ausgehandelt. Niemand kann sich sicher sein, wer am Ende die Nase vorn hat. Kann die wahre Liebe wirklich erblühen, wenn jeder Mann und jede Frau nur auf sich selbst bedacht ist?",
+    "label": "Neue Folgen bei Disney+",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/vPw5Gpg0YEEk1VsE8QlmyTxIJuU.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/3p9t1KDo5iXAn1zsSPn8sdtakWs.jpg",
+    "trailer": "",
+    "tmdb": "tv/208921"
+   },
+   {
+    "title": "Zoomania 2",
+    "meta": "2025  ·  Film  ·  Abenteuer, Animation  ·  ★ 7,7",
+    "desc": "Judy Hopps und Nick Wilde stoßen auf die rätselhafte Spur eines geheimnisvollen Reptils, das in Zootopia auftaucht und die Metropole völlig auf den Kopf stellt: Gary De'Snake! Um den Fall zu lösen, müssen die beiden Undercover in völlig unbekannte Stadtteile vordringen – und dabei wird ihre wachsende Partnerschaft auf eine harte Probe stellt.",
+    "label": "Neue Filme bei Disney+",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/lgotja3xMoJZbynwHfcQcJAEMWH.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/1PQLWjtGH1QfiGlFI83WUFbw5GN.jpg",
+    "trailer": "",
+    "tmdb": "movie/1084242"
+   },
+   {
+    "title": "Nightmare Before Christmas",
+    "meta": "1993  ·  Film  ·  Fantasy, Animation  ·  ★ 7,9",
+    "desc": "Jack Skellington ist der gefeierte Held von Halloweentown. Er treibt die gespenstischen Bewohner des Städtchens jedes Jahr aufs Neue dazu an, sich schauerliche Überraschungen und diabolische Gags für das nächste Halloweenfest auszudenken. Doch der jährliche Trott, der sich immer einzig und allein um das Halloween dreht, wird Jack langsam zu eintönig. Als er zufällig die Tür zur fröhlichen und farbigen Weihnachtswelt findet und hindurchtritt, kommt ihm die Idee, das so andersartige Weihnachtsfest dieses Jahr selbst auszurichten ...",
+    "label": "Gerade angesagt",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/dSfrsjhqC6lYe7LYDYnzWeXZmEl.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/n0kzTGsWhaN5yE2ybQ9BY4MqDdE.jpg",
+    "trailer": "",
+    "tmdb": "movie/9479"
+   },
+   {
+    "title": "Modern Family",
+    "meta": "2009  ·  Serie  ·  Komödie  ·  ★ 7,9",
+    "desc": "Die Mockumentary begleitet die Familien von Jay Pritchett, seiner Tochter Claire Dunphy und seines Sohns Mitchell Pritchett . Während Claire die Rolle der Hausfrau in einer klassischen Familie innehat, ist Jay mit einer viel jüngeren Frau verheiratet, mit der er seinen Stiefsohn erzieht. Mitchell und sein Lebensgefährte haben ein asiatisches Baby adoptiert.",
+    "label": "Beliebte Serien",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/nO7EzksrBzlNpAg5rgv8HzaBIkx.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/k5Qg5rgPoKdh3yTJJrLtyoyYGwC.jpg",
+    "trailer": "",
+    "tmdb": "tv/1421"
+   },
+   {
+    "title": "Fight Club",
+    "meta": "1999  ·  Film  ·  Drama, Thriller  ·  ★ 8,4",
+    "desc": "Ein Yuppie findet beim charismatischen Tyler Durden Unterschlupf, nachdem seine Wohnung in die Luft gejagt wird. Ein Gerangel zwischen den beiden entwickelt sich zu einer Schlägerei, die mit der Erkenntnis endet, dass man sich nach einer ordentlichen Portion Prügel einfach besser fühlt. Der \"Fight Club\" ist geboren. Immer mehr Männer versammeln sich, um sich zu schlagen - und gestärkt in den Alltag zu gehen. Wie ein Virus greift das Konzept um sich, doch für Tyler ist der Kampfverein nur die erste Stufe, um die USA in die Knie zu zwingen.",
+    "label": "Bestbewertete Filme",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/c6OLXfKAk5BKeR6broC8pYiCquX.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/5sLBZtBzmL9Xd5MdGyqymgM9kPY.jpg",
+    "trailer": "",
+    "tmdb": "movie/550"
+   },
+   {
+    "title": "Willkommen im Haus der Eulen",
+    "meta": "2020  ·  Serie  ·  Animation, Action & Adventure  ·  ★ 8,7",
+    "desc": "Luz ist eine Teenagerin, als solche natürlich vollkommen von sich überzeugt und ihr Lebensziel ist klar: sie will eine Hexe werden! Als sie durch ein Portal in eine magische Welt gerät, kommt sie ihrem Wunsch ein gutes Stück näher. Sie freundet sich mit der rebellischen Magierin Eda und dem kleinen Krieger King an und macht sich daran, trotz des Fehlen jeglicher magischer Kräfte ihrerseits, eine waschechte Hexe zu werden …",
+    "label": "Bestbewertete Serien",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/bGqKaVROpz7pWUNuBxgU8hbcXYn.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/ohqQl3L8lCF0L6HnEnWRmOpkB38.jpg",
+    "trailer": "",
+    "tmdb": "tv/92685"
+   },
+   {
+    "title": "Die Schöne und das Biest",
+    "meta": "2017  ·  Film  ·  Familie, Fantasy  ·  ★ 7,0",
+    "desc": "Belle ist eine ebenso kluge wie anmutige junge Frau, die gemeinsam mit ihrem etwas verschrobenen Vater Maurice ein ruhiges und zufriedenes Leben in dem kleinen Dorf Villeneuve lebt. Ihr beschaulicher Alltag wird nur durch den selbstverliebten Schönling Gaston gestört, der Belle regelmäßig den Hof macht und sich auch durch ihre Ablehnung nicht abschrecken lässt. Da gerät Belles Vater während einer Reise in die Fänge des Biestes, das in einem verwunschenen Schloss in der Nähe des Dorfes wohnt. Das Biest war einst ein selbstsüchtiger Prinz, der dazu verflucht wurde, als hässliches Ungeheuer zu leben, bis er jemanden dazu bringen kann, ihn trotz seines abschreckenden Äußeren wahrlich zu lieben. Doch davon ahnt Belle noch nichts, als sie sich selbstlos anstatt ihres Vaters in die Gefangenschaft des Biestes begibt. Erst langsam freundet sie sich mit den ebenfalls verzauberten Bediensteten im Schloss an und beginnt zu ahnen, dass hinter der abscheulichen Fassade des Biestes noch mehr steckt.",
+    "label": "Heute empfohlen: Liebesfilm",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/uU1Mt4JWhDvl4vKb3AfxNsorkoM.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/2fZ8FQXplJPA9EloPH7Fkaw4mQX.jpg",
+    "trailer": "",
+    "tmdb": "movie/321612"
+   },
+   {
+    "title": "Will Trent",
+    "meta": "2023  ·  Serie  ·  Krimi, Drama  ·  ★ 7,3",
+    "desc": "Will Trent, Special Agent des Georgia Bureau of Investigation (GBI), wurde unmittelbar nach seiner Geburt ausgesetzt und ist unter harten Umständen in Atlantas überfordertem Pflegesystem großgeworden. Jetzt ist Will Trent fest entschlossen, seine einzigartigen Fähigkeiten einzusetzen, um dafür zu sorgen, dass niemand so wie er im Stich gelassen wird – und er hat die höchste Aufklärungsrate im GBI.",
+    "label": "Neue Folgen bei Disney+",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/9pGzG5CYx2XM8JFFQvMk9Z3z9ze.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/vg8jFtWFbmpHmZjpfAwhQsKw0T0.jpg",
+    "trailer": "",
+    "tmdb": "tv/208569"
+   },
+   {
+    "title": "Star Wars: The Mandalorian and Grogu",
+    "meta": "2026  ·  Film  ·  Action, Abenteuer  ·  ★ 7,5",
+    "desc": "Das böse Imperium ist gefallen, doch imperiale Kriegsherren sind weiterhin über die Galaxis verstreut. Die junge Neue Republik arbeitet daran, alles zu schützen, wofür die Rebellion gekämpft hat, und hat sich dazu die Hilfe des legendären mandalorianischen Kopfgeldjägers Din Djarin und seines jungen Lehrlings Grogu gesichert.",
+    "label": "Neue Filme bei Disney+",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/ysLlsAxwgNSxBWHCgTKJrmjxpRQ.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/3VhTRgqH6YY33Enx8iRi7bCkWWX.jpg",
+    "trailer": "",
+    "tmdb": "movie/1228710"
+   },
+   {
+    "title": "Deadpool & Wolverine",
+    "meta": "2024  ·  Film  ·  Action, Komödie  ·  ★ 7,6",
+    "desc": "Seit Jahren träumt Deadpool davon, ein Avenger zu werden – und nun bietet ihm der zwielichtige TVA-Agent Mr. Paradox an, in die heilige Zeitlinie zu wechseln, um dort Teil des MCU zu sein. Doch dafür muss der vorlaute Söldner ein großes Opfer bringen: Seine Welt wird ausgelöscht. Weil Deadpool dies nicht zulassen will, schickt Mr. Paradox ihn und eine von Deadpool rekrutierte, abgehalfterte Variante von Wolverine in die Leere – die große Müllhalde aller Universen. Dort hat die finstere Cassandra Nova ein Schreckens-Regime errichtet. Deadpool ist klar: Will er seine Welt, all seine Freunde und seine große Liebe Vanessa retten, muss er an ihr vorbei und auch Mr. Paradox aufhalten. Doch dazu muss er erst einmal den verbitterten Wolverine überzeugen, ihm zu helfen …",
+    "label": "Gerade angesagt",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/by8z9Fe8y7p4jo2YlW2SZDnptyT.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/chDpMyvXNDFMhg3yUknITnGUCUk.jpg",
+    "trailer": "",
+    "tmdb": "movie/533535"
+   },
+   {
+    "title": "How I Met Your Mother",
+    "meta": "2005  ·  Serie  ·  Komödie  ·  ★ 8,1",
+    "desc": "Ted Mosby erzählt seinem Sohn und seiner Tochter von den Ereignissen, die dazu geführt haben, dass er ihre Mutter getroffen hat.",
+    "label": "Beliebte Serien",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/3f8aW6vcYRP6mTZdgXm83BiuB9t.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/b34jPzmB0wZy7EjUZoleXOl2RRI.jpg",
+    "trailer": "",
+    "tmdb": "tv/1100"
+   },
+   {
+    "title": "Der Herr der Ringe - Die zwei Türme",
+    "meta": "2002  ·  Film  ·  Abenteuer, Fantasy  ·  ★ 8,4",
+    "desc": "Der Weg der Gefährten hat sich geteilt. Ringträger Frodo und sein treuer Begleiter Sam treffen in den Bergen von Emyn Muil auf Gollum, dem einst Bilbo Beutlin den Einen Ring wegnahm. Gollums Versuch, den mächtigen Ring von Frodo zu stehlen, misslingt, doch die Hobbits bringen es nicht übers Herz, die Kreatur zu töten. Stattdessen soll Gollum die beiden nach Mordor an die Pforten von Barad-Dûr, Saurons Festung, führen, wo Frodo den Ring vernichten will. Währenddessen folgen Aragorn, Elben-Bogenschütze Legolas und Zwerg Gimli den Spuren der von Orks verschleppten Hobbits. Im Menschenkönigreich Rohan ersuchen sie Unterstützung. Doch König Theoden steht unter einem tödlichen Bann Saurons. Erst als Gandalf als wiedergeborener weißer Zauberer zurückkehrt, wendet sich das Blatt. Er befreit Theoden von dem Fluch und bringt die Menschen von Rohan hinter sich. Unterdessen rückt Saurons Verbündeter Saruman mit einer 10.000 Mann starken Armee von Uruk-hais in RIchtung der Menschenstadt vor...",
+    "label": "Bestbewertete Filme",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/6G73mNyooWAEQTpckPSnFxFoNmc.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/tgBCeAjPwXeUaf8LsRL0LzBIcdR.jpg",
+    "trailer": "",
+    "tmdb": "movie/121"
+   },
+   {
+    "title": "Untreu",
+    "meta": "2002  ·  Film  ·  Thriller, Drama  ·  ★ 6,7",
+    "desc": "Edward und Connie Sumner führen ein perfektes Leben mit Haus, Hund und Kind in einem New Yorker Vorort. Doch Connies stürmische Zufalls-Begegnung mit dem charmanten Lebenskünstler Paul verändert alles. Angezogen von Pauls erotischer Ausstrahlung, stürzt sich Connie in eine leidenschaftliche Affäre, die immer exzessivere Züge annimmt. Als Edward zufällig das Geheimnis seiner Frau entdeckt, dreht er durch - mit tödlichen Konsequenzen...",
+    "label": "Heute empfohlen: Liebesfilm",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/egVj5Y9f79xPnyAQJmeDR0Uwow3.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/A5xOj254O7uNvTu268BlehvItBU.jpg",
+    "trailer": "",
+    "tmdb": "movie/2251"
+   },
+   {
+    "title": "Tracker",
+    "meta": "2024  ·  Serie  ·  Drama, Krimi  ·  ★ 7,6",
+    "desc": "Colter Shaw reist in seinem Old-School-Wohnmobil durch das Land, um der Polizei und Privatleuten bei der Aufklärung von Verbrechen und der Suche nach vermissten Personen zu helfen, bis sein neuester Fall alles verändert.",
+    "label": "Neue Folgen bei Disney+",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/5C5cMYUlmX6BU5YxBqhp7ZpSd3Q.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/otula4h1ITZ0eV84eg7Lb8u614C.jpg",
+    "trailer": "",
+    "tmdb": "tv/211288"
+   },
+   {
+    "title": "Hoppers",
+    "meta": "2026  ·  Film  ·  Animation, Abenteuer  ·  ★ 8,1",
+    "desc": "Die Tierliebhaberin Mabel nutzt eine neuartige Technologie, um ihr Bewusstsein in einen täuschend echt aussehenden Biberroboter zu übertragen und so direkt mit der Tierwelt zu kommunizieren. Dabei entdeckt sie ungeahnte Geheimnisse und schließt Freundschaft mit dem charismatischen König George. Als der schleimige Bürgermeister Jerry Generazzo jedoch zur Bedrohung für den Lebensraum wird, muss Mabel das gesamte Tierreich vereinen, um sich der menschlichen Gefahr entgegenzustellen.",
+    "label": "Neue Filme bei Disney+",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/u53UYu5XG2hNgWGvs3xGhAVzypl.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/nyTJIwOVWok3fuJypPMziHcFCA2.jpg",
+    "trailer": "",
+    "tmdb": "movie/1327819"
+   }
+  ]
+ },
+ "kino": {
+  "label": "Kino",
+  "source": "Daten: TMDB",
+  "items": [
+   {
+    "title": "Hope",
+    "meta": "2026  ·  Film  ·  Science Fiction, Mystery  ·  ★ 6,8",
+    "desc": "Nachdem sämtliche Verstärkungskräfte abgezogen wurden, um Waldbrände einzudämmen, und die Kommunikation vollständig zusammengebrochen ist, kämpfen der Leiter des Polizeipostens von Hope, Bum-seok, und die Polizistin Sung-ae darum, ein Dorf voller älterer Menschen zu schützen. Währenddessen brechen Sung-ki und weitere Menschen aus dem Dorf in die umliegenden Berge auf, um eine mysteriöse Bestie aufzuspüren – doch schon bald werden sie selbst zur Beute. Was aus Unwissenheit beginnt, setzt eine Katastrophe in Gang, die sich durch menschliche Konflikte zu einer Tragödie kosmischen Ausmaßes entwickelt.",
+    "label": "Jetzt im Kino",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/j96rurZqmBjyY37Fncl3IB0qJNe.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/bRPrdyif9z2BYW2yNhZX0P8V9L5.jpg",
+    "trailer": "https://www.youtube.com/watch?v=THPE4yK5CZM",
+    "tmdb": "movie/1058424"
+   },
+   {
+    "title": "Other Mommy",
+    "meta": "2026  ·  Film  ·  Horror  ·  ★ 6,3",
+    "desc": "Ein junges Mädchen, Bela, bildet eine Beziehung mit einer unheimlichen Entität in ihrem Haus, die unheimlich aussieht wie ihre eigene Mutter.",
+    "label": "Jetzt im Kino",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/ncm7djsVTHQQMX2HEbEVxMUFchG.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/dDRtLmxorXpXHxTJqxNlMT9rJP9.jpg",
+    "trailer": "https://www.youtube.com/watch?v=l2KKzwDAXZ8",
+    "tmdb": "movie/1400837"
+   },
+   {
+    "title": "Beware Boiúna",
+    "meta": "2026  ·  Film  ·  Horror, Thriller  ·  ★ 6,1",
+    "desc": "Der Dschungel macht aus guten Menschen bessere und aus schlechten Menschen Monster.“ Ein junges Ärzteteam reist im Rahmen einer humanitären Mission mit einem Schiff tief in den Amazonas-Regenwald und macht sich damit nicht nur Freunde. Ihr Besuch ruft eine uralte Jägerin auf den Plan: die Boiúna. Diese mythische, aus dem kolumbianischen Volksglauben stammende Riesenschlange kehrt zurück, um ihr Territorium zu verteidigen. Sie entscheidet, wer lebt und wer stirbt. Mitten im dichten Dschungel entfacht ein unerbittlicher Kampf ums Überleben, in dem die Grenzen zwischen Jäger und Gejagtem immer mehr verschwimmen.",
+    "label": "Jetzt im Kino",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/9nU0FKNefmhbgi2xXlvZchZsqwm.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/3YTPvYoCRIU9PJGdxEmz6xbNrmV.jpg",
+    "trailer": "https://www.youtube.com/watch?v=X-IDVQpUHGA",
+    "tmdb": "movie/1244523"
+   },
+   {
+    "title": "Godzilla Minus Zero",
+    "meta": "2026  ·  Film  ·  Science Fiction, Horror  ·  ★ 7,8",
+    "desc": "Der Krieg hat Japan auf Null reduziert, und Godzilla hat es ins Minus gestürzt. Zwei Jahre sind seitdem vergangen und das Land kämpft immer noch immer verzweifelt darum, sich wieder zu erholen und endlich in den normalen Alltag zurückzufinden. Gerade als es der Menschheit gelang, an einem hart erkämpften Frieden festzuhalten, schlägt eine neue Bedrohung zu und vernichtet die Hoffnung im Handumdrehen. Ein drittes Mal wird es nicht geben. Hier endet alles.",
+    "label": "Jetzt im Kino",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/oqrYIDH4tvfEzPe1yqT4jzmAWHQ.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/hZviv9gguqHGw4GK8gS5d5bDhA4.jpg",
+    "trailer": "https://www.youtube.com/watch?v=x666Mat4ruI",
+    "tmdb": "movie/1381071"
+   },
+   {
+    "title": "Ramayana: Rise of a Legend",
+    "meta": "2026  ·  Film  ·  Fantasy, Action  ·  ★ 7,6",
+    "desc": "In einem Zeitalter der Götter und Könige hängt das Schicksal der Welten am seidenen Faden. Rama, ein Prinz, dessen Leben von Pflicht, Selbstlosigkeit und unerschütterlicher Rechtschaffenheit bestimmt wird, muss sich dem unsterblichen Ravana stellen, getrieben von Stolz und Rache und mächtig genug den Kosmos zu zerstören.",
+    "label": "Jetzt im Kino",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/yHVZncPRZr63mezRX20IyKLrSkv.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/gOWnXaBxqT6k2y40hKfYU6c0Ym.jpg",
+    "trailer": "",
+    "tmdb": "movie/656908"
+   },
+   {
+    "title": "Ebenezer – Eine Weihnachtsgeschichte",
+    "meta": "2026  ·  Film  ·  Fantasy, Komödie  ·  ★ 7,9",
+    "desc": "Johnny Depp wird in dieser Dickens-Verfilmung zum alten grantigen Geizkragen Ebenezer Scrooge.  Der verbitterte, knauserige Geizhals Ebenezer Scrooge verachtet das Weihnachtsfest und behandelt seine Mitmenschen kalt. Am Heiligen Abend wird er von mysteriösen übernatürlichen Mächten heimgesucht. Auf einer fantastischen Reise durch seine Vergangenheit, Gegenwart und Zukunft wird er mit den Konsequenzen seines Handelns konfrontiert. Er muss sich seinen eigenen Entscheidungen stellen, um noch eine Chance auf Erlösung und innere Wandlung zu erhalten.",
+    "label": "Jetzt im Kino",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/fdOVxyNNL95SuI8BGaN6vudEuYX.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/3VArJnDlvOnAIjzngIwjHU7CVVD.jpg",
+    "trailer": "",
+    "tmdb": "movie/1567605"
+   },
+   {
+    "title": "Buddy",
+    "meta": "2026  ·  Film  ·  Horror, Komödie  ·  ★ 6,8",
+    "desc": "Alle lieben Buddy. Oder müssen es zumindest, denn wenn das orange Einhorn wütend wird, verwandelt sich seine quietschbunte Kindersendung schnell in blutiges Chaos. In der künstlich perfekten Studiowelt im Stil der 80er und 90er leben Kinder neben sprechenden Gegenständen, singen, tanzen und lernen Lektionen über Freundschaft und Zusammenhalt. Doch als Josh keine Lust auf Buddys Geburtstagsparty hat, bekommt die fröhliche Fassade schnell Risse und Josh einen tödlichen Axthieb verpasst. Folge für Folge eskaliert die Lage, denn gegen Buddys Zorn gibt es keine pädagogisch wertvolle Lösung",
+    "label": "Jetzt im Kino",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/sMmG82PtjK8A9rVc34gwKQtCm3A.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/1BdZbNvl1SfrrX8J9X5tQzN6Ivu.jpg",
+    "trailer": "",
+    "tmdb": "movie/1514026"
+   },
+   {
+    "title": "Street Fighter",
+    "meta": "2026  ·  Film  ·  Action, Fantasy  ·  ★ 6,3",
+    "desc": "1993 werden die verfeindeten Kämpfer Ryu und Ken Masters erneut in den Kampf geworfen, als die mysteriöse Chun-Li sie für das nächste World Warrior Tournament rekrutiert, einen brutalen Kampf voller Fäuste, Schicksal und Wut. Doch hinter diesem Battle Royale verbirgt sich eine tödliche Verschwörung, die sie zwingt, gegeneinander und gegen die Dämonen ihrer Vergangenheit anzutreten.",
+    "label": "Jetzt im Kino",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/3BBjkQmdGacKYZtpmK2vIfuDmON.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/6HNssAfOCjAO4uEqCqhzKHBApxN.jpg",
+    "trailer": "",
+    "tmdb": "movie/1153576"
+   },
+   {
+    "title": "Wildwood",
+    "meta": "2026  ·  Film  ·  Animation, Fantasy  ·  ★ 8,5",
+    "desc": "Nachdem ihr kleiner Bruder von einem Schwarm Krähen entführt worden ist, begibt sich die 12-jährige Prue auf eine abenteuerliche Rettungsmission in die „Undurchdringliche Wildnis“ – einen verzauberten Wald, der sich am Rande von Portland, Oregon, verbirgt. Gemeinsam mit ihrem tollpatschigen Mitschüler Curtis betritt sie eine Welt voller sprechender Tiere, Magie und uralter Mächte. Als die beiden in einen Konflikt geraten, der das Gleichgewicht des Waldes bedroht, entdeckt Prue eine innere Stärke, von der sie niemals geahnt hätte, dass sie in ihr steckt. Wenn sie ihren Bruder retten und das Schicksal von Wildwood verändern will, muss sie alles aufs Spiel setzen.",
+    "label": "Jetzt im Kino",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/sl5NJ1vtyhP9Vr88bB4blULsJYp.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/oYkGlrvG7QNqrLtss4Q3Bpr1Np6.jpg",
+    "trailer": "",
+    "tmdb": "movie/791523"
+   },
+   {
+    "title": "Clayface",
+    "meta": "2026  ·  Film  ·  Horror, Thriller  ·  ★ 7,4",
+    "desc": "„Clayface“ schildert den erschütternden Niedergang eines Mannes vom aufstrebenden Hollywood-Star zum von Rachegelüsten getriebenen Monster. Die Geschichte erzählt vom Verlust der eigenen Identität und Menschlichkeit, von der zerstörerischen Kraft der Liebe und von der Schattenseite wissenschaftlichen Ehrgeizes.",
+    "label": "Jetzt im Kino",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/xSDoxv4pHvs4xZjvTb0Iqg1A6ro.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/lT39E4l7DnCzw5ctrciDxq903qc.jpg",
+    "trailer": "",
+    "tmdb": "movie/1400940"
+   },
+   {
+    "title": "La bola negra",
+    "meta": "Kinostart 19. November  ·  2026  ·  Film  ·  Drama, Kriegsfilm  ·  ★ 8,0",
+    "desc": "Drei Leben, drei miteinander verwobene Schicksale, ein gemeinsames Erbe: Die Jahre 1932, 1937 und 2017 umspannend, erzählt LA BOLA NEGRA eine Geschichte von Begehren, Schmerz und der Sehnsucht von Sebastián, Rafael und Alberto, deren Lebenswege untrennbar miteinander verbunden sind. Inspiriert von einem der letzten, unvollendeten Werke Federico García Lorcas, spannt der Film einen Bogen von der Vorkriegszeit Spaniens bis in die Gegenwart.",
+    "label": "Bald im Kino",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/bDsmYvrzto7xrEwqDpLC3SPhn9A.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/3YVcHHxTFRa0U9Q6CesKC9mtdAb.jpg",
+    "trailer": "https://www.youtube.com/watch?v=wCktgAye3NA",
+    "tmdb": "movie/1422041"
+   },
+   {
+    "title": "Die Tribute von Panem: Sunrise on the Reaping",
+    "meta": "Kinostart 19. November  ·  2026  ·  Film  ·  Science Fiction, Action  ·  ★ 9,0",
+    "desc": "Kehren Sie in die Welt von Panem zurück – 24 Jahre vor den Ereignissen von „Die Tribute von Panem“ –, beginnend am Morgen der Ernte für die 50. Hungerspiele, auch bekannt als das zweite Jubel-Jubiläum.",
+    "label": "Bald im Kino",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/aqFZcr2dxSZ2UwWSo1WC6C0rwDf.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/eyxBOW9HSTbhT7s5V17SJKVegvC.jpg",
+    "trailer": "https://www.youtube.com/watch?v=Lk9nOAKNxgE",
+    "tmdb": "movie/1300968"
+   },
+   {
+    "title": "You Can See Everything",
+    "meta": "Kinostart 19. November  ·  2026  ·  Film  ·  Dokumentarfilm  ·  ★ 8,9",
+    "desc": "34 Tage vor ihrer Inhaftierung lädt die berüchtigte Theranos-Gründerin Elizabeth Holmes ein skeptisches Filmteam ein, jeden ihrer Schritte zu dokumentieren. Was als intimes Porträt beginnt, entwickelt sich zu einer nervenaufreibenden dreijährigen Reise.",
+    "label": "Bald im Kino",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/nhIL3O4W9h5V5JbNQm7yjoDk3So.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/Ap8QwmKfSjYbWC4XIP8w9pdn72O.jpg",
+    "trailer": "https://www.youtube.com/watch?v=rD0gIlrClP8",
+    "tmdb": "movie/1765072"
+   },
+   {
+    "title": "Puella Magi Madoka Magica the Movie -Walpurgisnacht: Rising-",
+    "meta": "Kinostart 24. November  ·  2026  ·  Film  ·  Animation, Drama  ·  ★ 8,0",
+    "desc": "Nach den Ereignissen von „Rebellion“ scheint die Welt im Gleichgewicht zu sein – doch dieser Frieden ist brüchig. Als eine neue Bedrohung im Zusammenhang mit der Walpurgisnacht auftaucht, ist Homura Akemi gezwungen, sich den Konsequenzen ihrer Entscheidungen zu stellen und sich zu fragen, wie weit sie bereit ist zu gehen, um Madoka zu beschützen.",
+    "label": "Bald im Kino",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/xzm3RfWh932rS28WErNC3u8qzVm.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/tc7wW6whJSvxM9f5RdqmQVpdl6n.jpg",
+    "trailer": "",
+    "tmdb": "movie/822653"
+   },
+   {
+    "title": "The Only Living Pickpocket in New York",
+    "meta": "Kinostart 19. November  ·  2026  ·  Film  ·  Krimi, Drama  ·  ★ 7,6",
+    "desc": "Der alternde Taschendieb Harry Lehman war einst ein Meister seines Fachs, doch im digitalen New York von heute kommt er kaum noch über die Runden. Als er einem feiernden Rich Kid unwissentlich einen wertvollen USB-Stick stiehlt, hat er plötzlich eine skrupellose Mafiafamilie am Hals. Die Jagd nach dem Datenstick führt ihn durch alle fünf Stadtteile und zugleich in die verschwindende Welt seiner Vergangenheit.",
+    "label": "Bald im Kino",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/oahXjJ0UxnkJthITntGMrXVXQsJ.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/rTcZdmReszWMhV6ON7SE5D3gC1c.jpg",
+    "trailer": "",
+    "tmdb": "movie/1458099"
+   },
+   {
+    "title": "I Play Rocky",
+    "meta": "Kinostart 26. November  ·  2026  ·  Film  ·  Drama, Historie  ·  ★ 8,8",
+    "desc": "Die Entstehung des Boxerfilms „Rocky“ (1976) ist selbst Stoff für großes Kino: Der damals unbekannte Schauspieler Sylvester Stallone schreibt innerhalb von nur dreieinhalb Tagen ein Drehbuch und ist fest davon überzeugt, für die Hauptrolle bestimmt zu sein. Obwohl ihm immer wieder Steine in den Weg gelegt werden, setzt der später weltbekannte Actionstar alles auf eine Karte und beharrt trotz scheinbar unüberwindbarer Widerstände darauf, selbst als Rocky Balboa vor der Kamera zu stehen. Der Rest ist Filmgeschichte.",
+    "label": "Bald im Kino",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/1lnnjBCRLZzKRhQipK5zm61YkPe.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/fViZxjUGsR6IQD77FP22PIMfk0R.jpg",
+    "trailer": "",
+    "tmdb": "movie/1286656"
+   },
+   {
+    "title": "Wie verhext",
+    "meta": "Kinostart 26. November  ·  2026  ·  Film  ·  Abenteuer, Animation",
+    "desc": "",
+    "label": "Bald im Kino",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/wZ9Me7OndzgBOEAa8nSBNPu3Sl4.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/lMYJ4ogEBiB6pTxi5sm73kBsxiE.jpg",
+    "trailer": "",
+    "tmdb": "movie/1538497"
+   },
+   {
+    "title": "Meine Frau, unsere Schwiegertochter und ich",
+    "meta": "Kinostart 26. November  ·  2026  ·  Film  ·  Komödie, Liebesfilm",
+    "desc": "Mehr als zwei Jahrzehnte ist es her, dass Greg Focker seinen Schwiegervater Jack um die Hand von dessen Tochter Pam bat – eine Begegnung voller peinlicher Momente. Heute sind Greg und Pams Kinder erwachsen. Als Sohn Henry verkündet, seine Freundin Olivia Jones heiraten zu wollen, steht Greg vor einer neuen Herausforderung. Denn er begegnet der Beziehung mit großem Misstrauen: Olivia ist FBI-Verhandlungsexpertin und weiß Menschen mit Worten zu überzeugen. Greg vermutet, dass sie Henry gezielt beeinflusst, um eigene Interessen durchzusetzen. Also nimmt er die künftige Schwiegertochter genauer unter die Lupe – mit Methoden, die verdächtig an Jack erinnern. Wo einst der Schwiegervater ihn durchleuchtete, ist nun Greg der Misstrauische. Doch ihm fehlt das Geschick, unauffällig zu ermitteln. Sein Versuch, Henry vor einer vermeintlich falschen Entscheidung zu bewahren, sorgt für neue Spannungen in der Familie.",
+    "label": "Bald im Kino",
+    "images": [
+     "https://image.tmdb.org/t/p/w1280/6IfsmHoVWwgJwzxA9DLim2XZbSn.jpg"
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/z1EXnsDfGJY8W7VWkKf3Qc7EnrW.jpg",
+    "trailer": "",
+    "tmdb": "movie/1400336"
+   }
+  ]
+ },
+ "youtube_trends": {
+  "label": "Trends in Deutschland",
+  "source": "Quelle: YouTube",
+  "items": [
+   {
+    "title": "BANTU NATION X JAZEEK X LUCIANO X REEZY X THIZZY52 - BLACK",
+    "meta": "Bantu Nation Channel",
+    "desc": "",
+    "label": "Trends in Deutschland",
+    "images": [
+     "https://i.ytimg.com/vi/FWQuYaXqv4Y/maxresdefault.jpg",
+     "https://i.ytimg.com/vi/FWQuYaXqv4Y/sddefault.jpg",
+     "https://i.ytimg.com/vi/FWQuYaXqv4Y/hqdefault.jpg"
+    ],
+    "link": "https://www.youtube.com/watch?v=FWQuYaXqv4Y"
+   },
+   {
+    "title": "O.M - Trailer | Dhanush | Mammootty | Sai Pallavi | Sreeleela | Rajkumar Periasamy | Sai Abhyankkar",
+    "meta": "Divo Music",
+    "desc": "",
+    "label": "Trends in Deutschland",
+    "images": [
+     "https://i.ytimg.com/vi/aGSOpb_6kv8/maxresdefault.jpg",
+     "https://i.ytimg.com/vi/aGSOpb_6kv8/sddefault.jpg",
+     "https://i.ytimg.com/vi/aGSOpb_6kv8/hqdefault.jpg"
+    ],
+    "link": "https://www.youtube.com/watch?v=aGSOpb_6kv8"
+   },
+   {
+    "title": "😍🔥UNSER 1. J.O.N.A.S. & NEUE Brutale BASE! - Moon Sweepers Folge 2 mit @Rumathra!",
+    "meta": "Trymacs",
+    "desc": "",
+    "label": "Trends in Deutschland",
+    "images": [
+     "https://i.ytimg.com/vi/3hG8RIia1EY/maxresdefault.jpg",
+     "https://i.ytimg.com/vi/3hG8RIia1EY/sddefault.jpg",
+     "https://i.ytimg.com/vi/3hG8RIia1EY/hqdefault.jpg"
+    ],
+    "link": "https://www.youtube.com/watch?v=3hG8RIia1EY"
+   },
+   {
+    "title": "Fifi x Fero - U Katritha",
+    "meta": "FIFI OFFICIAL",
+    "desc": "",
+    "label": "Trends in Deutschland",
+    "images": [
+     "https://i.ytimg.com/vi/r3f1KRzkBIY/maxresdefault.jpg",
+     "https://i.ytimg.com/vi/r3f1KRzkBIY/sddefault.jpg",
+     "https://i.ytimg.com/vi/r3f1KRzkBIY/hqdefault.jpg"
+    ],
+    "link": "https://www.youtube.com/watch?v=r3f1KRzkBIY"
+   },
+   {
+    "title": "GTA 6: NEW Gameplay, Trailer, Screenshots & Features Revealed!",
+    "meta": "TGG",
+    "desc": "",
+    "label": "Trends in Deutschland",
+    "images": [
+     "https://i.ytimg.com/vi/2xFvefPwdD8/maxresdefault.jpg",
+     "https://i.ytimg.com/vi/2xFvefPwdD8/sddefault.jpg",
+     "https://i.ytimg.com/vi/2xFvefPwdD8/hqdefault.jpg"
+    ],
+    "link": "https://www.youtube.com/watch?v=2xFvefPwdD8"
+   },
+   {
+    "title": "ICH DACHTE DIESE CHALLENGE IST UNMÖGLICH (ist sie aber nicht...)",
+    "meta": "BastiGHG",
+    "desc": "",
+    "label": "Trends in Deutschland",
+    "images": [
+     "https://i.ytimg.com/vi/5JOfSyGLk3U/maxresdefault.jpg",
+     "https://i.ytimg.com/vi/5JOfSyGLk3U/sddefault.jpg",
+     "https://i.ytimg.com/vi/5JOfSyGLk3U/hqdefault.jpg"
+    ],
+    "link": "https://www.youtube.com/watch?v=5JOfSyGLk3U"
+   },
+   {
+    "title": "XXL EI KAPUTT SCHLAGEN",
+    "meta": "LUCREW",
+    "desc": "",
+    "label": "Trends in Deutschland",
+    "images": [
+     "https://i.ytimg.com/vi/L-hNXEcQBX0/maxresdefault.jpg",
+     "https://i.ytimg.com/vi/L-hNXEcQBX0/sddefault.jpg",
+     "https://i.ytimg.com/vi/L-hNXEcQBX0/hqdefault.jpg"
+    ],
+    "link": "https://www.youtube.com/watch?v=L-hNXEcQBX0"
+   },
+   {
+    "title": "ICH versuche ALLES für den PIRATE TOKEN! 😭 | Mohi Plays",
+    "meta": "Mohi Plays",
+    "desc": "",
+    "label": "Trends in Deutschland",
+    "images": [
+     "https://i.ytimg.com/vi/JiBclBbpudk/maxresdefault.jpg",
+     "https://i.ytimg.com/vi/JiBclBbpudk/sddefault.jpg",
+     "https://i.ytimg.com/vi/JiBclBbpudk/hqdefault.jpg"
+    ],
+    "link": "https://www.youtube.com/watch?v=JiBclBbpudk"
+   },
+   {
+    "title": "NASSIB (BAYDA) - VOLO x SADIQ x 18KARAT x GHOST61 x SA4 x KOLJA GOLDSTEIN x DU MAROC",
+    "meta": "VOLO",
+    "desc": "",
+    "label": "Trends in Deutschland",
+    "images": [
+     "https://i.ytimg.com/vi/VtUgDB_9Rr4/maxresdefault.jpg",
+     "https://i.ytimg.com/vi/VtUgDB_9Rr4/sddefault.jpg",
+     "https://i.ytimg.com/vi/VtUgDB_9Rr4/hqdefault.jpg"
+    ],
+    "link": "https://www.youtube.com/watch?v=VtUgDB_9Rr4"
+   },
+   {
+    "title": "4 STREAMER vs. 100 ZUSCHAUER! WER ÜBERLEBT AM LÄNGSTEN? | GTA 5 MANHUNT! | UNCUT",
+    "meta": "zarbex Uncut",
+    "desc": "",
+    "label": "Trends in Deutschland",
+    "images": [
+     "https://i.ytimg.com/vi/tJ4m1uOeX2U/maxresdefault.jpg",
+     "https://i.ytimg.com/vi/tJ4m1uOeX2U/sddefault.jpg",
+     "https://i.ytimg.com/vi/tJ4m1uOeX2U/hqdefault.jpg"
+    ],
+    "link": "https://www.youtube.com/watch?v=tJ4m1uOeX2U"
+   },
+   {
+    "title": "BrunoRevolt x Sabire - Çorapet me vija",
+    "meta": "Bruno Revolt",
+    "desc": "",
+    "label": "Trends in Deutschland",
+    "images": [
+     "https://i.ytimg.com/vi/hf4I3vlOhUU/maxresdefault.jpg",
+     "https://i.ytimg.com/vi/hf4I3vlOhUU/sddefault.jpg",
+     "https://i.ytimg.com/vi/hf4I3vlOhUU/hqdefault.jpg"
+    ],
+    "link": "https://www.youtube.com/watch?v=hf4I3vlOhUU"
+   },
+   {
+    "title": "GTA 6: Neue OFFIZIELLE Infos! Neues Gameplay, Heist & Polizei Details",
+    "meta": "Slag",
+    "desc": "",
+    "label": "Trends in Deutschland",
+    "images": [
+     "https://i.ytimg.com/vi/ia9HopAC1ZY/maxresdefault.jpg",
+     "https://i.ytimg.com/vi/ia9HopAC1ZY/sddefault.jpg",
+     "https://i.ytimg.com/vi/ia9HopAC1ZY/hqdefault.jpg"
+    ],
+    "link": "https://www.youtube.com/watch?v=ia9HopAC1ZY"
+   }
+  ]
+ },
+ "twitch": {
+  "label": "Jetzt live",
+  "source": "Quelle: Twitch",
+  "items": [
+   {
+    "label": "Deine Streamer sind live",
+    "title": "Trymacs",
+    "meta": "LIVE  ·  Potato Please  ·  22.036 Zuschauer",
+    "desc": "Größtes Pokemon Opening von mir aller Zeiten! 520 Booster! Heute MUSS das RGB mew kommen!   | !Nobomi !Prepmymeal !ESN",
+    "images": [
+     "https://static-cdn.jtvnw.net/previews-ttv/live_user_trymacs-1280x720.jpg?t=202611142055"
+    ],
+    "link": "https://www.twitch.tv/trymacs"
+   },
+   {
+    "label": "Gerade beliebt auf Twitch",
+    "title": "Tolkin",
+    "meta": "LIVE  ·  League of Legends  ·  47.104 Zuschauer",
+    "desc": "🟢WORLDS FINAL GENG vs BLG | DEUTSCHE PRESHOW ~18:30 UHR OPENING CEREMONY 20 UHR🟢",
+    "images": [
+     "https://static-cdn.jtvnw.net/previews-ttv/live_user_tolkin-1280x720.jpg?t=202611142055"
+    ],
+    "link": "https://www.twitch.tv/tolkin"
+   },
+   {
+    "label": "Gerade beliebt auf Twitch",
+    "title": "xRohat",
+    "meta": "LIVE  ·  Just Chatting  ·  12.258 Zuschauer",
+    "desc": "30 TAGE CHARITY STREAM - TAG 14 | !spenden !spendenziele",
+    "images": [
+     "https://static-cdn.jtvnw.net/previews-ttv/live_user_xrohat-1280x720.jpg?t=202611142055"
+    ],
+    "link": "https://www.twitch.tv/xrohat"
+   },
+   {
+    "label": "Gerade beliebt auf Twitch",
+    "title": "gTasty",
+    "meta": "LIVE  ·  Grand Theft Auto V  ·  11.526 Zuschauer",
+    "desc": "Peppi ist da | !yt !insta !dc",
+    "images": [
+     "https://static-cdn.jtvnw.net/previews-ttv/live_user_gtasty-1280x720.jpg?t=202611142055"
+    ],
+    "link": "https://www.twitch.tv/gtasty"
+   },
+   {
+    "label": "Gerade beliebt auf Twitch",
+    "title": "Bonjwa",
+    "meta": "LIVE  ·  Special Events  ·  9.821 Zuschauer",
+    "desc": "Bonjwa LAN 2026 !spenden mit Leon, Aster, Matteo & Jannik",
+    "images": [
+     "https://static-cdn.jtvnw.net/previews-ttv/live_user_bonjwa-1280x720.jpg?t=202611142055"
+    ],
+    "link": "https://www.twitch.tv/bonjwa"
+   },
+   {
+    "label": "Gerade beliebt auf Twitch",
+    "title": "krokoboss",
+    "meta": "LIVE  ·  ELDEN RING  ·  7.935 Zuschauer",
+    "desc": "NIGHTMARE SEED MONTH BEGINNT | !rival !prep !apex !wechselpilot ᵂᴱᴿᴮᵁᴺᴳ",
+    "images": [
+     "https://static-cdn.jtvnw.net/previews-ttv/live_user_krokoboss-1280x720.jpg?t=202611142055"
+    ],
+    "link": "https://www.twitch.tv/krokoboss"
+   },
+   {
+    "label": "Gerade beliebt auf Twitch",
+    "title": "BastiGHG",
+    "meta": "LIVE  ·  Minecraft  ·  7.697 Zuschauer",
+    "desc": "END SKYBLOCK⛓️STEGI & BASTI⛓️ULTRA HARDCORE RANDOMIZER⛓️GHG⛓️ZICKZACK v6 !cape !wings",
+    "images": [
+     "https://static-cdn.jtvnw.net/previews-ttv/live_user_bastighg-1280x720.jpg?t=202611142055"
+    ],
+    "link": "https://www.twitch.tv/bastighg"
+   },
+   {
+    "label": "Gerade beliebt auf Twitch",
+    "title": "nooreax",
+    "meta": "LIVE  ·  Just Chatting  ·  7.572 Zuschauer",
+    "desc": "🚨 NOOREAX SCHMINKEN 🚨 MIA IST DA 🚨 2,5 MONATE 24/7 LIVE 🚨 TAG 36 🚨 NOTY GmbH WG mit @DIMEAX & @NORMAN 🚨 !pmm | Werbung",
+    "images": [
+     "https://static-cdn.jtvnw.net/previews-ttv/live_user_nooreax-1280x720.jpg?t=202611142055"
+    ],
+    "link": "https://www.twitch.tv/nooreax"
+   },
+   {
+    "label": "Gerade beliebt auf Twitch",
+    "title": "KubaFPS",
+    "meta": "LIVE  ·  Slots  ·  7.500 Zuschauer",
+    "desc": "10.000€ GIVEAWAY HEUTE | 200k LEADERBOARD !bonus",
+    "images": [
+     "https://static-cdn.jtvnw.net/previews-ttv/live_user_kubafps-1280x720.jpg?t=202611142055"
+    ],
+    "link": "https://www.twitch.tv/kubafps"
+   },
+   {
+    "label": "Gerade beliebt auf Twitch",
+    "title": "marli",
+    "meta": "LIVE  ·  Just Chatting  ·  4.756 Zuschauer",
+    "desc": "Looksmaxxing Debatte Watchparty",
+    "images": [
+     "https://static-cdn.jtvnw.net/previews-ttv/live_user_marli-1280x720.jpg?t=202611142055"
+    ],
+    "link": "https://www.twitch.tv/marli"
+   }
+  ]
+ },
+ "youtube_channels": [
+  {
+   "query": "Beam in Serie",
+   "id": "UC8kho6CFD2eKqY1XqO5RD5A",
+   "name": "Beam in Serie"
+  },
+  {
+   "query": "Die Crew",
+   "id": "UCSfMSePxSvUG8bGAhqzLUVw",
+   "name": "Die Crew"
+  },
+  {
+   "query": "Einsatz Amerika",
+   "id": "UCjcV8Sg9U9qESPTB-mj9y7A",
+   "name": "Einsatz Amerika"
+  },
+  {
+   "query": "Aaron Troschke",
+   "id": "UCCprsL2xVSoReeKCCnWkd7Q",
+   "name": "Aaron Troschke"
+  },
+  {
+   "query": "HandOfBlood",
+   "id": "UC9YTp5M6yYgSd6t0SeL2GQw",
+   "name": "HandOfBlood"
+  },
+  {
+   "query": "Mattin",
+   "id": "UC5iYuXSliCgk_mtUJa25eoQ",
+   "name": "Mattin"
+  },
+  {
+   "query": "@MontanaBlack",
+   "id": "UCpAMOlA_0hFXopIxMq8ar0w",
+   "name": "MontanaBlack"
+  },
+  {
+   "query": "Zarbex",
+   "id": "UCk5IRwxIo4lYyV4PzHhWxsg",
+   "name": "Zarbex"
+  },
+  {
+   "query": "MrGeil",
+   "id": "UCEMOfc4WSYvEfAXelBiJyEQ",
+   "name": "MrGeil"
+  },
+  {
+   "query": "Richtiger Kevin",
+   "id": "UCo6utge9KpJI61gXe7ngUJQ",
+   "name": "Richtiger Kevin"
+  },
+  {
+   "query": "SurvivalMattin",
+   "id": "UCyQAraT4FYcXgnUTLOj796Q",
+   "name": "SurvivalMattin"
+  },
+  {
+   "query": "ZarbexLive",
+   "id": "UCqUkIkT0NvKxRQP-5_CMR3Q",
+   "name": "ZarbexLive"
+  }
+ ],
+ "hsv": [
+  {
+   "utc": "2026-11-22T16:30:00Z",
+   "opp": "SV Werder Bremen",
+   "home": false,
+   "league": "1. Fußball-Bundesliga 2026/2027",
+   "id": 83243
+  },
+  {
+   "utc": "2026-11-28T14:30:00Z",
+   "opp": "FC Bayern München",
+   "home": true,
+   "league": "1. Fußball-Bundesliga 2026/2027",
+   "id": 83251
+  },
+  {
+   "utc": "2026-12-05T14:30:00Z",
+   "opp": "1. FC Union Berlin",
+   "home": false,
+   "league": "1. Fußball-Bundesliga 2026/2027",
+   "id": 83261
+  },
+  {
+   "utc": "2026-12-11T19:30:00Z",
+   "opp": "FC Schalke 04",
+   "home": true,
+   "league": "1. Fußball-Bundesliga 2026/2027",
+   "id": 83269
+  }
+ ]
+}
